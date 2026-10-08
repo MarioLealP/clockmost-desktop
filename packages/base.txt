@@ -1,0 +1,32 @@
+# Base system (CachyOS on Arch). One package per line; comments allowed.
+base
+base-devel
+linux-cachyos
+linux-cachyos-headers
+linux-firmware
+amd-ucode
+btrfs-progs
+dosfstools
+# CachyOS bits: repos/keyring, tuned sysctl/udev/zram defaults, hooks
+cachyos-keyring
+cachyos-mirrorlist
+cachyos-v3-mirrorlist
+cachyos-settings
+cachyos-hooks
+cachyos-rate-mirrors
+zram-generator
+# boot menu + snapshots (rollback from the boot menu)
+limine
+limine-mkinitcpio-hook
+limine-snapper-sync
+snapper
+snap-pac
+btrfs-assistant
+# network, access, basics
+networkmanager
+openssh
+sudo
+git
+nano
+man-db
+bash-completion
