@@ -1,0 +1,17 @@
+# Plasma core (decided 2026-10-09: minimal, then every app picked one at a time).
+# The shell includes Klipper (clipboard + history, Meta+V) and KWin's alt-tab.
+plasma-desktop
+plasma-workspace
+kwin
+xdg-desktop-portal-kde
+kscreen
+# applets for things the core can't work without
+plasma-pa
+plasma-nm
+# audio stack
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+# one base font family so text renders (CJK/emoji/look are later picks)
+noto-fonts
