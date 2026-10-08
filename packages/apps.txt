@@ -3,3 +3,10 @@
 kitty
 # 3: shell (2026-10-09) - fish (history suggestions, described completion); bash stays for scripts
 fish
+# 4: file manager (2026-10-09) - Dolphin: Places (pins) + Folders tree like Explorer; server folders via KIO
+dolphin
+kio-extras
+kio-admin
+ffmpegthumbs
+kdegraphics-thumbnailers
+baloo-widgets
