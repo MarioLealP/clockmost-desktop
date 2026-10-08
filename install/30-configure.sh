@@ -10,7 +10,7 @@ sed -i -E 's/^#(en_US\.UTF-8 UTF-8)/\1/; s/^#(pt_PT\.UTF-8 UTF-8)/\1/' /etc/loca
 echo LANG=en_US.UTF-8 > /etc/locale.conf
 echo KEYMAP=us > /etc/vconsole.conf
 echo "$HOST" > /etc/hostname
-id benylin >/dev/null 2>&1 || useradd -m -G wheel -s /bin/bash benylin
+id benylin >/dev/null 2>&1 || useradd -m -G wheel -s /bin/bash benylin  # login shell -> fish in the bootstrap (pick #3)
 install -d -m 700 -o benylin -g benylin /home/benylin/.ssh
 printf '%s\n' "$SSHKEY" > /home/benylin/.ssh/authorized_keys
 chown benylin:benylin /home/benylin/.ssh/authorized_keys; chmod 600 /home/benylin/.ssh/authorized_keys

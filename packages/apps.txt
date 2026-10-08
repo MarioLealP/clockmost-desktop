@@ -1,3 +1,5 @@
 # Apps, picked one at a time (runbook decision log)
 # 2: terminal (2026-10-09) - inline images fit the window out of the box, built-in cursor trail
 kitty
+# 3: shell (2026-10-09) - fish (history suggestions, described completion); bash stays for scripts
+fish
