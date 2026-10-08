@@ -10,3 +10,5 @@ kio-admin
 ffmpegthumbs
 kdegraphics-thumbnailers
 baloo-widgets
+# 5: browser (2026-10-09) - Firefox: Firefox-based AND has Widevine (Disney+); Zen has no Widevine license
+firefox
