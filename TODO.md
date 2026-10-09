@@ -25,3 +25,12 @@
   GUI (Settings -> Secret Service Integration). On the real machine: the database
   (`Passwords.kdbx`, on Google Drive today) needs a Linux sync path (pick) + the tang auto-unlock
   with native clevis (clockmost phase).
+- **Headphone EQ (carry-over, "same system as last time")**: EasyEffects + lsp-plugins-lv2, preset
+  `DT880 oratory1990` built from `dotfiles/home/.local/share/easyeffects/output/DT880 oratory1990.apo.txt`
+  (AutoEq tag 2.0.0, oratory1990 harman_over-ear_2018, DT 880 250 Ohm, preamp -5.6 dB, 10 PEQ
+  bands - the exact profile used 2026-09). Needs the APO -> EasyEffects JSON converter again (the old
+  `~/.local/bin/apo2easyeffects` was lost with the Linux backup); silent autostart
+  (`easyeffects --hide-window --service-mode`, `showTrayIcon=false`, `noWindowAfterStarting=true`).
+  Details: runbooks/desktop-headphone-eq.md (historical).
+- **Carry-overs assumed solved (Mario 2026-10-09)**: Google Drive sync of `Passwords.kdbx` etc. and
+  the KeePassXC tang auto-unlock - redo as last time on the real machine.

@@ -18,3 +18,6 @@ spectacle
 equibop
 # 8: passwords + system keyring (standing rule, memory keepassxc-is-the-keyring): KeePassXC owns org.freedesktop.secrets
 keepassxc
+# 9: headphone EQ (carry-over from the old Linux desktop): EasyEffects + LSP plugins (its EQ backend; optional dep, required)
+easyeffects
+lsp-plugins-lv2
