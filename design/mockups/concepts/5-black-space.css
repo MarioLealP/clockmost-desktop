@@ -1,0 +1,560 @@
+/* 5 · Black-Space Survey — the apps are plain surfaces; the gaps are deep, measurable space */
+#screen {
+  background: #050506;
+}
+#wall canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- window surfaces: flat, quiet; depth lives only at the frame ---- */
+.win {
+  background: #18191e;
+  box-shadow: 0 0 0 1px #000;
+  transform-origin: center;
+}
+.win .titlebar {
+  background: #18191e;
+  color: #7f8391;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid #000;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.025);
+  position: relative;
+  z-index: 1;
+}
+.win.focused .titlebar {
+  color: #b9bdc9;
+}
+.bs-rim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.7);
+  transition: box-shadow 0.7s ease;
+}
+.win.focused .bs-rim {
+  box-shadow:
+    inset 0 1px 0 rgba(225, 232, 248, 0.13),
+    inset 0 0 0 1px rgba(200, 212, 236, 0.085),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+.bs-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 21;
+  padding: 2px;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0 42%,
+    rgba(150, 170, 215, 0.35) 47%,
+    rgba(236, 242, 255, 1) 50%,
+    rgba(150, 170, 215, 0.35) 53%,
+    transparent 58% 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.win.bs-lift {
+  box-shadow:
+    0 0 0 1px #000,
+    0 22px 60px rgba(0, 0, 0, 0.75);
+  z-index: 2;
+}
+
+/* Firefox: flush slots, one shallow recess around the active tab */
+.win.firefox .ff .tabs {
+  background: #18191e;
+  gap: 0;
+  padding: 0 0 0 8px;
+  height: 36px;
+  align-items: stretch;
+  border-bottom: 1px solid #000;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+.win.firefox .ff .tab {
+  background: transparent;
+  border-radius: 0;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  color: #8d91a0;
+  border-right: 1px solid #000;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.025);
+}
+.win.firefox .ff .tab.on {
+  background: #0f1014;
+  color: #e7e8ee;
+  box-shadow:
+    inset 0 3px 7px rgba(0, 0, 0, 0.85),
+    inset 1px 0 2px rgba(0, 0, 0, 0.6),
+    inset -1px 0 2px rgba(0, 0, 0, 0.6),
+    1px 0 0 rgba(255, 255, 255, 0.03),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+.win.firefox .ff .url {
+  background: #121317;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.75),
+    0 1px 0 rgba(255, 255, 255, 0.03);
+  color: #8a8e9c;
+}
+.win.firefox .ff .line {
+  background: #2b2d37;
+}
+
+/* Discord: uninterrupted surfaces, dark cuts between functional areas */
+.win.discord .dc .side {
+  background: #18191e;
+  position: relative;
+}
+.win.discord .dc .side::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -4px;
+  width: 4px;
+  background: linear-gradient(90deg, #000, #040405 60%, #0c0c0f);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.035);
+}
+.win.discord .dc .chat {
+  padding-left: 30px;
+}
+.win.discord .dc .chan {
+  background: #222329;
+  border-radius: 2px;
+}
+.win.discord .dc .chan:nth-child(3) {
+  background: #2c2e37;
+}
+.win.discord .dc .line {
+  background: #2b2d37;
+}
+
+/* Terminal: chrome almost disappears, the boundary does the work */
+.win.kitty {
+  background: #0e0f12;
+}
+.win.kitty .titlebar {
+  background: #0e0f12;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  color: rgba(160, 166, 180, 0.22);
+}
+.win.kitty .kt {
+  background: #0e0f12;
+}
+
+/* ---- the seam: an apparent trench, not a divider ---- */
+#seam.bs-trench {
+  background: linear-gradient(90deg, #1b1c22 0, #0a0a0c 1.5px, #020203 32%, #000 50%, #020203 68%, #0a0a0c calc(100% - 1.5px), #1b1c22 100%);
+  box-shadow:
+    inset 0 8px 16px #000,
+    inset 0 -8px 16px #000;
+  overflow: visible;
+  transition: opacity 0.25s;
+}
+#seam .bs-wall {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  background: linear-gradient(180deg, transparent, rgba(200, 212, 240, 0.32) 30% 70%, transparent);
+}
+#seam .bs-wall.l {
+  left: 0;
+}
+#seam .bs-wall.r {
+  right: 0;
+}
+#seam.lf .bs-wall.l,
+#seam.rf .bs-wall.r {
+  opacity: 1;
+}
+#seam .bs-ticks {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+#seam.ticks .bs-ticks {
+  opacity: 1;
+  transition-duration: 0.18s;
+}
+#seam .bs-ticks i {
+  position: absolute;
+  height: 1px;
+  background: rgba(205, 215, 238, 0.6);
+}
+#seam .bs-ticks i.l {
+  left: 1px;
+}
+#seam .bs-ticks i.r {
+  right: 1px;
+}
+#seam .bs-ticks i.c {
+  left: 50%;
+  width: 2px !important;
+  margin-left: -1px;
+  background: rgba(205, 215, 238, 0.22);
+}
+#seam .bs-drop {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 90px;
+  margin: -45px 0 0 -1px;
+  border-radius: 1px;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, #eef3ff 50%, transparent);
+  box-shadow: 0 0 10px 2px rgba(170, 195, 255, 0.55);
+}
+#seam .bs-glow {
+  position: absolute;
+  left: -30px;
+  right: -30px;
+  top: 50%;
+  height: 360px;
+  margin-top: -180px;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(150, 175, 230, 0.16), transparent);
+}
+
+/* ---- open / close / snap: slits and sockets ---- */
+.bs-slit {
+  position: absolute;
+  pointer-events: none;
+  z-index: 30;
+  background: #000;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(214, 224, 248, 0.5),
+    inset 0 0 0 2px #000,
+    inset 0 0 60px 18px rgba(21, 22, 28, 0.95),
+    0 0 18px rgba(150, 170, 220, 0.14);
+}
+.bs-slit svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.bs-pin {
+  position: absolute;
+  width: 140px;
+  height: 3px;
+  margin: -1.5px 0 0 -70px;
+  z-index: 31;
+  pointer-events: none;
+  border-radius: 2px;
+  background: radial-gradient(closest-side, #f2f6ff, rgba(170, 195, 255, 0.5) 50%, transparent);
+}
+.bs-socket {
+  position: absolute;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(190, 204, 235, 0.22),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.9),
+    inset 0 0 46px 14px rgba(0, 0, 0, 0.92);
+}
+.bs-socket::before {
+  /* survey ruler along the top lip */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 7px;
+  background: repeating-linear-gradient(90deg, rgba(200, 212, 240, 0.5) 0 1px, transparent 1px 48px);
+}
+.bs-socket::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, rgba(200, 212, 240, 0.35) 0 1px, transparent 1px 24px);
+}
+.bs-socket b {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid rgba(225, 233, 252, 0.8);
+}
+.bs-socket b:nth-child(1) {
+  left: 8px;
+  top: 14px;
+  border-width: 1px 0 0 1px;
+}
+.bs-socket b:nth-child(2) {
+  right: 8px;
+  top: 14px;
+  border-width: 1px 1px 0 0;
+}
+.bs-socket b:nth-child(3) {
+  left: 8px;
+  bottom: 10px;
+  border-width: 0 0 1px 1px;
+}
+.bs-socket b:nth-child(4) {
+  right: 8px;
+  bottom: 10px;
+  border-width: 0 1px 1px 0;
+}
+.bs-socket span {
+  position: absolute;
+  right: 38px;
+  bottom: 14px;
+  font:
+    11px ui-monospace,
+    Consolas,
+    monospace;
+  letter-spacing: 0.12em;
+  color: rgba(205, 215, 238, 0.7);
+}
+
+/* ---- HUD: the incision ---- */
+.bs-inc {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  background: #000;
+}
+.bs-inc > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.bs-edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 420px;
+  pointer-events: none;
+  overflow: visible;
+}
+.bs-far {
+  position: absolute;
+  left: 36px;
+  top: 0;
+  width: 1548px;
+  height: 268px;
+  color: #d8dce6;
+}
+.bs-far > * {
+  opacity: 0;
+}
+.bs-clock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 18px;
+  text-align: center;
+}
+.bs-clock .t {
+  font-weight: 200;
+  font-size: 138px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  color: #e3e6ee;
+  text-shadow:
+    0 0 40px rgba(160, 185, 235, 0.16),
+    0 2px 0 #000;
+}
+.bs-clock .d {
+  margin-top: 10px;
+  font-size: 15px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #868c9c;
+}
+.bs-niches {
+  position: absolute;
+  left: 46px;
+  top: 64px;
+  display: flex;
+  gap: 16px;
+}
+.bs-niche {
+  width: 74px;
+  text-align: center;
+}
+.bs-niche .n {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  background: #030304;
+  box-shadow:
+    inset 0 6px 12px #000,
+    inset 4px 0 8px rgba(0, 0, 0, 0.8),
+    inset -4px 0 8px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.06),
+    0 -1px 0 #000;
+}
+.bs-niche svg {
+  width: 30px;
+  height: 30px;
+  stroke: #b9c0d0;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bs-niche .lb {
+  margin-top: 9px;
+  font-size: 11px;
+  color: #7d8292;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.bs-notes {
+  position: absolute;
+  right: 44px;
+  top: 40px;
+  width: 400px;
+}
+.bs-note {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  height: 52px;
+  padding: 0 16px;
+  transform-origin: 0% 50%;
+  border-left: 2px solid rgba(208, 218, 242, 0.7);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0) 85%);
+  margin-bottom: 14px;
+  line-height: 52px;
+  font-size: 16px;
+  color: #d4d8e2;
+  white-space: nowrap;
+}
+.bs-note .dm {
+  font:
+    11px ui-monospace,
+    Consolas,
+    monospace;
+  color: #7d8496;
+  letter-spacing: 0.1em;
+}
+.bs-search {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  margin: 0 auto;
+  width: 560px;
+  height: 30px;
+}
+.bs-search .ln {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(205, 215, 238, 0.45) 20% 80%, transparent);
+}
+.bs-search .ph {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #5f6474;
+}
+
+/* the search line, pulled forward to the screen plane by typing */
+.bs-q {
+  position: absolute;
+  left: 640px;
+  width: 640px;
+  top: 252px;
+  height: 58px;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+  background: #0f1014;
+  box-shadow:
+    inset 0 0 0 1px rgba(210, 220, 245, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 30px 70px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  font-size: 24px;
+  color: #eef0f5;
+  transform-origin: 50% 0;
+}
+.bs-q .car {
+  width: 2px;
+  height: 26px;
+  background: #c8d4f2;
+  margin-left: 2px;
+  animation: bs-blink 1s steps(1) infinite;
+}
+.bs-res {
+  position: absolute;
+  left: 640px;
+  width: 640px;
+  top: 318px;
+  pointer-events: none;
+  z-index: 4;
+}
+.bs-res div {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 22px;
+  font-size: 15px;
+  color: #b8bdc9;
+  background: #121317;
+  border-top: 1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.25s,
+    transform 0.3s;
+}
+.bs-res div.on {
+  opacity: 1;
+  transform: none;
+}
+.bs-res div:first-child {
+  color: #eef0f5;
+  box-shadow: inset 2px 0 0 rgba(210, 220, 245, 0.7);
+}
+@keyframes bs-blink {
+  50% {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,90 @@
+/* 1 · Suminagashi — sumi ink windows on rice-paper water, one vermilion accent */
+#screen { background: #ece6d7; }
+#wins { z-index: 0; }
+#seam { z-index: 1; }
+#hud { z-index: 2; }
+.sm-wall { background-color: #ece6d7; background-repeat: no-repeat, no-repeat, repeat; overflow: hidden; }
+.sm-light {
+  position: absolute; inset: -20%;
+  background: radial-gradient(ellipse 40% 30% at 50% 50%, rgba(255, 255, 250, .22), transparent 70%);
+  animation: sm-drift 46s ease-in-out infinite alternate;
+}
+@keyframes sm-drift { from { transform: translate(-12%, -8%); } to { transform: translate(14%, 10%); } }
+.sm-ripples { position: absolute; inset: 0; }
+.sm-defs { position: absolute; }
+.sm-ring {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  border: 1.5px solid rgba(58, 50, 38, .22);
+  box-shadow: 0 0 0 5px rgba(255, 253, 246, .18), inset 0 0 0 4px rgba(58, 50, 38, .05);
+}
+
+/* windows: sumi ink */
+.win { background: #17181c; box-shadow: 0 0 0 1px rgba(80, 72, 60, .35), 0 2px 8px rgba(40, 34, 26, .16); transition: box-shadow .26s ease; }
+.win.focused { box-shadow: 0 0 0 1px #050506, 0 0 14px 2px rgba(6, 6, 8, .42); }
+.win .titlebar { background: #111215; color: #8a8478; font: 14px Georgia, "Noto Serif", "DejaVu Serif", serif; letter-spacing: .02em; transition: color .26s ease; }
+.win.focused .titlebar { color: #ece6d7; }
+.win .titlebar::before {
+  content: ""; width: 9px; height: 9px; margin-right: 11px; flex: none;
+  background: #b23a2a; border-radius: 3px 6px 4px 5px;
+  opacity: 0; transform: scale(.3) rotate(-20deg); transition: opacity .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1);
+}
+.win.focused .titlebar::before { opacity: 1; transform: none; }
+
+/* rim: wet (glossy, feathered) when focused, dry (matte, grainy) otherwise */
+.sm-rim { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.sm-e { position: absolute; }
+.sm-e.t { left: 0; right: 0; top: 0; height: 12px; }
+.sm-e.b { left: 0; right: 0; bottom: 0; height: 12px; }
+.sm-e.l { top: 0; bottom: 0; left: 0; width: 12px; }
+.sm-e.r { top: 0; bottom: 0; right: 0; width: 12px; }
+.sm-e > div { position: absolute; transition: opacity .26s ease; }
+.sm-e.t > div { left: 0; right: 0; top: 0; }
+.sm-e.b > div { left: 0; right: 0; bottom: 0; }
+.sm-e.l > div { top: 0; bottom: 0; left: 0; }
+.sm-e.r > div { top: 0; bottom: 0; right: 0; }
+.sm-e.t .wet, .sm-e.b .wet { height: 6px; } .sm-e.l .wet, .sm-e.r .wet { width: 6px; }
+.sm-e.t .dry, .sm-e.b .dry { height: 4px; } .sm-e.l .dry, .sm-e.r .dry { width: 4px; }
+.sm-e .wet { background: #030304; opacity: 0; }
+.sm-e .dry { background: rgba(132, 122, 104, .55); opacity: 1; }
+.win.focused .sm-e .wet { opacity: 1; }
+.win.focused .sm-e .dry { opacity: 0; }
+/* the gloss: a thin specular line on the wet ink, light from top-left */
+.sm-e .gl {
+  opacity: 0; filter: blur(.5px);
+  background: linear-gradient(90deg, rgba(255, 252, 240, .16), rgba(255, 252, 240, .16));
+  background-size: 100% 100%;
+}
+.sm-e.t .gl { top: 3px; height: 1px; } .sm-e.l .gl { left: 3px; width: 1px; }
+.win.focused .sm-e .gl { opacity: 1; }
+.sm-rim.glint .gl { animation: sm-glint .5s ease-out; }
+.sm-e.t .gl { background-image: linear-gradient(90deg, transparent 40%, rgba(255, 252, 240, .9) 50%, transparent 60%), linear-gradient(rgba(255, 252, 240, .16), rgba(255, 252, 240, .16)); background-size: 300% 100%, 100% 100%; background-position: 100% 0, 0 0; background-repeat: no-repeat; }
+.sm-e.l .gl { background-image: linear-gradient(180deg, transparent 40%, rgba(255, 252, 240, .9) 50%, transparent 60%), linear-gradient(rgba(255, 252, 240, .16), rgba(255, 252, 240, .16)); background-size: 100% 300%, 100% 100%; background-position: 0 100%, 0 0; background-repeat: no-repeat; }
+@keyframes sm-glint { from { background-position: 0 0, 0 0; } to { background-position: 100% 100%, 0 0; } }
+
+/* open / close ink layers */
+.sm-bloom { position: absolute; pointer-events: none; z-index: 20; }
+.sm-bloom svg { display: block; overflow: visible; }
+
+/* seam */
+.sm-seam { position: absolute; top: 0; left: 50%; width: 60px; margin-left: -30px; height: 100%; transform-origin: 50% 50%; }
+.sm-seam svg { display: block; }
+
+/* HUD */
+.sm-hud { position: absolute; inset: 0; }
+.sm-drop {
+  position: absolute; width: 18px; height: 24px; background: #101114;
+  border-radius: 50% 50% 50% 50% / 62% 62% 40% 40%;
+  box-shadow: inset -3px -4px 6px rgba(255, 255, 255, .12);
+}
+.sm-sheet { position: absolute; }
+.sm-sheet svg.bg { position: absolute; inset: 0; overflow: visible; }
+.sm-clock { font: 400 228px/1 "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", serif; letter-spacing: -6px; }
+.sm-date { font: italic 32px Georgia, "Noto Serif", serif; fill: #3a362f; letter-spacing: .5px; }
+.sm-seal { font: 700 28px Georgia, serif; fill: #f3ede0; }
+.sm-label { position: relative; display: inline-flex; align-items: center; padding: 7px 18px 7px 14px; color: #1d1d20; font: 17px Georgia, "Noto Serif", serif; }
+.sm-label .sw { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sm-label span { position: relative; }
+.sm-notes { position: absolute; left: 744px; top: 92px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.sm-notes .sm-label { font-size: 19px; }
+.sm-tray { position: absolute; left: 92px; top: 336px; display: flex; gap: 10px; }
+.sm-tray .sm-label { font-size: 15px; color: #3a362f; }

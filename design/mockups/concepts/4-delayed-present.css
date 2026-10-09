@@ -1,0 +1,90 @@
+/* 4 · The Delayed Present - monochrome + one accent, hairlines, exact afterimages */
+#screen { --dp-acc: #ef7a3c; --dp-ink: #e6e6e9; --dp-dim: #8a8a90; background: #101012; }
+
+/* ---- fx layer ---- */
+#dp-fx { position: absolute; inset: 0; pointer-events: none; }
+#dp-fx svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; shape-rendering: crispEdges; }
+#dp-fx circle, #dp-fx polyline { shape-rendering: geometricPrecision; }
+.dp-pre { position: absolute; border: 1px solid var(--dp-ink); transform-origin: center; }
+.dp-pre::before, .dp-pre::after { content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid var(--dp-acc); }
+.dp-pre::before { left: -2px; top: -2px; border-right: 0; border-bottom: 0; }
+.dp-pre::after { right: -2px; bottom: -2px; border-left: 0; border-top: 0; }
+
+/* ---- the one real seam ---- */
+#seam { background: #101012; }
+#seam::before { content: ""; position: absolute; left: 0; width: 1px; top: 0; bottom: 0; background: #34343a; }
+
+/* ---- windows: neutral, readable ---- */
+.win { background: #18181b; box-shadow: inset 0 0 0 1px #232327; }
+.win .titlebar { background: #131315; color: #9a9aa0; letter-spacing: .02em; gap: 10px; position: relative; border-bottom: 1px solid #1f1f23; }
+.win.focused .titlebar { color: #d8d8dc; }
+.dp-ind { width: 7px; height: 7px; flex: none; border: 1px solid #5a5a60; box-sizing: border-box;
+}
+.win.focused .dp-ind { background: var(--dp-acc); border-color: var(--dp-acc); }
+
+/* focus accent: a mechanical indicator that catches up one beat after focus */
+.dp-acc { position: absolute; left: 0; top: 0; width: 96px; height: 2px; background: var(--dp-acc);
+  transform-origin: left; opacity: 0; z-index: 2; pointer-events: none; }
+.dp-acc::after { content: ""; position: absolute; left: 0; top: 0; width: 2px; height: 12px; background: inherit; }
+.win.focused .dp-acc { opacity: 1; }
+
+/* app bodies, de-coloured */
+.ff .tabs { background: #1a1a1d; }
+.ff .tab { background: #202024; color: #9a9aa0; position: relative; border-radius: 2px 2px 0 0; }
+.ff .tab.on { background: #29292e; color: #e6e6e9; }
+.ff .url { background: #202024; color: #7a7a80; border-radius: 2px; }
+.ff .h { background: #3a3a40; border-radius: 1px; }
+.line { background: #29292e; border-radius: 1px; }
+.dc .side { background: #141416; }
+.dc .chan { background: #212125; border-radius: 1px; }
+.dc .av { background: #34343a; border-radius: 2px; }
+.dc .bub .line:first-child { background: #4a4a52 !important; }
+.kt { background: #0f0f11; color: #c9c9ce; }
+
+/* Firefox: underline (active), the previous one dissolves on switch (JS) */
+.dp-ul { position: absolute; left: 10px; right: 10px; bottom: 0; height: 1px; background: transparent; }
+.tab.on .dp-ul { background: #d8d8dc; }
+
+/* Discord: the last-read boundary as a timestamped cut */
+.dp-cut { position: relative; height: 12px; margin: -4px 0; display: flex; align-items: center; gap: 10px; }
+.dp-cut i { flex: 1; height: 1px; background: var(--dp-acc); opacity: .75; position: relative; }
+.dp-cut i::before { content: ""; position: absolute; left: 0; top: -5px; width: 1px; height: 11px; background: var(--dp-acc); }
+.dp-cut span { font: 11px ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--dp-acc); letter-spacing: .06em; text-transform: uppercase; }
+
+/* kitty: only the prompt's frame participates */
+.dp-prompt { display: inline-block; padding: 1px 6px; margin-left: -7px; border: 1px solid transparent; }
+.win.focused .dp-prompt { border-left-color: var(--dp-acc); border-color: #3a3a40 #3a3a40 #3a3a40 var(--dp-acc); }
+
+/* ---- HUD ---- */
+.dp-hud { position: absolute; inset: 0; pointer-events: none; color: var(--dp-ink); }
+.dp-scrim { position: absolute; inset: 0; background: rgba(12, 12, 14, .86); }
+.dp-col { position: absolute; left: 50%; top: 150px; width: 820px; transform: translateX(-50%); }
+.dp-clockwrap { position: relative; height: 190px; }
+.dp-clock, .dp-echo { position: absolute; left: -8px; top: 0; font: 200 196px/190px "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dp-echo { color: #cfcfd4; opacity: 0; }
+.dp-echo.o1 { -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 5px, transparent 5px 7px); mask-image: repeating-linear-gradient(180deg, #000 0 5px, transparent 5px 7px); }
+.dp-echo.o2 { -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 2px, transparent 2px 7px); mask-image: repeating-linear-gradient(180deg, #000 0 2px, transparent 2px 7px); }
+.dp-date { margin: 14px 0 46px; font: 300 22px "Segoe UI", system-ui, sans-serif; color: #a9a9af; letter-spacing: .04em; }
+.dp-ledger { border-top: 1px solid #2c2c31; }
+.dp-row, .dp-tray { position: relative; display: grid; grid-template-columns: 96px 150px 1fr; align-items: center; height: 44px;
+  font: 15px "Segoe UI", system-ui, sans-serif; }
+.dp-row > .rule, .dp-tray > .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #2c2c31; transform-origin: left; padding: 0 !important; border: 0 !important; }
+.dp-row .t { font: 13px ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--dp-dim); }
+.dp-row .s { color: #b9b9bf; }
+.dp-row .x { color: var(--dp-ink); }
+.dp-row.new .t { color: var(--dp-acc); }
+.dp-row.new::before { content: ""; position: absolute; left: -18px; top: 50%; width: 7px; height: 1px; background: var(--dp-acc); }
+.dp-tray { display: flex; height: 40px; margin-top: 22px; }
+.dp-tray .c { display: flex; align-items: center; gap: 8px; padding: 0 18px; height: 100%; font-size: 13px; color: #b9b9bf; border-left: 1px solid #2c2c31; }
+.dp-tray .c:first-child { border-left: 0; padding-left: 0; }
+.dp-tray em { font: normal 12px ui-monospace, Consolas, monospace; color: var(--dp-dim); }
+.dp-meter { display: inline-block; width: 48px; height: 1px; background: #3a3a40; position: relative; }
+.dp-meter b { position: absolute; left: 0; top: -1px; height: 3px; background: var(--dp-ink); }
+.dp-row > *, .dp-tray > * { opacity: 0; }
+.dp-row > .rule, .dp-tray > .rule { opacity: 1; }
+.dp-search { position: relative; margin-top: 64px; height: 30px; }
+.dp-sline { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--dp-ink); transform-origin: left; }
+.dp-caret { position: absolute; left: 0; bottom: 6px; width: 2px; height: 24px; background: var(--dp-acc); }
+.dp-caret.blink { animation: dp-blink 1.2s ease-in-out infinite; }
+@keyframes dp-blink { 0%, 45% { opacity: 1; } 60%, 85% { opacity: .15; } 100% { opacity: 1; } }
