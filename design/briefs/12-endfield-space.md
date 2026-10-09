@@ -35,3 +35,46 @@ Mario's art direction, verbatim where possible, with reference images in design/
    highlights with soft falloff, slight sheen), no colour fills. Static (rendered once).
 
 Keep: dark ground, yellow structural, tri-band once per view, readable windows, nothing busy at rest.
+9. **World print vs camera HUD** (refs/world-print-03-floating.png, refs/world-print-floor-vs-hud.png): "stuff
+   exists in a 3d world, so text is printed on a floor or floating, but not necessarily facing the camera ... the
+   small clickable display next to the character is facing the user, so information is relayed on the world not
+   forcefully facing the camera, readable but also not the main goal, while clickable things are rendered on the
+   camera, like a hud". -> NON-interactive information (workspace number e.g. a huge italic "02" printed on the floor
+   in perspective, window telemetry, labels, maybe the clock) lives IN the 3D world: printed on the floor plane or
+   floating on its own angled plane (with X/hatch marks, barcode microtext, thin floor arcs like the refs), moving
+   with the camera. INTERACTIVE things (HUD tabs, search field, tray buttons, notification cards, any button) are
+   flat on the camera/screen plane, facing the user, crisp.
+10. **Deep layer stacks** (refs/layer-stack-reconnect.png): "at the end of the day, layers, they layer everything":
+   in that reconnect screen, top to bottom: blue strip -> spinning circle (reconnect icon) -> red strip ("//.RECON...")
+   -> colourful middle stripe ("-ENDFIELD-" label, green/cyan/yellow segments) -> the logo (white line-art) ->
+   the yellow motif (big chamfered vertical banner) -> a white stripe -> background overlay with texture squares (dot
+   grids, hatching, binary/microtext, corner brackets, chevrons ‹‹) -> topographic lines at the very bottom. -> Every
+   "screen moment" (HUD open, fullscreen transition, a workspace/state change) is a composition of ~6-9 distinct
+   overlapping layers in a defined z-order, each entering on its own timing (rule 3/4 motion), so the depth reads.
+11. **Timer tag** (refs/timer-tag.png): a small crimson/red tag (#D91E36-ish, slightly angled/chamfered) with a white
+   clock icon + a compact duration in bold sans ("2d", "3h", "12m"). Use for time remaining / age: notification age,
+   pending update or backup countdown, timed states.
+12. **Reward reveal** (Mario's clip `refs/endfield/rewards-contact-1/2.png`, 10 fps sheets, 4.7 s; Gemini notes in
+   `rewards-gemini-breakdown.md`, corrected by me against the frames): "the way rewards are collected, it's hard to
+   describe". Sequence, 30 fps:
+   - t0: the whole screen behind goes heavy frosted blur + darkens in ~1 frame (no slide, the world just defocuses).
+   - +0.1 s: a hairline horizontal rule wipes out from the centre to both screen edges; the header (small icon +
+     "Rewards Acquired") sits on it, mid-screen.
+   - ~0.5 s hold, then the rule + header TRAVEL UP together to the top band (SETTLE ease) - the reveal "opens" the
+     stage under it. Thin vertical hairlines appear at the far left/right edges, a faint ring behind centre, a
+     tri-band streak at the top-right corner, a round confirm button at the bottom.
+   - the item cards deal in one by one, left to right, ~0.1 s apart, each a quick scale-pop in place (no slide),
+     rarity colour on the card; then everything holds still.
+   - exit on click: the overlay is gone in ~1-2 frames and the blur snaps back to sharp.
+   Use for: anything "you got X" - finished download, update applied, backup done, screenshot saved.
+13. **Backpack / app drawer** (Mario's screenshot of the Wuling Depot + Backpack panels, 2026-10-10; image not saved
+   to refs - shared in chat): "backpack is a frosted glass gradient overlay, this would be great for a app drawer
+   style thing. The window opens left to right, slots with the 'icons' along with it, then the minor icons and
+   text like the capacity, the two on the bottom right, etc". -> App drawer = a wide frosted-glass panel (light
+   grey-blue gradient, the world blurred through it), header bar with a square icon tile + title + tiny barcode
+   microtext, a filter row of category glyphs separated by thin bars (active one = dark pill), a grid of square
+   slots: dark-steel tile, the app icon large, a big white numeral bottom-centre (use: open windows / badge), and a
+   thin rarity-colour underbar (use: app category or state). Motion: the panel reveals LEFT -> RIGHT (clip wipe), the
+   slots + icons ride in with that same wipe (part of it, not after it), THEN the secondary layer fades in: counters
+   ("Capacity 13/40"), filter glyphs, the bottom bar (sort pill, Quick-Stash style pill, the two small glyph
+   buttons bottom-right).
