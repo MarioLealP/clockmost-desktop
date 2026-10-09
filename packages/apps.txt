@@ -12,3 +12,5 @@ kdegraphics-thumbnailers
 baloo-widgets
 # 5: browser (2026-10-09) - Firefox: Firefox-based AND has Widevine (Disney+); Zen has no Widevine license
 firefox
+# 6: screenshots (2026-10-09) - Spectacle: region capture, GIF/WebP region recording, annotation editor
+spectacle

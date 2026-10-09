@@ -1,0 +1,9 @@
+[General]
+ocrLanguages=afr
+
+[ImageSave]
+lastImageSaveLocation=file:///home/benylin/Pictures/Screenshots/Screenshot_20261009_184220.png
+translatedScreenshotsFolder=Screenshots
+
+[VideoSave]
+translatedScreencastsFolder=Screencasts
