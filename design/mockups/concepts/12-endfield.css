@@ -1,0 +1,173 @@
+/* ---- 12 · Endfield (layered) — tokens inline from design/briefs/11-endfield.md -------- */
+#screen {
+  --ground: #0f0f10;
+  --surface: #17181a;
+  --surface-2: #1e2024;
+  --well: #0a0a0b;
+  --steel: #33363c;
+  --line-2: #4a4e56;
+  --ink-1: #f0f0f2;
+  --ink-2: #a8abb2;
+  --ink-3: #6c6f76;
+  --ink-4: #44474d;
+  --yel: #fffa00;
+  --yel-hot: #fdfd1f;
+  --cyn: #00ffa2;
+  --mag: #ff1aac;
+  --org: #ff7a1a;
+  --snap: cubic-bezier(1, 0, 0.7, 1);
+  --settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --disp: Bahnschrift, "DIN Alternate", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --body: "Segoe UI", system-ui, sans-serif;
+  --data: Consolas, "Cascadia Mono", ui-monospace, monospace;
+  background: var(--ground);
+}
+
+/* wallpaper: still — dot-matrix fading off edges, steel guides, microtext telemetry */
+#wall .ed-dots {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(240, 240, 242, 0.07) 1px, transparent 1.4px);
+  background-size: 14px 14px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, transparent 30%, black 78%);
+  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, transparent 30%, black 78%);
+}
+#wall .ed-wall { position: absolute; inset: 0; width: 100%; height: 100%; }
+#wall .ed-guides line, #wall .ed-guides path { stroke: var(--steel); stroke-width: 1; opacity: 0.7; }
+#wall .ed-micro {
+  position: absolute; font: 10px var(--data); letter-spacing: 0.08em; line-height: 1.7;
+  color: var(--ink-4); opacity: 0.85; white-space: nowrap;
+}
+#wall .ed-micro.m1 { left: 200px; top: 156px; }
+#wall .ed-micro.m2 { right: 200px; top: 156px; text-align: right; }
+#wall .ed-micro.m3 { left: 200px; bottom: 156px; }
+
+/* windows: plate stack — back-plate (offset steel) -> chamfered surface -> title band */
+.win { background: transparent; overflow: visible; border-radius: 0; }
+.win .ed-back {
+  position: absolute; inset: 0; z-index: 0; transform: translate(8px, 8px);
+  background: rgba(51, 54, 60, 0.55); border: 1px solid rgba(74, 78, 86, 0.6);
+}
+.win .ed-surf {
+  position: absolute; inset: 0; z-index: 1; background: var(--surface);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.win .titlebar {
+  position: relative; z-index: 2; justify-content: flex-start; background: var(--surface-2);
+  border-bottom: 1px solid var(--steel); border-radius: 0;
+  font: 600 13px var(--disp); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3);
+  transition: color 0.2s;
+}
+.win .titlebar .title { color: inherit; }
+.win.focused .titlebar { color: var(--ink-1); }
+.win .ed-dia {
+  width: 8px; height: 8px; flex: none; margin-right: 10px; transform: rotate(45deg);
+  border: 1px solid var(--yel); transition: background 0.18s, box-shadow 0.18s;
+}
+.win.focused .ed-dia { background: var(--yel); box-shadow: 0 0 0.55rem rgba(255, 250, 0, 0.4); }
+.win .ed-tele { margin-left: auto; font: 11px var(--data); letter-spacing: 0.04em; color: var(--ink-3); text-transform: none; }
+.win .content { position: relative; z-index: 2; overflow: hidden; background: transparent; }
+/* leading rails: top draw rail + left focus rail, 3px */
+.win .ed-trail {
+  position: absolute; left: 0; top: 0; width: 100%; height: 3px; z-index: 3; opacity: 0;
+  background: var(--yel); box-shadow: 0 0 0.55rem rgba(255, 250, 0, 0.4);
+  transform: scaleX(0); transform-origin: left;
+}
+.win .ed-frail {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px; z-index: 3; opacity: 0;
+  background: var(--yel); box-shadow: 0 0 0.55rem rgba(255, 250, 0, 0.4);
+  transform: scaleY(0); transform-origin: top;
+}
+/* corner brackets: TL + BR only, 14px arms, 2px, yellow 55% */
+.win .ed-bk { position: absolute; width: 14px; height: 14px; z-index: 3; opacity: 0; transform: scale(1.25); transition: opacity 0.14s var(--snap), transform 0.14s var(--snap); }
+.win .ed-bk.tl { left: 10px; top: 10px; border-left: 2px solid rgba(255, 250, 0, 0.55); border-top: 2px solid rgba(255, 250, 0, 0.55); }
+.win .ed-bk.br { right: 10px; bottom: 10px; border-right: 2px solid rgba(255, 250, 0, 0.55); border-bottom: 2px solid rgba(255, 250, 0, 0.55); }
+.win.focused .ed-bk { opacity: 1; transform: none; }
+.win.ed-drawing .ed-bk { opacity: 0; transform: scale(1.25); transition: none; }
+/* app touches */
+.ff .tabs { background: var(--surface-2); }
+.ff .tab { position: relative; background: var(--surface-2); border-radius: 0; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%); }
+.ff .tab.on { background: #26292f; color: var(--ink-1); box-shadow: inset 0 -2px 0 var(--yel); }
+.ff .tab.on::after { content: ""; position: absolute; left: 8px; bottom: 5px; width: 6px; height: 6px; transform: rotate(45deg); background: var(--yel); }
+.ff .url { background: var(--well); border-radius: 0; border: 1px solid var(--steel); }
+.ff .h { background: var(--line-2); border-radius: 0; }
+.line { background: #2a2d33; border-radius: 0; }
+.dc .side { background: #141518; }
+.dc .chan { position: relative; background: transparent; border: 1px solid transparent; border-radius: 0; padding-left: 18px; }
+.dc .chan::before { content: ""; position: absolute; left: 6px; top: 50%; width: 6px; height: 6px; margin-top: -4px; transform: rotate(45deg); border: 1px solid var(--ink-3); }
+.dc .chan:first-child::before { background: var(--yel); border-color: var(--yel); }
+.dc .chat .line { background: #2a2d33; }
+.kt { background: var(--well); }
+.kt::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--yel); opacity: 0.85; }
+
+/* overlay: snap measuring rail, readout, chevrons */
+.ed-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.ed-mrail { stroke: var(--yel); stroke-width: 3; }
+.ed-chev { fill: none; stroke: var(--yel); stroke-width: 2.5; }
+.ed-mlab rect { fill: var(--well); stroke: var(--yel); stroke-width: 1; }
+.ed-mlab text { fill: var(--yel); font: 13px var(--data); text-anchor: middle; dominant-baseline: central; letter-spacing: 0.06em; }
+
+/* seam: steel hairline + barcode data-strip; yellow runner on change */
+.ed-seam { position: absolute; left: 0; top: 0; overflow: visible; }
+.ed-seam .hair { stroke: var(--steel); stroke-width: 1; }
+.ed-seam .b1 { fill: var(--steel); }
+.ed-seam .b2 { fill: var(--line-2); }
+.ed-seam .tk { stroke: var(--line-2); stroke-width: 1; }
+.ed-seam .runner { stroke: var(--yel); stroke-width: 3; opacity: 0; }
+.ed-smratio {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0;
+  padding: 5px 8px; background: var(--well); border: 1px solid var(--steel); white-space: nowrap;
+  font: 12px var(--data); color: var(--yel); letter-spacing: 0.06em;
+}
+
+/* HUD: right-edge layered stack */
+.ed-hud { position: absolute; inset: 0; }
+.ed-hud .h-dim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); opacity: 0; transition: opacity 0.6s var(--settle); }
+.ed-hud.in .h-dim { opacity: 1; }
+.ed-hud .h-stack { position: absolute; top: 0; right: 0; bottom: 0; width: 480px; }
+.ed-hud .sl {
+  opacity: 0; transform: translateX(46px);
+  transition: opacity 0.28s var(--settle) var(--d, 0ms), transform 0.28s var(--settle) var(--d, 0ms);
+}
+.ed-hud.in .sl { opacity: 1; transform: none; }
+.ed-hud.out .sl { opacity: 0; transform: translateX(60px); transition: opacity 0.16s var(--snap), transform 0.16s var(--snap); }
+.ed-hud .h-plate {
+  position: absolute; inset: 0; background: rgba(10, 10, 11, 0.92);
+  background-image: radial-gradient(circle, rgba(240, 240, 242, 0.08) 1px, transparent 1.4px);
+  background-size: 14px 14px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 30%);
+  mask-image: linear-gradient(90deg, transparent, black 30%);
+}
+.ed-hud .h-clock { position: absolute; top: 120px; left: 48px; right: 40px; background: var(--surface); padding: 18px 22px 14px; }
+.ed-hud .triband { height: 4px; margin: -18px -22px 12px; background: linear-gradient(90deg, var(--yel) 0 75%, var(--cyn) 75% 88%, var(--mag) 88% 100%); }
+.ed-hud .ck-g { position: relative; font: 600 76px/1 var(--disp); letter-spacing: 0.02em; color: var(--ink-1); }
+.ed-hud .ck-g::before, .ed-hud .ck-g::after {
+  content: attr(data-t); position: absolute; left: 0; top: 0; opacity: 0.55; pointer-events: none;
+}
+.ed-hud .ck-g::before { color: var(--cyn); transform: translate(-3px, 0); }
+.ed-hud .ck-g::after { color: var(--mag); transform: translate(3px, 0); }
+.ed-hud.in .ck-g::before { animation: ed-jit 0.3s var(--snap) 2; }
+.ed-hud.in .ck-g::after { animation: ed-jit 0.3s var(--snap) 2 reverse; }
+.ed-hud .ck-date { margin-top: 8px; font: 12px var(--data); letter-spacing: 0.18em; color: var(--ink-3); border-top: 1px solid var(--steel); padding-top: 8px; }
+.ed-hud .h-tray { position: absolute; top: 420px; left: 48px; right: 40px; }
+.ed-hud .hsec { font: 600 10px var(--disp); letter-spacing: 0.24em; color: var(--ink-3); border-bottom: 1px solid var(--steel); padding-bottom: 6px; margin-bottom: 8px; }
+.ed-hud .trow { display: flex; align-items: center; gap: 12px; padding: 6px 0; font: 13px var(--body); color: var(--ink-2); }
+.ed-hud .td { width: 8px; height: 8px; flex: none; transform: rotate(45deg); border: 1px solid var(--ink-3); }
+.ed-hud .td.on { background: var(--yel); border-color: var(--yel); }
+.ed-hud .h-notes { position: absolute; top: 640px; left: 48px; right: 40px; }
+.ed-hud .ncard {
+  position: relative; margin-bottom: 10px; padding: 10px 12px 10px 40px; background: var(--surface-2);
+  font: 13px var(--body); color: var(--ink-1);
+  opacity: 0; transform: translateX(46px);
+  transition: opacity 0.28s var(--settle) var(--d, 0ms), transform 0.28s var(--settle) var(--d, 0ms);
+}
+.ed-hud.in .ncard { opacity: 1; transform: none; }
+.ed-hud.out .ncard { opacity: 0; transform: translateX(60px); transition: opacity 0.16s var(--snap), transform 0.16s var(--snap); }
+.ed-hud .ncard::before { content: ""; position: absolute; left: 12px; top: 12px; width: 12px; height: 12px; background: var(--org); }
+.ed-hud .ncard .nsrc { display: block; font: 10px var(--data); letter-spacing: 0.12em; color: var(--ink-3); margin-bottom: 2px; }
+.ed-hud .h-search {
+  position: absolute; bottom: 48px; left: 48px; right: 40px; display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--well); border: 1px solid var(--steel);
+  font: 600 12px var(--disp); letter-spacing: 0.2em; color: var(--ink-3);
+}
+.ed-hud .h-search .chev { color: var(--yel); font-size: 16px; }
+@keyframes ed-jit { 50% { transform: translate(-6px, 1px); } }

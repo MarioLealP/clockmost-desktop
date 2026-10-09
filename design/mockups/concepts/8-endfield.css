@@ -1,0 +1,142 @@
+/* ---- 8 · Endfield Protocol (industrial) ------------------------------------------------ */
+#screen {
+  --amb: #ffb000;
+  --org: #ff5a00;
+  --cyn: #35e0c8;
+  --red: #ff3b30;
+  --ink: #0e1116;
+  --pan: #161b23;
+  --txt: #eef1f4;
+  --ef-disp: "Arial Black", "Archivo Black", Impact, system-ui, sans-serif;
+  --ef-mono: "Cascadia Mono", Consolas, "DejaVu Sans Mono", ui-monospace, monospace;
+  background:
+    radial-gradient(ellipse 80% 50% at 80% 0%, rgba(255, 90, 0, 0.12), transparent 60%),
+    linear-gradient(180deg, #141922 0%, #0e1116 60%, #0a0c10 100%);
+}
+
+/* wallpaper: gantry, beacons, hazard footer, sweeping scan */
+#wall { background:
+  linear-gradient(rgba(140, 170, 200, 0.05) 1px, transparent 1px) 0 0 / 96px 96px,
+  linear-gradient(90deg, rgba(140, 170, 200, 0.05) 1px, transparent 1px) 0 0 / 96px 96px; }
+#wall .ef-wall { position: absolute; inset: 0; width: 100%; height: 100%; }
+#wall .ef-giant {
+  font: 900 420px var(--ef-disp); fill: none; stroke: rgba(238, 241, 244, 0.07); stroke-width: 3;
+  text-anchor: end; letter-spacing: -0.04em;
+}
+#wall .ef-gantry line { stroke: #232a36; stroke-width: 10; }
+#wall .ef-gantry rect { fill: #232a36; }
+#wall .ef-gantry circle { fill: #39424f; }
+#wall .ef-hazbar { fill: url(#ef-hatch); opacity: 0.85; }
+#wall .ef-amberline { stroke: var(--amb); stroke-width: 2; opacity: 0.8; }
+#wall .ef-beacon { fill: var(--amb); animation: ef-blink 1.6s steps(2, jump-none) infinite; }
+#wall .ef-beacon.b2 { animation-delay: 0.8s; }
+#wall .ef-scan {
+  position: absolute; left: 0; right: 0; top: -140px; height: 120px; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(255, 176, 0, 0.06) 70%, rgba(255, 176, 0, 0.12));
+  animation: ef-scan 11s linear infinite;
+}
+#wall .ef-walltag {
+  position: absolute; left: 28px; bottom: 64px; font: 800 12px var(--ef-disp);
+  letter-spacing: 0.28em; color: rgba(238, 241, 244, 0.55);
+}
+#wall .ef-walltag::before { content: ""; display: inline-block; width: 34px; height: 10px; margin-right: 10px; background: var(--amb); }
+@keyframes ef-blink { 50% { opacity: 0.15; } }
+@keyframes ef-scan { to { transform: translateY(1350px); } }
+
+/* windows: steel modules with riveted frames */
+.win {
+  background: #1b212b; border-radius: 0;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.65);
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+}
+.win .titlebar {
+  justify-content: flex-start; background: #0a0d12; color: var(--txt);
+  font: 800 12px var(--ef-disp); letter-spacing: 0.18em; text-transform: uppercase;
+  border-bottom: 3px solid var(--amb);
+}
+.win .ef-tag { margin-left: auto; font: 11px var(--ef-mono); letter-spacing: 0.06em; color: var(--amb); text-transform: none; }
+.win::after {
+  content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  border: 2px solid rgba(140, 170, 200, 0.16); transition: border-color 0.15s ease-out, box-shadow 0.2s ease-out;
+}
+.win.focused::after { border-color: var(--org); box-shadow: inset 0 0 46px rgba(255, 90, 0, 0.14); }
+.win.ef-dropping::after { opacity: 0; }
+.ff .tabs { background: #141a24; }
+.ff .tab { background: #1e2532; color: #8b98ac; border-radius: 0; font-weight: 700; }
+.ff .tab.on { background: #2a3345; color: #fff; box-shadow: inset 0 3px 0 var(--amb); }
+.ff .url { background: #10151d; color: #8b98ac; border-radius: 0; border: 1px solid #2a3345; }
+.ff .h { background: #39424f; border-radius: 0; }
+.line { background: #2a3345; border-radius: 0; }
+.dc .side { background: #10151d; }
+.dc .chan { background: #1e2532; border-radius: 0; }
+.dc .av { border-radius: 0; background: #7a3c00; }
+.kt { background: #07090d; color: #ffd9a0; }
+
+/* overlay: frames, rings, shutters, cables, chevrons, brackets */
+.ef-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.ef-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.ef-ring { stroke: var(--amb); stroke-width: 3; }
+.ef-rivet { fill: #c8d0dc; }
+.ef-lock { fill: var(--amb); opacity: 0; }
+.ef-cable { stroke: #39424f; stroke-width: 4; }
+.ef-ghost { fill: none; stroke: rgba(238, 241, 244, 0.7); stroke-width: 2; stroke-dasharray: 14 8; }
+.ef-chev { fill: var(--amb); }
+.ef-wlab rect { fill: #0a0d12; stroke: var(--amb); stroke-width: 2; }
+.ef-wlab text { fill: var(--amb); font: 800 14px var(--ef-disp); letter-spacing: 0.08em; text-anchor: middle; dominant-baseline: central; }
+.ef-focus path { fill: none; stroke: var(--org); stroke-width: 5; }
+.ef-scanline { fill: var(--amb); opacity: 0.8; }
+
+/* seam: striped safety barrier with strobing beacon */
+.ef-barrier { position: absolute; left: 0; top: 0; overflow: visible; }
+.ef-barrier .ef-base { fill: #232a36; }
+.ef-barrier .ef-post { fill: #2b3342; }
+.ef-barrier .ef-stripes { fill: url(#ef-hatch); opacity: 0.9; }
+.ef-barrier .ef-cap { fill: var(--amb); }
+.ef-barrier .ef-beacon { fill: var(--red); animation: ef-blink 1.4s steps(2, jump-none) infinite; }
+.ef-seam-lab {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  padding: 6px 6px; background: #0a0d12; border: 2px solid #39424f; white-space: nowrap;
+  font: 800 12px var(--ef-disp); letter-spacing: 0.06em; color: var(--txt);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  transition: border-color 0.2s;
+}
+#seam.ef-hot .ef-seam-lab { border-color: var(--amb); color: var(--amb); }
+#seam.ef-hot .ef-barrier .ef-beacon { animation-duration: 0.32s; fill: var(--amb); }
+
+/* HUD: full-width control console */
+.ef-hud { position: absolute; inset: 0; transition: opacity 0.25s ease-out, transform 0.25s ease-out; }
+.ef-hud .ef-alert { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.ef-hud .ef-alert path { fill: none; stroke: var(--amb); stroke-width: 5; }
+.ef-hud.in .ef-alert { animation: ef-aflash 0.16s 4; }
+.ef-hud .ef-console {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 0 0 18px;
+  background: rgba(10, 13, 18, 0.96); border-top: 3px solid var(--amb);
+  transform: translateY(46px); opacity: 0; transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.3s ease-out;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+.ef-hud.in .ef-console { transform: none; opacity: 1; }
+.ef-hud.out { opacity: 0; transform: translateY(20px); }
+.ef-hud .ef-haztop { height: 12px; background: repeating-linear-gradient(-45deg, var(--amb) 0 22px, #14161c 22px 44px); }
+.ef-hud .cgrid { display: flex; gap: 34px; padding: 18px 34px 0; }
+.ef-hud .cleft { flex: 1.1; }
+.ef-hud .clock { font: 800 76px/1 var(--ef-disp); color: #fff; letter-spacing: 0.01em; }
+.ef-hud .cdate { font: 700 14px var(--ef-mono); letter-spacing: 0.14em; color: #8b98ac; margin-top: 6px; }
+.ef-hud .cstatus { display: flex; align-items: center; gap: 10px; margin-top: 14px; font: 800 12px var(--ef-disp); letter-spacing: 0.18em; color: var(--cyn); }
+.ef-hud .cmid, .ef-hud .cright { flex: 1; }
+.ef-hud .chead { font: 800 11px var(--ef-disp); letter-spacing: 0.24em; color: var(--amb); border-bottom: 2px solid #2a3345; padding-bottom: 6px; margin-bottom: 8px; }
+.ef-hud .srow {
+  display: flex; align-items: center; gap: 12px; padding: 6px 0; font: 700 13px var(--ef-mono); color: var(--txt);
+  opacity: 0; transform: translateX(-12px); transition: opacity 0.28s ease-out var(--d, 0ms), transform 0.28s ease-out var(--d, 0ms);
+}
+.ef-hud.in .srow { opacity: 1; transform: none; }
+.ef-hud .led { width: 12px; height: 12px; flex: none; border-radius: 50%; }
+.ef-hud .led.g { background: #3dff7a; box-shadow: 0 0 10px #3dff7a; }
+.ef-hud .led.a { background: var(--amb); box-shadow: 0 0 10px var(--amb); animation: ef-blink 1s steps(2, jump-none) infinite; }
+.ef-hud .led.r { background: var(--red); box-shadow: 0 0 10px var(--red); }
+.ef-hud .meter { flex: 1; height: 10px; background: #232a36; }
+.ef-hud .meter i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--cyn) 0 8px, #1d7a6e 8px 16px); }
+.ef-hud .sev { font: 800 10px var(--ef-disp); letter-spacing: 0.1em; padding: 3px 8px; }
+.ef-hud .sev.info { background: #123b37; color: var(--cyn); }
+.ef-hud .sev.warn { background: #3d2c00; color: var(--amb); }
+.ef-hud .sev.alrt { background: #3d0a08; color: var(--red); animation: ef-blink 0.8s steps(2, jump-none) infinite; }
+@keyframes ef-aflash { 50% { opacity: 0.1; } }

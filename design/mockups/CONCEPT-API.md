@@ -16,6 +16,7 @@ return Promises the harness awaits.
 | `onMove(win, from, to, place)` | snap / neighbour opens/closes | MUST call `place(win, to)` (sets left/top/width/height + win.rect); animate around it |
 | `onFocus(win, prev)` | focus change | harness toggles `.focused` on `win.el` |
 | `seam(s)` | layout settles / changes | s = {visible, seam (the #seam el), x, w, h, changing, left, right}; `#seam` is positioned between the windows (width = gap) |
+| `onFullscreen(win, on, from, to, place, others)` | F key: focused window to/from fullscreen | MUST `place(win, to)`; hide/show `others` (their `el`); harness tracks `state.full` and adds `.fullscreen` to `win.el` |
 | `hudShow(hudEl, data)` | H / hover top edge | data = {time, date, tray[], notes[]}; `#hud` is a full-screen layer above everything |
 | `hudHide(hudEl)` | H / Esc / mouse leaves | animate out, then clear |
 
@@ -26,5 +27,5 @@ Headless check (Edge on Windows, from WSL):
 `"/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --disable-gpu
 --hide-scrollbars --window-size=1400,860 --virtual-time-budget=<ms> --screenshot='F:\VMs\x.png'
 'file:///E:/Felt/review/<batch>/pending/<slug>.html?auto=hud'` - `?auto=` runs actions (open, close,
-r11, r12, r21, focus, hud) 300 ms apart after load; the screenshot is taken when the virtual time
+r11, r12, r21, focus, full, hud) 300 ms apart after load; the screenshot is taken when the virtual time
 budget runs out, so pick a budget that lands mid-animation to check it.

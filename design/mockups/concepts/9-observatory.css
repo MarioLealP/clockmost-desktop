@@ -1,0 +1,107 @@
+/* ---- 9 · Observatory (night sky) ---------------------------------------------------- */
+#screen {
+  --star: #dfe9ff;
+  --gold: #ffd479;
+  --ink: #05070f;
+  --ob-font: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --ob-mono: "Cascadia Mono", Consolas, "DejaVu Sans Mono", ui-monospace, monospace;
+  background: radial-gradient(ellipse 130% 90% at 50% -10%, #101a36 0%, #070c1c 45%, #03040a 100%);
+}
+
+/* wallpaper: two twinkling star layers, faint constellations, a milky-way band */
+#wall .ob-wall { position: absolute; inset: 0; width: 100%; height: 100%; }
+#wall .stars circle { fill: var(--star); }
+#wall .stars.far circle { opacity: 0.45; animation: ob-tw 5s ease-in-out infinite alternate; }
+#wall .stars.near circle { opacity: 0.9; animation: ob-tw 3.2s ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+#wall .cons path { fill: none; stroke: rgba(169, 200, 255, 0.28); stroke-width: 1; }
+#wall .cons circle { fill: rgba(223, 233, 255, 0.7); }
+#wall .ob-milky {
+  position: absolute; left: -20%; top: 55%; width: 140%; height: 220px; pointer-events: none;
+  transform: rotate(-14deg); opacity: 0.5; filter: blur(18px);
+  background: linear-gradient(180deg, transparent, rgba(150, 180, 230, 0.16) 40%, rgba(200, 220, 255, 0.2) 50%, rgba(150, 180, 230, 0.16) 60%, transparent);
+}
+#wall .ob-walltag { position: absolute; left: 28px; bottom: 22px; font: 600 11px var(--ob-mono); letter-spacing: 0.3em; color: rgba(223, 233, 255, 0.35); }
+@keyframes ob-tw { to { opacity: 0.15; } }
+
+/* windows: dark glass plates with starlight edges */
+.win { background: #0c1222; border-radius: 6px; box-shadow: 0 18px 70px rgba(0, 0, 0, 0.7); }
+.win .titlebar {
+  justify-content: flex-start; background: #070b16; color: #b9c8e8;
+  font: 500 12px var(--ob-mono); letter-spacing: 0.16em; text-transform: uppercase;
+  border-bottom: 1px solid rgba(169, 200, 255, 0.18); border-radius: 6px 6px 0 0;
+}
+.win .ob-tag { margin-left: auto; font: 11px var(--ob-mono); letter-spacing: 0.04em; color: #6f86b3; text-transform: none; }
+.win::after {
+  content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none; border-radius: 6px;
+  border: 1px solid rgba(169, 200, 255, 0.14); transition: border-color 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.win.focused::after { border-color: var(--gold); box-shadow: 0 0 30px rgba(255, 212, 121, 0.28), inset 0 0 40px rgba(255, 212, 121, 0.05); }
+.win.ob-exposing::after { opacity: 0; }
+.ff .tabs { background: #0e1526; }
+.ff .tab { background: #151d33; color: #7e92b8; }
+.ff .tab.on { background: #1e2942; color: #dfe9ff; }
+.ff .url { background: #151d33; color: #7e92b8; }
+.ff .h { background: #2c3a5c; }
+.line { background: #1c2740; }
+.dc .side { background: #0a0f1e; }
+.dc .chan { background: #16203a; }
+.dc .msg .line { background: #1c2740; }
+.kt { background: #04060d; color: #b8d0f0; }
+
+/* overlay: webs, arcs, rings, reticles, labels */
+.ob-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.ob-web { fill: none; stroke: rgba(223, 233, 255, 0.8); stroke-width: 1; }
+.ob-retflash line { stroke: #fff; stroke-width: 1.5; }
+.ob-retflash circle { fill: none; stroke: #fff; stroke-width: 1.5; }
+.ob-ring { fill: none; stroke: var(--gold); stroke-width: 2.5; }
+.ob-swirl { fill: none; stroke: #9db8e8; stroke-width: 2; stroke-dasharray: 0.22 0.78; }
+.ob-arc { fill: none; stroke: url(#ob-arc); stroke-width: 2.5; stroke-dasharray: 1; }
+.ob-wlab rect { fill: rgba(5, 7, 15, 0.92); stroke: var(--gold); stroke-width: 1; }
+.ob-wlab text { fill: var(--gold); font: 13px var(--ob-mono); text-anchor: middle; dominant-baseline: central; }
+.ob-focus path { fill: none; stroke: #fff3d0; stroke-width: 2; }
+.ob-focus circle { fill: none; stroke: #fff3d0; stroke-width: 1.5; }
+
+/* seam: telescope reticle */
+.ob-ret { position: absolute; left: 0; top: 0; overflow: visible; }
+.ob-ret .hair { stroke: rgba(223, 233, 255, 0.4); stroke-width: 1; transition: stroke 0.3s; }
+.ob-ret .tk { stroke: rgba(223, 233, 255, 0.4); stroke-width: 1; transition: stroke 0.3s; }
+.ob-ret .finder { fill: none; stroke: rgba(223, 233, 255, 0.5); stroke-width: 1.2; transition: stroke 0.3s; }
+.ob-seam-lab {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  padding: 6px 4px; background: var(--ink); border: 1px solid rgba(223, 233, 255, 0.4); white-space: nowrap;
+  font: 11px var(--ob-mono); color: var(--star); transition: color 0.3s, border-color 0.3s;
+}
+#seam.ob-chg .ob-seam-lab { color: var(--gold); border-color: var(--gold); animation: ob-pulse 0.5s ease-in-out infinite alternate; }
+#seam.ob-chg .ob-ret .hair, #seam.ob-chg .ob-ret .tk { stroke: var(--gold); }
+#seam.ob-chg .ob-ret .finder { stroke: var(--gold); }
+@keyframes ob-pulse { to { box-shadow: 0 0 16px rgba(255, 212, 121, 0.5); } }
+
+/* HUD: ephemeris panel under a darkening wash */
+.ob-hud { position: absolute; inset: 0; transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+.ob-hud .ob-wash {
+  position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease-out;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(2, 3, 8, 0.72) 100%);
+}
+.ob-hud .ob-card {
+  position: absolute; left: 50%; bottom: 36px; width: 720px; padding: 20px 28px 22px;
+  transform: translate(-50%, 30px); opacity: 0; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease-out;
+  background: rgba(4, 6, 13, 0.94); border: 1px solid rgba(169, 200, 255, 0.35); border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
+}
+.ob-hud.in .ob-wash { opacity: 1; }
+.ob-hud.in .ob-card { transform: translate(-50%, 0); opacity: 1; }
+.ob-hud.out { opacity: 0; transform: translateY(14px); }
+.ob-card .chead { display: flex; justify-content: space-between; font: 600 11px var(--ob-mono); letter-spacing: 0.24em; color: #8fa3cc; }
+.ob-card .cno { color: var(--gold); }
+.ob-card .clock { font: 300 84px/1 var(--ob-font); color: #f2f6ff; margin-top: 8px; letter-spacing: 0.04em; }
+.ob-card .cdate { font: 13px var(--ob-mono); letter-spacing: 0.14em; color: #8fa3cc; margin-top: 4px; }
+.ob-card .sec { font: 600 10px var(--ob-mono); letter-spacing: 0.24em; color: #8fa3cc; margin: 16px 0 6px; border-bottom: 1px solid rgba(169, 200, 255, 0.2); padding-bottom: 4px; }
+.ob-card .row {
+  display: flex; align-items: center; gap: 12px; padding: 5px 0; font: 14px var(--ob-font); color: #dfe9ff;
+  opacity: 0; transform: translateY(6px); transition: opacity 0.3s ease-out var(--d, 0ms), transform 0.3s ease-out var(--d, 0ms);
+}
+.ob-hud.in .row { opacity: 1; transform: none; }
+.ob-card .bod { width: 12px; height: 12px; flex: none; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+.ob-card .row .mag { margin-left: auto; font: 11px var(--ob-mono); color: #8fa3cc; }
+.ob-card .row.log .obj { font: 600 11px var(--ob-mono); color: var(--gold); letter-spacing: 0.06em; }
+.ob-card .row .nm b { color: #fff; }

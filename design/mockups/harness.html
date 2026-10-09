@@ -59,6 +59,7 @@
   <button data-a="r21">2:1 <kbd>3</kbd></button>
   <span class="sep"></span>
   <button data-a="focus">Switch focus <kbd>Tab</kbd></button>
+  <button data-a="full">Fullscreen <kbd>F</kbd></button>
   <button data-a="hud">HUD <kbd>H</kbd> / hover top edge</button>
   <span class="about">/*ABOUT*/</span>
 </div>
@@ -152,6 +153,20 @@ const act = {
   }),
   ratio: (r) => run(async () => { state.ratio = r; await layout(true); await sleep(50); seamState(false); }),
   focus: () => { const i = state.list.indexOf(state.focused); focus(state.list[(i + 1) % state.list.length]); },
+  // F: the focused window goes fullscreen (others hidden) and back. Concepts may animate it via
+  // onFullscreen(win, on, fromRect, toRect, place) -> Promise; default = instant.
+  full: () => run(async () => {
+    const win = state.focused; if (!win) return;
+    const on = !state.full;
+    const others = state.list.filter((w) => w !== win);
+    const from = { ...win.rect };
+    const to = on ? { x: 0, y: 0, w: W, h: H } : tiles(state.list.length)[state.list.indexOf(win)];
+    if (on) { state.full = win; seam.style.display = "none"; }
+    if (C.onFullscreen) await C.onFullscreen(win, on, from, to, place, others);
+    else { place(win, to); others.forEach((o) => { o.el.style.visibility = on ? "hidden" : ""; }); }
+    win.el.classList.toggle("fullscreen", on);
+    if (!on) { state.full = null; seamState(false); }
+  }),
   hud: async (on = !state.hud) => {
     if (on === state.hud) return;
     state.hud = on;
@@ -176,7 +191,7 @@ addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   if (k === "o") act.open(); else if (k === "x") act.close(); else if (k === "1") act.ratio([1, 1]);
   else if (k === "2") act.ratio([1, 2]); else if (k === "3") act.ratio([2, 1]);
-  else if (k === "tab") { e.preventDefault(); act.focus(); } else if (k === "h") act.hud(); else if (k === "escape") act.hud(false);
+  else if (k === "tab") { e.preventDefault(); act.focus(); } else if (k === "f") act.full(); else if (k === "h") act.hud(); else if (k === "escape") act.hud(false);
 });
 $("#edge").addEventListener("mouseenter", () => act.hud(true));
 screen.addEventListener("mouseleave", () => act.hud(false));
