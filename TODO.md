@@ -17,3 +17,11 @@
   must create it; the design track must keep Klipper loaded somewhere.
 - Klipper settings (`~/.config/klipperrc` [General]): MaxClipItems=50, KeepClipboardContents=true,
   IgnoreSelection=true, SyncClipboards=false, IgnoreImages=false, PreventEmptyClipboard=true.
+- **Keyring = KeePassXC** (bootstrap step): mask KWallet's D-Bus activation in
+  `~/.local/share/dbus-1/services/` (`/dev/null` symlinks for `org.kde.kwalletd6`,
+  `org.kde.secretservicecompat`, `org.kde.secretprompter`,
+  `org.freedesktop.impl.portal.desktop.kwallet` .service), `kwalletrc [Wallet] Enabled=false`, kill
+  ksecretd/kwalletd6, then KeePassXC `[FdoSecrets] Enabled=true` + pick the exposed group in its
+  GUI (Settings -> Secret Service Integration). On the real machine: the database
+  (`Passwords.kdbx`, on Google Drive today) needs a Linux sync path (pick) + the tang auto-unlock
+  with native clevis (clockmost phase).

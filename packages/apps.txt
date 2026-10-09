@@ -16,3 +16,5 @@ firefox
 spectacle
 # 7: Discord client (2026-10-09) - Equibop (Vesktop fork + Equicord plugins; same CSS themes), named "Discord" in menus
 equibop
+# 8: passwords + system keyring (standing rule, memory keepassxc-is-the-keyring): KeePassXC owns org.freedesktop.secrets
+keepassxc
