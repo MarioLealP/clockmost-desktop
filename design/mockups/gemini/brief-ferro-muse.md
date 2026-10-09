@@ -53,3 +53,12 @@ Motion language: spiky magnetic attraction/repulsion, liquid clustering into sha
 - HUD: rises from a bottom corner as a smooth liquid droplet that splits into sharp geometric shards
   holding the clock, tray, notifications and search; melts away on dismiss.
 - Wallpaper: near-black with a faint magnetic field-line texture.
+
+Notes from the previous attempt at this exact concept (by another model): the user found the IDEA
+"interesting", but the execution was rough - the open was an outlined, flat, spiky starburst polygon
+(not liquid at all) and the HUD was a plain stack of boxes in a corner. Make it feel like REAL
+ferrofluid: glossy black liquid metal with specular highlights and soft reflections (radial/linear
+gradients, SVG filters like feSpecularLighting / feGaussianBlur + feColorMatrix "gooey" metaball
+blending), spikes that grow and recede smoothly in a regular array (the Rosensweig instability: a
+hexagonal field of cone peaks rising out of a pool), liquid that merges and separates (gooey filter),
+beads that are round and shiny. Smooth eased motion, never jittery. Keep window content readable.
