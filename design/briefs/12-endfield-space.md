@@ -126,3 +126,14 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
      Use for state/toggle/refresh-type buttons.
    Same stroke weight, dark grey on light plates (white on dark); the whole icon set follows this: heavy strokes,
    cut gaps, nothing touching in the middle.
+19. **Vertical tabs** (refs/tabs-vertical-states.png, Mario 2026-10-10). Each tab = big title + smaller grey
+   sub-line (status / a time left) + a small square-with-diagonal glyph at the right; thin grey rule between tabs;
+   a black device-label strip on top ("DEVICE TYPE.R002 C" + logo + microtext). States, as layers that stack:
+   - **base**: the panel's flat light-grey background colour;
+   - **highlighted (selected)**: solid yellow fill + a fine dot-grid texture + a big faint motif (a chevron/"V"
+     shape) in a slightly deeper yellow; black text;
+   - **hovered**: concentric-circle ripple texture, faint, centred near the right side - stacks ON TOP of the
+     highlighted state too (hover a selected tab = yellow + dots + motif + rings).
+20. **Soft dotted edge gradients** (refs/panel-dot-gradient-edge.png): panels are a flat colour, then a masked layer
+   of slightly darker dots whose mask is a very soft gradient - dense along an edge (e.g. the bottom), fading to
+   nothing toward the middle. "Lots of" them: the default way an edge gets finished, instead of borders or shadows.
