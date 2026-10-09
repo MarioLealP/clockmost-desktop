@@ -1,0 +1,387 @@
+(() => {
+  "use strict";
+  const SW = 1920;
+  const SH = 1080;
+  const GAP = 24;
+  const NS = "http://www.w3.org/2000/svg";
+
+  let ctx = null;
+  let ov = null;
+  let hudGen = 0;
+  let seamT = 0;
+  let seamActive = false;
+
+  const tick = /Headless/.test(navigator.userAgent) ? (f) => setTimeout(f, 16) : (f) => requestAnimationFrame(f);
+
+  function tween(ms, fn) {
+    return new Promise((res) => {
+      const t0 = performance.now();
+      const step = () => {
+        const t = Math.min(1, Math.max(0, (performance.now() - t0) / ms));
+        fn(t);
+        if (t < 1) tick(step);
+        else res();
+      };
+      tick(step);
+    });
+  }
+
+  const eOut = (t) => 1 - Math.pow(1 - t, 3);
+  const eInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  const getRectPts = (x, y, w, h, N) => {
+    const pts = [];
+    const p = (w + h) * 2;
+    if (p === 0) return Array(N).fill({ x, y });
+    for (let i = 0; i < N; i++) {
+      let d = (i / N) * p;
+      if (d <= w) pts.push({ x: x + d, y: y });
+      else if (d <= w + h) pts.push({ x: x + w, y: y + d - w });
+      else if (d <= 2 * w + h) pts.push({ x: x + w - (d - w - h), y: y + h });
+      else pts.push({ x: x, y: y + h - (d - 2 * w - h) });
+    }
+    return pts;
+  };
+
+  function seamLoop() {
+    seamT++;
+    const pathL = document.querySelector(".mg-zip-l");
+    const pathR = document.querySelector(".mg-zip-r");
+    if (pathL && pathR) {
+      const spikiness = seamActive ? 22 : 5;
+      const N = 40;
+      const dy = SH / N;
+      let dL = `M 0 0 `, dR = `M ${GAP} 0 `;
+      for (let i = 0; i <= N; i++) {
+        const y = i * dy;
+        const phase = y * 0.06 - seamT * 0.12;
+        const jag = (i % 2 === 0 ? 1 : -1) * spikiness;
+        const px = GAP / 2 + Math.sin(phase) * 3;
+        dL += `L ${px + jag - 2} ${y} `;
+        dR += `L ${px + jag + 2} ${y} `;
+      }
+      dL += `L 0 ${SH} Z`;
+      dR += `L ${GAP} ${SH} Z`;
+      pathL.setAttribute("d", dL);
+      pathR.setAttribute("d", dR);
+    }
+    tick(seamLoop);
+  }
+  tick(seamLoop);
+
+  function wallpaper(wallEl) {
+    ov = document.createElementNS(NS, "svg");
+    ov.setAttribute("class", "mg-ov");
+    ov.setAttribute("viewBox", `0 0 ${SW} ${SH}`);
+    ov.style.position = "absolute";
+    ov.style.inset = "0";
+    ov.style.pointerEvents = "none";
+    ov.style.zIndex = "50";
+    
+    wallEl.parentNode.insertBefore(ov, wallEl.parentNode.querySelector("#hud"));
+
+    wallEl.innerHTML = `
+      <svg width="100%" height="100%">
+        <defs>
+          <filter id="mg-field">
+            <feTurbulence type="fractalNoise" baseFrequency="0.003 0.015" numOctaves="3" result="noise" />
+            <feColorMatrix type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   1 0 0 0 0" in="noise" result="coloredNoise" />
+            <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="composite" />
+          </filter>
+        </defs>
+        <rect width="100%" height="100%" fill="#050507" />
+        <rect width="100%" height="100%" fill="#1a1c24" filter="url(#mg-field)" opacity="0.25" />
+      </svg>
+    `;
+  }
+
+  function ready(c) {
+    ctx = c;
+  }
+
+  async function onOpen(win) {
+    const r = win.rect;
+    const el = win.el;
+    el.style.visibility = "hidden";
+
+    const poly = document.createElementNS(NS, "polygon");
+    poly.setAttribute("fill", "#0a0b0e");
+    poly.setAttribute("stroke", "#5a6a7a");
+    poly.setAttribute("stroke-width", "1.5");
+    ov.appendChild(poly);
+
+    const cx = r.x + r.w / 2;
+    const cy = r.y + r.h / 2;
+    const N = 80;
+    const rectPts = getRectPts(r.x, r.y, r.w, r.h, N);
+    const rand = Array.from({ length: N }, () => Math.random());
+    const maxSpike = Math.max(r.w, r.h) * 0.45;
+
+    await tween(650, t => {
+      let pts;
+      if (t < 0.4) {
+        const p = eOut(t / 0.4);
+        pts = rectPts.map((pt, i) => {
+          const ang = Math.atan2(pt.y - cy, pt.x - cx);
+          const dist = 10 + 40 * p + rand[i] * maxSpike * p;
+          return { x: cx + Math.cos(ang) * dist, y: cy + Math.sin(ang) * dist };
+        });
+      } else {
+        const p = eInOut((t - 0.4) / 0.6);
+        pts = rectPts.map((pt, i) => {
+          const ang = Math.atan2(pt.y - cy, pt.x - cx);
+          const spikeDist = 50 + rand[i] * maxSpike * (1 - p);
+          const sx = cx + Math.cos(ang) * spikeDist;
+          const sy = cy + Math.sin(ang) * spikeDist;
+          return { x: lerp(sx, pt.x, p), y: lerp(sy, pt.y, p) };
+        });
+      }
+      poly.setAttribute("points", pts.map(p => `${p.x},${p.y}`).join(" "));
+    });
+
+    el.style.visibility = "";
+    poly.remove();
+  }
+
+  async function onClose(win) {
+    const r = win.rect;
+    win.el.style.visibility = "hidden";
+
+    const poly = document.createElementNS(NS, "polygon");
+    poly.setAttribute("fill", "#0a0b0e");
+    poly.setAttribute("stroke", "#5a6a7a");
+    const rectPts = [{x: r.x, y: r.y}, {x: r.x+r.w, y: r.y}, {x: r.x+r.w, y: r.y+r.h}, {x: r.x, y: r.y+r.h}];
+    poly.setAttribute("points", rectPts.map(p => `${p.x},${p.y}`).join(" "));
+    ov.appendChild(poly);
+
+    await tween(100, t => {
+      poly.style.opacity = String(1 - t);
+    });
+    poly.remove();
+
+    const N = 80;
+    const beads = [];
+    const dLeft = r.x;
+    const dRight = SW - (r.x + r.w);
+    const dTop = r.y;
+    const dBot = SH - (r.y + r.h);
+    const minD = Math.min(dLeft, dRight, dTop, dBot);
+    
+    let targetX = 0, targetY = 0;
+    let isX = false, isY = false;
+    if (minD === dLeft) { isX = true; targetX = -50; }
+    else if (minD === dRight) { isX = true; targetX = SW + 50; }
+    else if (minD === dTop) { isY = true; targetY = -50; }
+    else { isY = true; targetY = SH + 50; }
+
+    for (let i = 0; i < N; i++) {
+      const circle = document.createElementNS(NS, "circle");
+      circle.setAttribute("r", String(2 + Math.random() * 6));
+      circle.setAttribute("fill", "#0a0b0e");
+      circle.setAttribute("stroke", "#5a6a7a");
+      circle.setAttribute("stroke-width", "1");
+
+      const startX = r.x + Math.random() * r.w;
+      const startY = r.y + Math.random() * r.h;
+
+      ov.appendChild(circle);
+      beads.push({
+        el: circle,
+        sx: startX, sy: startY,
+        tx: isX ? targetX : startX + (Math.random() - 0.5) * 350,
+        ty: isY ? targetY : startY + (Math.random() - 0.5) * 350,
+        delay: Math.random() * 0.4
+      });
+    }
+
+    await tween(450, t => {
+      beads.forEach(b => {
+        const pt = clamp((t - b.delay) / (1 - b.delay));
+        const p = eInOut(pt);
+        const x = lerp(b.sx, b.tx, p);
+        const y = lerp(b.sy, b.ty, p);
+        b.el.setAttribute("cx", String(x));
+        b.el.setAttribute("cy", String(y));
+        if (pt > 0.8) b.el.style.opacity = String(1 - (pt - 0.8) / 0.2);
+      });
+    });
+
+    beads.forEach(b => b.el.remove());
+  }
+
+  async function onMove(win, from, to, place) {
+    const el = win.el;
+    const isLeft = ctx && ctx.state.list.length === 2 && to.x === 0;
+    
+    const line = document.createElementNS(NS, "line");
+    line.setAttribute("stroke", "#5a6a7a");
+    line.setAttribute("stroke-width", "2");
+    const lx = isLeft ? to.x + to.w : to.x;
+    line.setAttribute("x1", String(lx)); line.setAttribute("y1", String(to.y));
+    line.setAttribute("x2", String(lx)); line.setAttribute("y2", String(to.y + to.h));
+    ov.appendChild(line);
+
+    const poly = document.createElementNS(NS, "polygon");
+    poly.setAttribute("fill", "#0a0b0e");
+    poly.setAttribute("stroke", "#5a6a7a");
+    poly.setAttribute("stroke-width", "1.5");
+    ov.appendChild(poly);
+
+    el.style.visibility = "hidden";
+
+    const N = 80;
+    const rand = Array.from({ length: N }, () => Math.random());
+    seamActive = true;
+
+    await tween(540, t => {
+      const e = eInOut(t);
+      const curRect = {
+        x: lerp(from.x, to.x, e),
+        y: lerp(from.y, to.y, e),
+        w: lerp(from.w, to.w, e),
+        h: lerp(from.h, to.h, e)
+      };
+
+      const spikiness = Math.sin(t * Math.PI);
+      const pts = getRectPts(curRect.x, curRect.y, curRect.w, curRect.h, N);
+      const finalPts = pts.map((pt, i) => {
+        const cx = curRect.x + curRect.w / 2;
+        const cy = curRect.y + curRect.h / 2;
+        const ang = Math.atan2(pt.y - cy, pt.x - cx);
+        const spikeL = rand[i] * 65 * spikiness;
+        return { x: pt.x + Math.cos(ang) * spikeL, y: pt.y + Math.sin(ang) * spikeL };
+      });
+      poly.setAttribute("points", finalPts.map(p => `${p.x},${p.y}`).join(" "));
+      line.style.opacity = String(spikiness);
+    });
+
+    place(win, to);
+    el.style.visibility = "";
+    poly.remove();
+    line.remove();
+    seamActive = false;
+  }
+
+  function onFocus(win) {
+    if (!ov) return;
+    const r = win.rect;
+    if (!r) return;
+
+    const poly = document.createElementNS(NS, "polygon");
+    poly.setAttribute("fill", "none");
+    poly.setAttribute("stroke", "#6c86a0");
+    poly.setAttribute("stroke-width", "2");
+    ov.appendChild(poly);
+
+    const N = 80;
+    const rectPts = getRectPts(r.x, r.y, r.w, r.h, N);
+    const rand = Array.from({ length: N }, () => Math.random());
+
+    tween(300, t => {
+      const p = t < 0.5 ? eOut(t / 0.5) : 1 - eOut((t - 0.5) / 0.5);
+      const pts = rectPts.map((pt, i) => {
+        const cx = r.x + r.w / 2;
+        const cy = r.y + r.h / 2;
+        const ang = Math.atan2(pt.y - cy, pt.x - cx);
+        const spikeL = rand[i] * 35 * p;
+        return { x: pt.x + Math.cos(ang) * spikeL, y: pt.y + Math.sin(ang) * spikeL };
+      });
+      poly.setAttribute("points", pts.map(pt => `${pt.x},${pt.y}`).join(" "));
+      poly.style.opacity = String(1 - t);
+    }).then(() => poly.remove());
+  }
+
+  function seamHook(s) {
+    const el = s.seam;
+    if (!el.querySelector(".mg-seam")) {
+      el.innerHTML = `
+        <svg class="mg-seam" width="${GAP}" height="${SH}" style="overflow:visible; position:absolute; left:0; top:0;">
+           <path class="mg-zip mg-zip-l" fill="#0a0b0e" stroke="#2a303a" stroke-width="1.5" />
+           <path class="mg-zip mg-zip-r" fill="#0a0b0e" stroke="#2a303a" stroke-width="1.5" />
+        </svg>
+      `;
+    }
+    if (!s.visible) {
+      el.style.opacity = "0";
+      return;
+    }
+    el.style.opacity = "1";
+    seamActive = s.changing;
+  }
+
+  async function hudShow(hudEl, data) {
+    const gen = ++hudGen;
+    hudEl.innerHTML = `
+      <div class="mg-hud">
+         <svg class="mg-droplet" viewBox="0 0 ${SW} ${SH}" style="position:absolute; inset:0; pointer-events:none; z-index:100">
+           <path class="drop-path" fill="#0a0b0e" stroke="#5a6a7a" stroke-width="2"/>
+         </svg>
+         
+         <div class="shard-container" style="position:absolute; inset:0; opacity:0; z-index:101">
+           <div class="shard clock" style="left: 60px; bottom: 100px; width: 340px; height: 160px;">
+             <div class="time">${esc(data.time)}</div>
+             <div class="date">${esc(data.date)}</div>
+           </div>
+           <div class="shard tray" style="left: 420px; bottom: 100px; width: 260px; height: 280px;">
+             ${data.tray.map(t => `<div class="tray-item">${esc(t)}</div>`).join('')}
+           </div>
+           <div class="shard notes" style="left: 60px; bottom: 280px; width: 340px; height: 260px;">
+             <div class="title">NOTIFICATIONS</div>
+             ${data.notes.map(n => `<div class="note-item">${esc(n)}</div>`).join('')}
+           </div>
+           <div class="shard search" style="left: 60px; bottom: 20px; width: 620px; height: 60px;">
+             <div class="search-txt">SEARCH SYSTEM...</div>
+           </div>
+         </div>
+      </div>
+    `;
+
+    const dropPath = hudEl.querySelector(".drop-path");
+    const container = hudEl.querySelector(".shard-container");
+    const shards = hudEl.querySelectorAll(".shard");
+    const cx = 180, cy = SH - 160;
+
+    await tween(540, t => {
+      if (t < 0.4) {
+        const p = eOut(t / 0.4);
+        const r = 10 + 160 * p;
+        const by = SH;
+        dropPath.setAttribute("d", `M ${cx - r * 1.5} ${by} Q ${cx - r} ${cy} ${cx} ${cy - r} Q ${cx + r} ${cy} ${cx + r * 1.5} ${by} Z`);
+        dropPath.style.opacity = "1";
+        container.style.opacity = "0";
+      } else {
+        const p = eOut((t - 0.4) / 0.6);
+        dropPath.style.opacity = String(1 - p);
+        container.style.opacity = String(p);
+
+        shards.forEach((s, i) => {
+          const dx = (i % 2 === 0) ? -60 : 60;
+          const dy = (i > 1) ? -60 : 60;
+          s.style.transform = `translate(${dx * (1 - p)}px, ${dy * (1 - p)}px) scale(${0.85 + 0.15 * p})`;
+        });
+      }
+    });
+  }
+
+  async function hudHide(hudEl) {
+    const gen = ++hudGen;
+    const shards = hudEl.querySelectorAll(".shard");
+    if (!shards.length) return;
+
+    await tween(360, t => {
+      const p = eInOut(t);
+      shards.forEach(s => {
+        s.style.transformOrigin = "bottom center";
+        s.style.transform = `scaleY(${1 - p * 0.8}) translateY(${p * 60}px)`;
+        s.style.opacity = String(1 - p);
+      });
+    });
+
+    if (gen === hudGen) hudEl.innerHTML = "";
+  }
+
+  window.CONCEPT = { gap: GAP, wallpaper, ready, onOpen, onClose, onMove, onFocus, seam: seamHook, hudShow, hudHide };
+})();
