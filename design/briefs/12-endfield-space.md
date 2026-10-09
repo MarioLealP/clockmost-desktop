@@ -69,8 +69,11 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    Use for: anything "you got X" - finished download, update applied, backup done, screenshot saved.
 13. **Backpack / app drawer** (refs/drawer-backpack-depot.png, Mario 2026-10-10): "backpack is a frosted glass gradient overlay, this would be great for a app drawer
    style thing. The window opens left to right, slots with the 'icons' along with it, then the minor icons and
-   text like the capacity, the two on the bottom right, etc". -> App drawer = a wide frosted-glass panel (light
-   grey-blue gradient, the world blurred through it), header bar with a square icon tile + title + tiny barcode
+   text like the capacity, the two on the bottom right, etc". -> App drawer = a wide panel whose MATERIAL is a vertical
+   gradient (refs/drawer-gradient-detail.png; Mario: "the top of the bag is solid color, and it gradients as alpha
+   into frost glass ... with a different color 'bottom'"): solid light grey-white at the top (header), alpha
+   falling off downward so the lower body is frosted glass with the world blurred through it, then a separate
+   darker grey bottom bar. Spatial, not a transition - it does not 'turn into' glass over time, header bar with a square icon tile + title + tiny barcode
    microtext, a filter row of category glyphs separated by thin bars (active one = dark pill), a grid of square
    slots: dark-steel tile, the app icon large, a big white numeral bottom-centre (use: open windows / badge), and a
    thin rarity-colour underbar (use: app category or state). Motion: the panel reveals LEFT -> RIGHT (clip wipe), the
@@ -93,7 +96,7 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    dont need the exact same blanket across every app and every window"; "very open to the idea of different window
    types react different also or are colored different"). One shared language (tokens, rules 1-15), but each type
    has its own motion and colour:
-   - **App drawer**: comes in solid white, then turns to frosted glass (rule 13 layout: wipe left->right, slots
+   - **App drawer**: solid colour at the top, alpha-gradient into frosted glass downward, different-colour bottom bar (rule 13 layout: wipe left->right, slots
      ride the wipe, minor layer after).
    - **Workspaces**: switching = the camera travels through the 3D world to the other workspace, using the huge
      numbers on the walls and floor (rule 9 world print) as landmarks; the location toast (rule 14) names it.
@@ -114,3 +117,4 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
      (hatching, dot grid, glyph) with a thin tri-band underline; dark rounded bubbles, incoming left with round
      avatar, outgoing right with avatar on the right; reactions sit inside the bubble (emoji + name); the composer
      is one wide white pill at the bottom (in-game it's a reply choice).
+   (Mario: these refs are examples - each surface's exact look gets specified as we go.)
