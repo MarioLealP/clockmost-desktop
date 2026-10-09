@@ -1,0 +1,183 @@
+/* 2 · Origami desk — windows are sheets of paper on a walnut desk */
+#screen { background: #2a1b11; }
+#wall canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+:root {
+  --paper: #f1eadb;
+  --paper-2: #e6dcc7;
+  --ink: #2a2830;
+  --ink-soft: rgba(42, 40, 48, 0.62);
+  --ink-faint: rgba(42, 40, 48, 0.2);
+  --ink-red: #b2392a;
+  --ink-blue: #2c4778;
+  --ink-green: #2f6a4d;
+  --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .28  0 0 0 .55 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+  --speck: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.4 2.7'/></filter><rect width='160' height='160' filter='url(%23s)'/></svg>");
+  --fibre: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .09' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .42  0 0 0 0 .3  0 0 0 .35 0'/></filter><rect width='600' height='600' filter='url(%23f)'/></svg>");
+}
+
+/* ---- the sheets -------------------------------------------------------------------------- */
+.win {
+  background: radial-gradient(120% 90% at 30% 10%, #f6f0e2 0%, var(--paper) 55%, #e9e0cc 100%);
+  color: var(--ink);
+  box-shadow: 0 1px 1px rgba(20, 10, 0, 0.35), 0 3px 8px rgba(20, 10, 0, 0.25), inset 0 0 0 4000px rgba(70, 45, 15, 0.045);
+}
+.win.focused {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 3px rgba(20, 10, 0, 0.3), 0 18px 40px rgba(10, 5, 0, 0.6), inset 0 0 0 4000px rgba(70, 45, 15, 0);
+}
+/* paper grain over everything: printed look, very light */
+.win::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--noise), var(--fibre);
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+}
+/* dog-ear corner */
+.win::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  z-index: 2;
+  background: linear-gradient(225deg, #24170e 0 50%, #d8ccb3 50% 100%);
+  box-shadow: -2px 2px 3px rgba(40, 25, 10, 0.25);
+}
+.win .titlebar {
+  background: transparent;
+  color: var(--ink);
+  height: 38px;
+  padding: 0 20px;
+  border-bottom: 2px dotted var(--ink-faint);
+  font: 600 12px/1 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.win .title::before { content: "№ "; color: var(--ink-red); }
+.win .content { background: transparent; }
+
+/* fake apps, re-inked */
+.win .ff .tabs { background: transparent; padding: 10px 16px 0; gap: 6px; }
+.win .ff .tab { background: transparent; border: 1.5px solid var(--ink-faint); border-bottom: 0; color: var(--ink-soft); border-radius: 2px 2px 0 0; }
+.win .ff .tab.on { color: var(--ink); border-color: var(--ink-soft); background: rgba(255, 255, 255, 0.35); }
+.win .ff .url { background: transparent; border: 1.5px solid var(--ink-faint); border-radius: 2px; color: var(--ink-blue); margin: 0 16px; font-family: ui-monospace, Consolas, monospace; }
+.win .ff .page { padding: 34px 56px; }
+.win .ff .h { background: var(--ink); opacity: 0.85; border-radius: 1px; }
+.win .line { background: var(--ink); opacity: 0.32; border-radius: 1px; height: 9px; }
+.win .dc .side { background: rgba(80, 55, 20, 0.05); border-right: 2px dotted var(--ink-faint); }
+.win .dc .chan { background: var(--ink); opacity: 0.16; border-radius: 1px; }
+.win .dc .av { background: radial-gradient(circle at 35% 35%, #fff4 0 20%, transparent 21%), var(--ink-blue); opacity: 0.75; box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink-blue); }
+.win .dc .bub .line:first-child { background: var(--ink-blue) !important; opacity: 0.8; }
+.win .kt { background: transparent; color: var(--ink); font-weight: 600; }
+
+/* ---- fold rig (open / close) ---------------------------------------------------------------- */
+.o-rig { position: absolute; z-index: 5; pointer-events: none; perspective: 2600px; }
+.o-sheet, .o-half { position: absolute; transform-style: preserve-3d; }
+.o-sheet { inset: 0; }
+.o-face {
+  position: absolute;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  background: radial-gradient(140% 120% at 30% 10%, #f6f0e2, var(--paper) 60%, #e3d9c3);
+  box-shadow: 0 0 0 0.5px rgba(90, 70, 40, 0.35);
+}
+.o-face::after { content: ""; position: absolute; inset: 0; background: var(--noise); opacity: 0.3; mix-blend-mode: multiply; }
+.o-face .win { backface-visibility: hidden; transition: none; transform: none !important; box-shadow: none !important; }
+.o-face .win::after { display: none; }
+.o-shade { position: absolute; inset: 0; z-index: 3; opacity: 0; background: linear-gradient(90deg, rgba(60, 40, 15, 0.55), rgba(60, 40, 15, 0.1)); }
+.o-crease { position: absolute; z-index: 3; background: rgba(120, 95, 60, 0.35); }
+.o-ground { position: absolute; z-index: 4; pointer-events: none; border-radius: 6px; background: rgba(10, 5, 0, 0.32); filter: blur(16px); }
+
+.o-plane-wrap { position: absolute; z-index: 6; pointer-events: none; filter: drop-shadow(0 14px 10px rgba(10, 5, 0, 0.45)); }
+.o-plane {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #f6f0e2 0 49.4%, #a89d86 49.4% 50.6%, #dfd5bf 50.6%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 50%);
+}
+
+/* print head on open */
+.o-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(42, 40, 48, 0.25) 40%, rgba(42, 40, 48, 0.55) 55%, transparent);
+  filter: blur(1px);
+}
+
+/* ---- seam: deckled edges drawn in the gap ------------------------------------------------- */
+#seam svg { position: absolute; top: 0; left: 0; overflow: visible; }
+#seam .dl { fill: #ece4d3; }
+#seam .dr { fill: #ece4d3; filter: drop-shadow(-1.5px 0 1.5px rgba(30, 18, 5, 0.45)); }
+#seam .fib { fill: none; stroke: rgba(255, 252, 240, 0.85); stroke-width: 0.9; }
+#seam[data-f="0"] .dl, #seam[data-f="1"] .dr { fill: #f2ebdc; }
+
+/* ---- HUD: a receipt fed down from a slot -------------------------------------------------- */
+.o-dim { position: absolute; inset: 0; background: radial-gradient(70% 60% at 50% 0%, rgba(20, 10, 0, 0.42), rgba(20, 10, 0, 0.08) 70%, transparent); opacity: 0; }
+.o-slot {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 500px;
+  height: 14px;
+  margin-left: -250px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(#0b0806, #2b241e 70%, #4a4038);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+.o-rwrap { position: absolute; top: 6px; left: 50%; width: 440px; margin-left: -220px; z-index: 2; filter: drop-shadow(0 12px 14px rgba(10, 5, 0, 0.5)); }
+.o-receipt {
+  position: relative;
+  padding: 26px 30px 40px;
+  background: var(--noise), linear-gradient(#f8f4ea, #efe8d8);
+  color: var(--ink);
+  font: 600 13px/1.35 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 11px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 22px 11px repeat-x;
+}
+.o-receipt .hdr { text-align: center; letter-spacing: 0.3em; font-size: 12px; color: var(--ink-soft); }
+.o-receipt .rule { border-top: 2px dashed var(--ink-faint); margin: 14px 0; }
+.o-receipt .lbl { font-size: 11px; letter-spacing: 0.25em; color: var(--ink-soft); margin-bottom: 10px; }
+.o-stamp {
+  display: inline-block;
+  color: var(--ink-red);
+  border: 5px double currentColor;
+  border-radius: 6px;
+  font: 900 108px/0.95 Impact, "Arial Black", "Helvetica Neue", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  padding: 6px 18px 2px;
+  -webkit-mask: var(--speck) 0 0 / 160px 160px;
+}
+.o-time { display: flex; justify-content: center; margin: 4px 0 10px; }
+.o-time .o-stamp { transform: rotate(-3deg); }
+.o-date { text-align: center; }
+.o-date .o-stamp { color: var(--ink-blue); font-size: 26px; border-width: 3px; border-style: solid; padding: 6px 12px 4px; letter-spacing: 0.08em; text-transform: uppercase; transform: rotate(1.5deg); }
+.o-tray { display: flex; flex-wrap: wrap; gap: 12px 10px; justify-content: center; }
+.o-tray .o-stamp { font-size: 16px; border-width: 2.5px; border-style: solid; padding: 6px 10px 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+.o-tray .o-stamp:nth-child(3n + 1) { color: var(--ink-green); border-radius: 20px; }
+.o-tray .o-stamp:nth-child(3n + 2) { color: var(--ink-blue); }
+.o-tray .o-stamp:nth-child(3n) { color: var(--ink-red); border-style: dashed; }
+.o-foot { text-align: center; font-size: 11px; letter-spacing: 0.2em; color: var(--ink-soft); }
+
+.o-tickets { position: absolute; top: 70px; left: calc(50% + 200px); width: 330px; z-index: 1; }
+.o-ticket {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 16px 22px 16px 34px;
+  font: 600 15px/1.3 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: var(--ink);
+  background: var(--noise), linear-gradient(90deg, #efe2bf, #f5ecd6);
+  filter: drop-shadow(0 6px 6px rgba(10, 5, 0, 0.45));
+  -webkit-mask:
+    radial-gradient(circle 4px at 14px 50%, #0000 98%, #000) 0 0 / 100% 14px repeat-y;
+  clip-path: polygon(0 0, 97% 0, 100% 12%, 97.5% 26%, 100% 41%, 98% 57%, 100% 70%, 97% 86%, 99.5% 100%, 0 100%);
+}
+.o-ticket b { display: block; font-size: 11px; letter-spacing: 0.22em; color: var(--ink-red); margin-bottom: 4px; }
