@@ -90,3 +90,15 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
 15. **Exits don't move** (Mario 2026-10-10, "yes sounds good", from the reward reveal + location toast refs): all
    the motion goes into ENTRANCES. Anything leaving (window close, HUD close, toast, reward overlay, drawer) fades
    or cuts out in place - no slide, no scale, no camera move on exit. Quick and quiet.
+16. **Each app/window type gets its own entrance** (Mario 2026-10-10: "we use the endfield design language, but we
+   dont need the exact same blanket across every app and every window"; "very open to the idea of different window
+   types react different also or are colored different"). One shared language (tokens, rules 1-15), but each type
+   has its own motion and colour:
+   - **App drawer**: comes in solid white, then turns to frosted glass (rule 13 layout: wipe left->right, slots
+     ride the wipe, minor layer after).
+   - **Workspaces**: switching = the camera travels through the 3D world to the other workspace, using the huge
+     numbers on the walls and floor (rule 9 world print) as landmarks; the location toast (rule 14) names it.
+   - **Discord**: skinned/entered like the in-game messaging app (ref still to come from Mario).
+   - **Firefox**: opens on its new tab - the fixed fox mark + search bar land first, then the rest of the elements
+     fade in around them.
+   - Others: decide per app; a type may also carry its own accent colour.
