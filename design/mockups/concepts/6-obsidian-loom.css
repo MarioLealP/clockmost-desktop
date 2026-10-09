@@ -1,0 +1,72 @@
+/* Windows: dark carbon-fibre weave when inactive, glowing threads when active */
+.win { background: #080b0f; }
+.win .titlebar {
+  background: #0d1117; color: #6a7f96;
+  font: 500 12px monospace; letter-spacing: 0.1em;
+  border-bottom: 1px solid #1c2633;
+}
+
+.win::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: repeating-linear-gradient(45deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px),
+              repeating-linear-gradient(-45deg, #090c11 0px, #090c11 2px, #0b0f15 2px, #0b0f15 4px);
+  opacity: 0.6; transition: opacity 0.3s;
+}
+.win.focused::before { opacity: 0; }
+
+.win::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 6;
+  border: 1px solid #202b38; transition: border 0.3s, box-shadow 0.3s;
+}
+.win.focused::after {
+  border: 1px solid #63a9ff;
+  box-shadow: 0 0 10px rgba(99, 169, 255, 0.4), inset 0 0 10px rgba(99, 169, 255, 0.2);
+}
+
+.ff .tabs { background: #06090c; }
+.ff .tab { background: #0c1015; border-right: 1px solid #1c2633; }
+.ff .tab.on { background: #131a23; border-top: 1px solid #63a9ff; }
+.ff .url { background: #0c1015; border: 1px solid #1c2633; }
+.ff .h { background: #202b38; }
+.line { background: #1c2633; }
+.dc .side { background: #06090c; }
+.dc .chan { background: #0c1015; }
+.kt { background: #06090c; }
+
+/* Overlays */
+.loom-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 10; }
+
+.th-warp, .th-weft {
+  stroke: #63a9ff; stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px rgba(99, 169, 255, 0.8));
+}
+.th-surface { fill: #63a9ff; mix-blend-mode: screen; }
+
+.th-snap { stroke: #ff4a6e; stroke-width: 2; filter: drop-shadow(0 0 6px #ff4a6e); }
+.th-flash { fill: #ff4a6e; mix-blend-mode: screen; }
+
+.th-split { stroke: #63a9ff; stroke-width: 2; filter: drop-shadow(0 0 8px rgba(99, 169, 255, 0.9)); }
+.lm-focus-flash { fill: none; stroke: #63a9ff; }
+
+/* Seam */
+.lm-seam { position: absolute; top: 0; left: 0; overflow: visible; }
+.lm-seam .braid { fill: none; stroke: #2a3a4c; stroke-width: 1.5; transition: stroke 0.3s; }
+.lm-seam .core { stroke: #1c2633; stroke-width: 1; transition: stroke 0.3s; opacity: 0; }
+.lm-seam.lm-chg .braid { stroke: #63a9ff; filter: drop-shadow(0 0 4px rgba(99,169,255,0.6)); }
+.lm-seam.lm-chg .core { stroke: #fff; filter: drop-shadow(0 0 2px #fff); }
+
+/* HUD */
+.lm-hud { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lm-slate { position: absolute; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8)); }
+.lm-slate-bg { fill: #0d1116; stroke: #253140; stroke-width: 2; }
+.lm-time { fill: #e5f0ff; font: 300 86px monospace; }
+.lm-date { fill: #6a7f96; font: 500 24px monospace; letter-spacing: 0.2em; }
+.lm-search-box { fill: none; stroke: #2a3a4c; stroke-width: 2; }
+.lm-search-text { fill: #6a7f96; font: 500 16px monospace; letter-spacing: 0.1em; }
+.lm-section { fill: #485c73; font: 600 12px monospace; letter-spacing: 0.2em; }
+.lm-tray-item, .lm-note-src { fill: #a3bfdf; font: 500 14px monospace; }
+.lm-note-dsc { fill: #6a7f96; font: 400 14px sans-serif; }
+.lm-hole { fill: #05080c; stroke: #2a3a4c; stroke-width: 1.5; }
+.lm-hole.glowing { fill: #63a9ff; stroke: none; filter: drop-shadow(0 0 5px #63a9ff); }
+.lm-thread { stroke: #63a9ff; stroke-width: 1.5; filter: drop-shadow(0 0 3px #63a9ff); }
+.lm-thread-dec { stroke: #1c2633; stroke-width: 1; stroke-dasharray: 4 4; }
