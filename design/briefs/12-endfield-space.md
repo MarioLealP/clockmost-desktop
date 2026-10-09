@@ -78,3 +78,11 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    slots + icons ride in with that same wipe (part of it, not after it), THEN the secondary layer fades in: counters
    ("Capacity 13/40"), filter glyphs, the bottom bar (sort pill, Quick-Stash style pill, the two small glyph
    buttons bottom-right).
+14. **Location toast** (refs/toast-location.png, Mario 2026-10-10: "toast notification with 'location' can be
+   something else for us"): a dark translucent band across the left of the screen that fades out to the right
+   (horizontal gradient, no hard right edge), faint topo contour lines inside it, a ruler scale (10..160 ticks)
+   along its bottom edge. Three lines of text: big white title, yellow subtitle, small grey data line with a precise
+   number ("Depth 0.1254±0.0054"). For us = a "you are now here" toast: workspace switched ("Workspace 02" /
+   yellow "Gaming" / grey "3 windows · 1:2 split"), network/VPN change, game launched, Felt mode change. Motion not
+   in the ref; proposal: band wipes in left->right, then the title, subtitle, data line fade-slide in staggered,
+   then it fades out after a few seconds.
