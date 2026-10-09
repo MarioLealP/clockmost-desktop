@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/*TITLE*/</title>
+<style>
+  :root { --W: 1920; --H: 1080; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b0b0e; color: #ddd; font: 14px system-ui, sans-serif; overflow: hidden; }
+  #stage { position: absolute; inset: 0 0 64px 0; overflow: hidden; }
+  #fit { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; transform-origin: center; }
+  #screen { position: absolute; inset: 0; overflow: hidden; border-radius: 6px; background: #111; }
+  #wall { position: absolute; inset: 0; }
+  #wins { position: absolute; inset: 0; }
+  #seam { position: absolute; top: 0; width: 0; height: 100%; pointer-events: none; display: none; }
+  #hud { position: absolute; inset: 0; pointer-events: none; }
+  #hud.on { pointer-events: auto; }
+  #edge { position: absolute; left: 0; right: 0; top: 0; height: 10px; z-index: 50; }
+  #felt-note { position: absolute; right: 12px; bottom: 8px; font-size: 12px; opacity: .35; }
+  .win { position: absolute; display: flex; flex-direction: column; overflow: hidden; background: #1b1c22; }
+  .win .titlebar { height: 34px; flex: none; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: #aab; background: #15161b; user-select: none; }
+  .win .content { flex: 1; position: relative; overflow: hidden; }
+  /* fake app bodies (neutral; concepts may restyle) */
+  .ff .tabs { display: flex; gap: 2px; padding: 6px 8px 0; background: #1f2027; }
+  .ff .tab { padding: 6px 14px; background: #2a2b33; border-radius: 6px 6px 0 0; font-size: 12px; color: #bbb; }
+  .ff .tab.on { background: #34353e; color: #eee; }
+  .ff .url { margin: 6px 8px; height: 30px; border-radius: 6px; background: #2a2b33; display: flex; align-items: center; padding: 0 12px; color: #889; font-size: 12px; }
+  .ff .page { padding: 24px 48px; }
+  .ff .h { height: 22px; width: 55%; background: #3a3c48; border-radius: 4px; margin-bottom: 18px; }
+  .line { height: 10px; background: #2c2e38; border-radius: 3px; margin: 9px 0; }
+  .dc { display: flex; height: 100%; }
+  .dc .side { width: 220px; background: #17181d; padding: 14px 10px; }
+  .dc .chan { height: 18px; margin: 10px 4px; border-radius: 4px; background: #23252c; }
+  .dc .chat { flex: 1; padding: 18px 22px; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; }
+  .dc .msg { display: flex; gap: 12px; }
+  .dc .av { width: 38px; height: 38px; border-radius: 50%; background: #3b3f6a; flex: none; }
+  .dc .bub { flex: 1; }
+  .kt { background: #0f1014; height: 100%; padding: 16px 18px; font: 13px ui-monospace, monospace; color: #9fb; white-space: pre; }
+  #bar { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; display: flex; gap: 8px; align-items: center; padding: 0 14px; background: #121217; border-top: 1px solid #22232b; }
+  #bar button { background: #22242c; color: #ddd; border: 1px solid #31333d; border-radius: 6px; padding: 8px 12px; font: inherit; cursor: pointer; }
+  #bar button:hover { background: #2c2e38; }
+  #bar .sep { width: 1px; height: 28px; background: #2a2b33; margin: 0 4px; }
+  #bar .about { margin-left: auto; font-size: 12px; color: #889; max-width: 520px; text-align: right; }
+  kbd { font: 11px ui-monospace, monospace; background: #2c2e38; border-radius: 3px; padding: 1px 4px; }
+/*CONCEPT_CSS*/
+</style>
+</head>
+<body>
+<div id="stage"><div id="fit"><div id="screen">
+  <div id="wall"></div><div id="wins"></div><div id="seam"></div><div id="hud"></div><div id="edge"></div>
+</div></div></div>
+<div id="bar">
+  <button data-a="open">Open <kbd>O</kbd></button>
+  <button data-a="close">Close focused <kbd>X</kbd></button>
+  <span class="sep"></span>
+  <button data-a="r11">Snap 1:1 <kbd>1</kbd></button>
+  <button data-a="r12">1:2 <kbd>2</kbd></button>
+  <button data-a="r21">2:1 <kbd>3</kbd></button>
+  <span class="sep"></span>
+  <button data-a="focus">Switch focus <kbd>Tab</kbd></button>
+  <button data-a="hud">HUD <kbd>H</kbd> / hover top edge</button>
+  <span class="about">/*ABOUT*/</span>
+</div>
+<script>
+/*CONCEPT_JS*/
+</script>
+<script>
+"use strict";
+// ---- harness: a fake 1920x1080 side screen; concepts animate the events -------------------
+const W = 1920, H = 1080;
+const $ = (s, r = document) => r.querySelector(s);
+const screen = $("#screen"), wins = $("#wins"), seam = $("#seam"), hud = $("#hud"), wall = $("#wall");
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const KINDS = {
+  firefox: { title: "Firefox — a long article", body: () => `<div class="ff"><div class="tabs"><div class="tab on">Article</div><div class="tab">Wiki</div><div class="tab">Mail</div></div><div class="url">https://example.org/read</div><div class="page"><div class="h"></div>${lines(14)}</div></div>` },
+  discord: { title: "Discord — #general", body: () => `<div class="dc"><div class="side">${'<div class="chan"></div>'.repeat(9)}</div><div class="chat">${msgs(5)}</div></div>` },
+  kitty: { title: "kitty — ~", body: () => `<div class="kt">~ ❯ paru -Syu\n:: Synchronizing package databases...\n cachyos-v3 is up to date\n:: Starting full system upgrade...\n there is nothing to do\n~ ❯ █</div>` },
+};
+function lines(n) { let s = ""; for (let i = 0; i < n; i++) s += `<div class="line" style="width:${60 + ((i * 37) % 40)}%"></div>`; return s; }
+function msgs(n) { let s = ""; for (let i = 0; i < n; i++) s += `<div class="msg"><div class="av"></div><div class="bub"><div class="line" style="width:22%;height:11px;background:#454a7a"></div><div class="line" style="width:${50 + ((i * 29) % 45)}%"></div></div></div>`; return s; }
+
+const state = { list: [], ratio: [1, 1], focused: null, hud: false, busy: false };
+const C = window.CONCEPT || {};
+const GAP = C.gap ?? 0;
+let nextKind = ["kitty", "firefox", "discord"];
+
+function tiles(n) {
+  if (n === 1) return [{ x: 0, y: 0, w: W, h: H }];
+  const [a, b] = state.ratio, lw = Math.round((W - GAP) * a / (a + b));
+  return [{ x: 0, y: 0, w: lw, h: H }, { x: lw + GAP, y: 0, w: W - lw - GAP, h: H }];
+}
+function place(win, r) { Object.assign(win.el.style, { left: r.x + "px", top: r.y + "px", width: r.w + "px", height: r.h + "px" }); win.rect = { ...r }; }
+function make(kind) {
+  const el = document.createElement("div");
+  el.className = "win " + kind;
+  el.innerHTML = `<div class="titlebar"><span class="title">${KINDS[kind].title}</span></div><div class="content">${KINDS[kind].body()}</div>`;
+  const win = { kind, el, rect: null };
+  el.addEventListener("mousedown", () => focus(win));
+  wins.appendChild(el);
+  return win;
+}
+function seamState(changing) {
+  if (state.list.length !== 2) { seam.style.display = "none"; C.seam?.({ visible: false, seam, changing }); return; }
+  const [a, b] = state.list.map((w) => w.rect);
+  const x = a.x + a.w, w = b.x - x;
+  Object.assign(seam.style, { display: "block", left: x + "px", width: Math.max(w, 0) + "px" });
+  C.seam?.({ visible: true, seam, x, w, h: H, changing, left: state.list[0], right: state.list[1] });
+}
+async function layout(changing) {
+  const t = tiles(state.list.length);
+  await Promise.all(state.list.map((win, i) => {
+    const from = win.rect, to = t[i];
+    if (!from) { place(win, to); return null; }
+    if (from.x === to.x && from.w === to.w) return null;
+    return C.onMove ? C.onMove(win, from, to, place) : (place(win, to), null);
+  }));
+  seamState(changing);
+}
+function focus(win) {
+  if (!win || state.focused === win) return;
+  const prev = state.focused;
+  state.list.forEach((w) => w.el.classList.toggle("focused", w === win));
+  state.focused = win;
+  C.onFocus?.(win, prev);
+}
+async function run(fn) { if (state.busy) return; state.busy = true; try { await fn(); } finally { state.busy = false; } }
+const act = {
+  open: () => run(async () => {
+    if (state.list.length >= 2) return;
+    const kind = nextKind.find((k) => !state.list.some((w) => w.kind === k)) || "kitty";
+    const win = make(kind);
+    state.list.push(win);
+    const t = tiles(state.list.length);
+    place(win, t[state.list.length - 1]);
+    win.el.style.visibility = "hidden";
+    await layout(true);
+    win.el.style.visibility = "";
+    focus(win);
+    await (C.onOpen?.(win) ?? null);
+    seamState(false);
+  }),
+  close: () => run(async () => {
+    const win = state.focused; if (!win) return;
+    await (C.onClose?.(win) ?? null);
+    win.el.remove();
+    state.list = state.list.filter((w) => w !== win);
+    state.focused = null;
+    await layout(true);
+    focus(state.list[0]);
+    seamState(false);
+  }),
+  ratio: (r) => run(async () => { state.ratio = r; await layout(true); await sleep(50); seamState(false); }),
+  focus: () => { const i = state.list.indexOf(state.focused); focus(state.list[(i + 1) % state.list.length]); },
+  hud: async (on = !state.hud) => {
+    if (on === state.hud) return;
+    state.hud = on;
+    hud.classList.toggle("on", on);
+    if (on) await (C.hudShow?.(hud, hudData()) ?? null); else await (C.hudHide?.(hud) ?? null);
+  },
+};
+function hudData() {
+  const d = new Date();
+  return {
+    time: d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+    date: d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }),
+    tray: ["Discord", "Steam", "KeePassXC", "Wi-Fi", "Volume 40%"],
+    notes: ["Discord: Kuri — gg", "Steam: update ready", "Backup: OK 03:25"],
+  };
+}
+document.querySelectorAll("#bar button").forEach((b) => b.addEventListener("click", () => {
+  const a = b.dataset.a;
+  if (a === "r11") act.ratio([1, 1]); else if (a === "r12") act.ratio([1, 2]); else if (a === "r21") act.ratio([2, 1]); else act[a]();
+}));
+addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+  if (k === "o") act.open(); else if (k === "x") act.close(); else if (k === "1") act.ratio([1, 1]);
+  else if (k === "2") act.ratio([1, 2]); else if (k === "3") act.ratio([2, 1]);
+  else if (k === "tab") { e.preventDefault(); act.focus(); } else if (k === "h") act.hud(); else if (k === "escape") act.hud(false);
+});
+$("#edge").addEventListener("mouseenter", () => act.hud(true));
+screen.addEventListener("mouseleave", () => act.hud(false));
+hud.addEventListener("mousedown", (e) => { if (e.target === hud) act.hud(false); });
+function fit() { const s = Math.min(innerWidth / W, (innerHeight - 64) / H) * 0.98; $("#fit").style.transform = `translate(-50%, -50%) scale(${s})`; }
+addEventListener("resize", fit); fit();
+C.wallpaper?.(wall);
+(async () => {
+  for (const k of ["firefox", "discord"]) { const w = make(k); state.list.push(w); }
+  nextKind = ["kitty", "firefox", "discord"];
+  await layout(false);
+  focus(state.list[0]);
+  C.ready?.({ state, screen, wins, seam, hud, wall, W, H, sleep });
+  // ?auto=hud,close,r12,open,focus - run actions after load (for headless checks / demos)
+  const auto = new URLSearchParams(location.search).get("auto");
+  for (const a of auto ? auto.split(",") : []) {
+    await sleep(300);
+    if (a === "r11") await act.ratio([1, 1]); else if (a === "r12") await act.ratio([1, 2]);
+    else if (a === "r21") await act.ratio([2, 1]); else if (act[a]) await act[a]();
+  }
+})();
+</script>
+</body>
+</html>
