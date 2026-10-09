@@ -1,0 +1,13 @@
+# Gaming (decided 2026-10-09; not tested in the VM - Mario: "we know those work").
+# No MangoHud (Mario: "no go"), no gamemode/gamescope (CachyOS tuning covers gamemode; gamescope only
+# if one game misbehaves).
+steam
+proton-cachyos-slr
+lutris
+# AUR via paru (CachyOS's AUR helper, installed by the bootstrap):
+#   xivlauncher        FFXIV (XIVLauncher.Core)
+#   ffxiv-teamcraft    FFXIV Teamcraft desktop app
+#   sgdboop            one-click SteamGridDB art for hand-added Steam shortcuts
+# clockmost pkgs repo (git.clockmost.com/pkgs, built + scanned by our own pipeline):
+#   boilr              syncs Lutris (Battle.net) etc. into Steam with SteamGridDB art (upstream 1.11.0;
+#                      AUR is stale at 0.4.5)

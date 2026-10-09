@@ -44,3 +44,7 @@
   (`monitor.alsa.rules`: device.disabled / node.disabled by the real `alsa_card.*` / node names,
   checked with `wpctl status`), default sink = Realtek analog (EasyEffects EQ on it), default source =
   USB mic.
+- **Package BoilR in the clockmost pkgs repo** (Mario: "if we can build it ourselves, we go for it,
+  and we can let Trivy sniff it"): Rust, upstream PhilipK/BoilR v1.11.0 (2026-10-02); include a
+  Trivy scan of the package (Cargo.lock deps) in that pipeline. Then XIVLauncher added to Steam once
+  as a non-Steam game (art via SGDBoop); Battle.net games via Lutris -> BoilR syncs them.
