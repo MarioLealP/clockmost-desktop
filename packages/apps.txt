@@ -14,3 +14,5 @@ baloo-widgets
 firefox
 # 6: screenshots (2026-10-09) - Spectacle: region capture, GIF/WebP region recording, annotation editor
 spectacle
+# 7: Discord client (2026-10-09) - Equibop (Vesktop fork + Equicord plugins; same CSS themes), named "Discord" in menus
+equibop

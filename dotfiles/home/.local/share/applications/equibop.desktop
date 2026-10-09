@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Discord
+GenericName=Internet Messenger
+Comment=Equibop is a Vesktop fork that is a free/libre cross platform desktop app aiming to give you a snappier Discord experience with Equicord pre-installed
+Type=Application
+Exec=/usr/bin/equibop %U
+Icon=equibop
+Categories=Network;InstantMessaging;
+MimeType=x-scheme-handler/discord;
+StartupWMClass=equibop
+Keywords=Discord;Equibop;Equicord;Vencord;chat;
+GenericName=Equibop
