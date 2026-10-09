@@ -137,3 +137,17 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
 20. **Soft dotted edge gradients** (refs/panel-dot-gradient-edge.png): panels are a flat colour, then a masked layer
    of slightly darker dots whose mask is a very soft gradient - dense along an edge (e.g. the bottom), fading to
    nothing toward the middle. "Lots of" them: the default way an edge gets finished, instead of borders or shadows.
+21. **Second vertical tab style** (refs/tabs-vertical-icon-cards.png): proof that the same job gets a different
+   design. Panel background = light grey with fine diagonal hatching. Each tab = a 3D object icon (with a small
+   coloured badge glyph at its corner) + a two-line bold title. Selected = a dark translucent grey card with a faint
+   watermark glyph behind white text, PLUS a glowing vertical yellow bar outside the panel to its left (bright
+   core, fading out at both ends). Hovered = a lighter near-white card. Rest = no card, grey text.
+22. **Never one blanket, always many layers** (Mario 2026-10-10: "all very endfield, but different designs so
+   nothing gets overused, but always lots of layers, small textured details, dots, gradient textures and
+   layers"). Ref refs/card-shop-item-layers.png - one shop card is ~8 layers, bottom to top (Mario's breakdown):
+   background -> motif (topology lines, + a faint big watermark word) -> gradient -> price trim (white chamfered
+   plate, bottom-right) -> details on the price trim (hatch marks, tiny label/barcode line) -> price + icon ("20"
+   + currency glyph) -> stock + number (dark pill "Stock | ∞") ; plus the dark title header above, a "× 6" quantity
+   pill and a rarity-colour underbar (purple). Rule for every component we design: give it its OWN take (don't
+   reuse another component's recipe), and build it from 6-9 layers of small textured detail - dots, hatching,
+   topo lines, soft gradients, trims, microtext.
