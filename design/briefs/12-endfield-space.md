@@ -83,6 +83,7 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    (horizontal gradient, no hard right edge), faint topo contour lines inside it, a ruler scale (10..160 ticks)
    along its bottom edge. Three lines of text: big white title, yellow subtitle, small grey data line with a precise
    number ("Depth 0.1254±0.0054"). For us = a "you are now here" toast: workspace switched ("Workspace 02" /
-   yellow "Gaming" / grey "3 windows · 1:2 split"), network/VPN change, game launched, Felt mode change. Motion not
-   in the ref; proposal: band wipes in left->right, then the title, subtitle, data line fade-slide in staggered,
-   then it fades out after a few seconds.
+   yellow "Gaming" / grey "3 windows · 1:2 split"), network/VPN change, game launched, Felt mode change. Motion (Mario: "it goes left to
+   right, feathering the right side, fade slides in, static fade out"): the band reveals left->right with a soft
+   feathered leading edge on the right (not a hard wipe line), the content fade-slides in, and the exit is a plain
+   fade in place - nothing moves on the way out.
