@@ -34,3 +34,13 @@
   Details: runbooks/desktop-headphone-eq.md (historical).
 - **Carry-overs assumed solved (Mario 2026-10-09)**: Google Drive sync of `Passwords.kdbx` etc. and
   the KeePassXC tang auto-unlock - redo as last time on the real machine.
+- **Audio devices: whitelist only** (Mario 2026-10-09: "disabled all sources input and output except
+  this, cuz i know screens like to get added, dont. and just accept once i connect the robin through
+  bluetooth"). On Windows today: output = **Realtek onboard analog** ("Speakers", DT 880 jack),
+  input = **USB PnP Audio Device** mic. Disable everything else: AMD GPU HDMI/DP audio (both MSI
+  monitors; Linux card name usually "HDA ATI HDMI"), Realtek digital/S/PDIF (iec958) and its analog
+  mic inputs, "AMD Streaming Audio". Bluetooth: allowed when paired (the "robin" device). Implement
+  on metal as WirePlumber 0.5 rules in `~/.config/wireplumber/wireplumber.conf.d/51-clockmost-audio.conf`
+  (`monitor.alsa.rules`: device.disabled / node.disabled by the real `alsa_card.*` / node names,
+  checked with `wpctl status`), default sink = Realtek analog (EasyEffects EQ on it), default source =
+  USB mic.
