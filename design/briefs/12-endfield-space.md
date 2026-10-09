@@ -54,7 +54,7 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
 11. **Timer tag** (refs/timer-tag.png): a small crimson/red tag (#D91E36-ish, slightly angled/chamfered) with a white
    clock icon + a compact duration in bold sans ("2d", "3h", "12m"). Use for time remaining / age: notification age,
    pending update or backup countdown, timed states.
-12. **Reward reveal** (Mario's clip `refs/endfield/rewards-contact-1/2.png`, 10 fps sheets, 4.7 s; Gemini notes in
+12. **Reward reveal** (Mario's clip `refs/endfield/rewards-collect.mp4`, sheets `rewards-contact-1/2.png`, 10 fps sheets, 4.7 s; Gemini notes in
    `rewards-gemini-breakdown.md`, corrected by me against the frames): "the way rewards are collected, it's hard to
    describe". Sequence, 30 fps:
    - t0: the whole screen behind goes heavy frosted blur + darkens in ~1 frame (no slide, the world just defocuses).
@@ -67,8 +67,7 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
      rarity colour on the card; then everything holds still.
    - exit on click: the overlay is gone in ~1-2 frames and the blur snaps back to sharp.
    Use for: anything "you got X" - finished download, update applied, backup done, screenshot saved.
-13. **Backpack / app drawer** (Mario's screenshot of the Wuling Depot + Backpack panels, 2026-10-10; image not saved
-   to refs - shared in chat): "backpack is a frosted glass gradient overlay, this would be great for a app drawer
+13. **Backpack / app drawer** (refs/drawer-backpack-depot.png, Mario 2026-10-10): "backpack is a frosted glass gradient overlay, this would be great for a app drawer
    style thing. The window opens left to right, slots with the 'icons' along with it, then the minor icons and
    text like the capacity, the two on the bottom right, etc". -> App drawer = a wide frosted-glass panel (light
    grey-blue gradient, the world blurred through it), header bar with a square icon tile + title + tiny barcode
@@ -98,7 +97,20 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
      ride the wipe, minor layer after).
    - **Workspaces**: switching = the camera travels through the 3D world to the other workspace, using the huge
      numbers on the walls and floor (rule 9 world print) as landmarks; the location toast (rule 14) names it.
-   - **Discord**: skinned/entered like the in-game messaging app (ref still to come from Mario).
+   - **Discord**: skinned/entered like the in-game messaging app (rule 17).
    - **Firefox**: opens on its new tab - the fixed fox mark + search bar land first, then the rest of the elements
      fade in around them.
    - Others: decide per app; a type may also carry its own accent colour.
+17. **Discord = the in-game messaging app** (refs/chat-empty-choose-dialog.png, refs/chat-conversation.png).
+   - Top: breadcrumb "// BAKER / TASKS" top-left (for us "// DISCORD / <server>"), the centred tab strip (rule 7,
+     Q/E keys, active = yellow block), round X close top-right; tiny ping + UID telemetry bottom-left.
+   - Left column = conversation cards (DMs/channels): dark steel card, square avatar, a thin vertical accent bar
+     (green/yellow/blue = state, e.g. unread / muted / mention), two-line preview, a faint glyph watermark in a
+     triangle at top-right. Selected card = solid yellow with black text and a chevron cut. White "Show All" filter
+     pill at the bottom.
+   - Nothing selected: a small dark plate "- Choose dialog -" centred over a dim diamond-grid glyph with "EMPTY"
+     and thin connector lines, faint telemetry microtext at the panel's top-left.
+   - Open chat: a header bar with a yellow notch at the left edge + the name, a yellow pattern block on the right
+     (hatching, dot grid, glyph) with a thin tri-band underline; dark rounded bubbles, incoming left with round
+     avatar, outgoing right with avatar on the right; reactions sit inside the bubble (emoji + name); the composer
+     is one wide white pill at the bottom (in-game it's a reply choice).
