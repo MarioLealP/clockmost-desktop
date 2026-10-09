@@ -9,4 +9,4 @@
 | ~/.local/share/user-places.xbel | - | bookmark `file://~/.config` | pinned | .config one click away |
 | kdeglobals | General | BrowserApplication | firefox.desktop | pick #5 |
 | /usr/lib/firefox/distribution/policies.json | - | EncryptedMediaExtensions | Enabled | DRM (Disney+) on by default |
-| dolphinrc | FoldersPanel | LimitFoldersPanelToHome / HiddenFilesShown / AutoScrolling | false / true / true | tree from / (trial; Mario "not great not terrible") |
+| dolphinrc | FoldersPanel | LimitFoldersPanelToHome / HiddenFilesShown / AutoScrolling | true / true / true | tree from Home; data disks mounted under ~/Drives/<name> so drives + folders share one tree |
