@@ -4,6 +4,8 @@
 # Temporary defaults, each an open decision (runbook): LANG en_US + pt_PT generated, keymap us,
 # shell bash, hostname, VM-only passwordless sudo for wheel.
 set -euo pipefail
+# 32-bit repo (Steam/Wine need it; CachyOS's installer enables it too)
+sed -i '/^#\[multilib\]/{s/^#//;n;s/^#//}' /etc/pacman.conf
 HOST=${HOST:?}; SSHKEY=${SSHKEY:?}
 ln -sf /usr/share/zoneinfo/Europe/Lisbon /etc/localtime; hwclock --systohc
 sed -i -E 's/^#(en_US\.UTF-8 UTF-8)/\1/; s/^#(pt_PT\.UTF-8 UTF-8)/\1/' /etc/locale.gen; locale-gen >/dev/null
