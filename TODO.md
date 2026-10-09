@@ -48,3 +48,20 @@
   and we can let Trivy sniff it"): Rust, upstream PhilipK/BoilR v1.11.0 (2026-10-02); include a
   Trivy scan of the package (Cargo.lock deps) in that pipeline. Then XIVLauncher added to Steam once
   as a non-Steam game (art via SGDBoop); Battle.net games via Lutris -> BoilR syncs them.
+- **clockmost block** (Mario 2026-10-09: "agents yes, backups yes, updates yes, renewers yes ...
+  the rest yes"), all mirrors of what exists today:
+  - **Zabbix agent 2**: host `clockmost-windows` becomes a Linux host (template "Linux by Zabbix
+    agent active" + SMART + systemd); keep zbx6-desktop-quiet (no page on power-off); status files
+    for the backup/updates like the server's job-status pattern.
+  - **Wazuh agent**: re-enroll the desktop (same agent name), FIM paths for Linux (~/.ssh, /etc/sudoers.d).
+  - **restic**: same repo + password + excludes as `C:\Users\lealm\.restic\desktop-backup.ps1`
+    (paths re-mapped: ~/.ssh, ~/.config, runbooks/Projects, Felt, F:\VMs\installers equivalents),
+    systemd timer + staleness status for Zabbix (zbx17 desktop-backup).
+  - **Updates**: replaces the choco auto-patch task - a weekly `paru -Syu` (+ snapper pre/post
+    snapshots via snap-pac) with a status file for Zabbix, never an unattended reboot.
+  - **Vault renewers** for `tray` + `felt-animation`: Linux installer like the laptop's
+    (`projects/openbao/offhost/install-laptop.sh`), renewer accounts + timers; same off-host roles.
+  - **Keys**: SSH aliases + keys (Gitea, server, laptop, router), carried from WSL ~/.ssh.
+- **PIT STOP: Claude Code on the Linux desktop** (Mario: "about claude code, we need a pit stop
+  there"): how/where it runs, and the agent's admin path (today: ClaudeElevated allowlist on
+  Windows; claude-admin on server/laptop). Discuss before building.
