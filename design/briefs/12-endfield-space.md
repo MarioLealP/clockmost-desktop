@@ -118,3 +118,10 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
      avatar, outgoing right with avatar on the right; reactions sit inside the bubble (emoji + name); the composer
      is one wide white pill at the bottom (in-game it's a reply choice).
    (Mario: these refs are examples - each surface's exact look gets specified as we go.)
+18. **Icon glyphs** (refs/icon-close-x.png, refs/icon-ring-split.png, Mario 2026-10-10):
+   - **Close X**: four thick arms with square-cut ends that do NOT meet - the centre is empty (a small open gap).
+   - **Plus**: exactly the same glyph rotated 45° (same arms, same empty centre) - one shape, two meanings.
+   - **Split ring**: a thick dark ring cut by a diagonal gap (two arcs, the gap running top-right to bottom-left,
+     like a slash through it), with a small filled dot at the centre. Use for state/toggle/refresh-type buttons.
+   Same stroke weight, dark grey on light plates (white on dark); the whole icon set follows this: heavy strokes,
+   cut gaps, nothing touching in the middle.
