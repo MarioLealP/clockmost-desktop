@@ -151,3 +151,13 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    pill and a rarity-colour underbar (purple). Rule for every component we design: give it its OWN take (don't
    reuse another component's recipe), and build it from 6-9 layers of small textured detail - dots, hatching,
    topo lines, soft gradients, trims, microtext.
+23. **Light pages are allowed** (refs/light-page-intel-archive.png, Mario 2026-10-10: "darkmode doesn't mean shy
+   away from white backgrounds, they can be used, but ... light grey, with dark sections so it's not glaring plain
+   eye murdering white"). Never pure white: the page is a light grey with very faint layers (wireframe boxes, dot
+   grids, a soft warm light bloom in a corner, faint big circles), framed by long thin dark rules top and bottom
+   with gaps and tick segments. The CONTENT sits in dark sections: dark tiles with monochrome grey imagery on dark
+   gradients, so most of the eye's weight is dark. Accents: small chamfered yellow "NEW" tags, short yellow bars on
+   tile left edges, one cool accent per screen (here blue: a big "9" + a thin ring), dark number plates
+   ("Collected | 222"), corner arrows with tiny code labels ("00.101"), slight RGB-split on images, an empty slot
+   filled with dots + hatching instead of left blank. Breadcrumb "// INTEL ARCHIVE" + round X, as everywhere.
+   So "dark ground" = the default, not a ban: light-grey pages with dark sections are a second mode.
