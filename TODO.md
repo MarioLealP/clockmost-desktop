@@ -62,6 +62,7 @@
   - **Vault renewers** for `tray` + `felt-animation`: Linux installer like the laptop's
     (`projects/openbao/offhost/install-laptop.sh`), renewer accounts + timers; same off-host roles.
   - **Keys**: SSH aliases + keys (Gitea, server, laptop, router), carried from WSL ~/.ssh.
-- **PIT STOP: Claude Code on the Linux desktop** (Mario: "about claude code, we need a pit stop
-  there"): how/where it runs, and the agent's admin path (today: ClaudeElevated allowlist on
-  Windows; claude-admin on server/laptop). Discuss before building.
+- **Agents on the desktop (pit stop done 2026-10-09, plan only)**: Claude Code + a local agent
+  harness side by side, both reading the same AGENTS.md/runbooks/memory (provider-neutral). The admin
+  path is agent-neutral (one account for any agent). Local model + harness picked when the extra
+  8 GB card arrives. See runbooks/desktop-linux-return.md.
