@@ -9,7 +9,9 @@
   `org.kde.plasma.clipboard` widget (no standalone binary). Removing Plasma's panel (to make room
   for an anime shell) removes the system tray -> no Klipper, no Meta+V after the next shell start.
   Current fix: the clipboard widget sits on the desktop containment
-  (`desktops()[0].addWidget("org.kde.plasma.clipboard")`). The bootstrap must do this; the design
-  track must keep it (hidden/invisible is fine).
+  (`desktops()[0].addWidget("org.kde.plasma.clipboard")`), **sized 32x32 in a corner** (containment
+  `ItemGeometries*=Applet-N:0,0,32,32,0;`) - at its default 464x464 it shows the full history
+  permanently (Mario: "the clipboard history hasn't closed"). The bootstrap must do this; the
+  design track must keep it (hidden/invisible is fine).
 - Klipper settings (`~/.config/klipperrc` [General]): MaxClipItems=50, KeepClipboardContents=true,
   IgnoreSelection=true, SyncClipboards=false, IgnoreImages=false, PreventEmptyClipboard=true.
