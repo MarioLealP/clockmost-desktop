@@ -87,3 +87,6 @@ Keep: dark ground, yellow structural, tri-band once per view, readable windows, 
    right, feathering the right side, fade slides in, static fade out"): the band reveals left->right with a soft
    feathered leading edge on the right (not a hard wipe line), the content fade-slides in, and the exit is a plain
    fade in place - nothing moves on the way out.
+15. **Exits don't move** (Mario 2026-10-10, "yes sounds good", from the reward reveal + location toast refs): all
+   the motion goes into ENTRANCES. Anything leaving (window close, HUD close, toast, reward overlay, drawer) fades
+   or cuts out in place - no slide, no scale, no camera move on exit. Quick and quiet.
