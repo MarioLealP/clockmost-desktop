@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>App · phonograph (port of components/ds-spotify-v2.html)</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="phonograph.css">
+  <style>
+    html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0F0F10; }
+    #screen { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #0F0F10; }
+  </style>
+</head>
+<body>
+<div id="screen"></div>
+
+<script src="../core.js"></script>
+<script src="phonograph.js"></script>
+<script>
+"use strict";
+const feat = +new URLSearchParams(location.search).get("feat") || 0;
+const ph = EF.phonograph({ feat });
+document.getElementById("screen").appendChild(ph);
+window.ph = ph;
+ph.enter();
+</script>
+</body>
+</html>

@@ -454,3 +454,39 @@
   Next job rewritten (port phonograph -> chat -> toast, then compose).
 - Working model from here: Claude writes bounded work orders, Pi (MiMo) does the long mechanical passes,
   Claude reviews diff + screenshots before anything is accepted.
+
+## 2026-10-12 - Pi (order 01: phonograph port)
+- Built: `src/apps/phonograph.css` (all page CSS scoped under `.ef-phonograph`), `src/apps/phonograph.js`
+  (`EF.phonograph({ albums, tracks, feat })` -> el with enter/swapTo/leave/destroy), `src/apps/phonograph.html`
+  (1920x1080 preview, reads ?feat=N, exposes window.ph). Nothing else touched; components/ds-spotify-v2.html
+  untouched as reference.
+- Checks: node --check OK; all shots clean (no page errors); pixel diff vs out/baseline (UV...python -I kit/imgdiff.py):
+  settled 544 px (0.026%), mid slow=10 244 px (0.012%), feat=2 516 px (0.025%), swap2 341 px (0.016%) - all under
+  0.05%. Residual diffs are only the live visualizer band (simulated noise, capture-time dependent) and mid-tween
+  interpolation on the slow shot. Repeat run of settled diffs to 0 px (deterministic). Baseline sanity: re-shot
+  components/ds-spotify-v2.html -> 0.000% vs its baseline (harness/baselines confirmed exact).
+- Not mapped 1:1 (say-so list):
+  1. Artwork/assets: `topo-floor-strip.svg` / `ds-topo-card.svg` referenced from `components/` by relative path
+     (`../../components/...`) - copying them would have exceeded the file list. Values unchanged.
+  2. `will-change: transform` added to the three bg layers (.bg-dot/.bg-rings/.bg-hatch). The page's fixed
+     pseudo-layers were composited; `position: absolute` divs are not, and text rasterization flipped from the
+     page's grayscale AA to LCD subpixel (and flaked run-to-run, ~350px). Restoring the composited layer context
+     makes every text pixel identical to the baseline - it is the one added CSS value in the port.
+  3. Canvas sizing: the factory runs before the root is mounted, so `size()` saw clientWidth 0 and the visualizer
+     bitmap stayed 0x0. `frame()` now re-sizes when the bitmap doesn't match the CSS size. Same output once mounted.
+  4. Motion: EF.SNAP / EF.SETTLE / EF.tween / EF.SLOW used via a thin `tween(dur, ease, step)` adapter (the page's
+     signature); `wait(ms, fn)` kept local (setTimeout x S has no EF equivalent). Curves/timing identical.
+  5. `el.leave()` is the page's own rule-15 leave() (120ms SNAP fade in place) applied to the root - the page had
+     no whole-surface exit. No other new behaviour.
+- Not done / notes: nothing outstanding in the order's scope. Known look issue (chevron motif overlapping lyrics)
+  left as is per the stop rules. Probe/experiment screenshots kept in out/shots/01-*.png, diff images in
+  out/shots/diff/.
+
+## 2026-10-12 - Claude (review of order 01)
+- Accepted. Pi/MiMo: 65 tool calls, $0.22, ~35 min. Stayed inside the file list (only probe shots in out/shots).
+- Re-checked independently: node --check OK, no page errors, diffs settled 0.011% / feat2 0.016% /
+  swap2 0.011% / mid 0.023% - the settled ones differ only in the live visualizer strip (y 950-977).
+- Code review: scoped to the root, listeners removed in destroy(), keys only while connected. Good.
+- Fixed one bug myself: artwork paths were page-relative (`../../components/...`), so mounting from any
+  other folder broke them. SVGs copied to `src/assets/`; JS resolves ART against its own script URL, CSS uses
+  `../assets/`. Verified by mounting from the folder root: 0.020%.
