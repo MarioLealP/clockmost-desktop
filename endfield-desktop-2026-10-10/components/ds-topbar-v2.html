@@ -88,8 +88,11 @@
   /* side wings: triangle markers + micro print flanking the plate, sitting on the band */
   .wing { position: absolute; top: 0; height: var(--band); display: flex; align-items: center; gap: 8px; }
   .wing.l { right: calc(50% + 176px); }
+  .wing.l .ln { width: 90px; }
+  .wing .wbc { width: 38px; height: 8px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.45) 0 2px, transparent 2px 4px, rgba(241,241,244,.45) 4px 5px, transparent 5px 8px); }
   .wing.r { left: calc(50% + 176px); }
-  .wing .ln { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, rgba(241,241,244,.3)); }
+  .wing .ln { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, rgba(241,241,244,.3)); }
   .wing.r .ln { background: linear-gradient(90deg, rgba(241,241,244,.3), transparent); }
   .wing .tri-s { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
   .wing.l .tri-s { border-left: 6px solid rgba(241,241,244,.5); }
@@ -440,10 +443,10 @@
         <div class="wsp on"><span class="n">02</span><span class="w"><i style="--c:#ff7a1a"></i><i style="--c:#cfc6f4"></i><i style="--c:#5aa7ff"></i></span></div>
         <div class="wsp"><span class="n">03</span><span class="w"><i style="--c:#ff1aac"></i></span><span class="notif pin"></span></div>
       </div>
-      <div class="focus"><b>PHONOGRAPH</b><span><i class="tri-m"></i><span class="micro">GLASSY SKY · 3 WINDOWS</span></span></div>
     </div>
 
     <!-- CENTRE -->
+    <div class="wing l"><span class="micro">WS 02 · 3 WIN</span><i class="tri-s"></i><span class="ln"></span></div>
     <div class="clock">
       <img class="topo" src="../src/assets/topo-floor.svg" alt="">
       <div class="hatch"></div><div class="dots2"></div>
@@ -453,6 +456,7 @@
       <div class="id">CLK-0912 · UTC+1</div>
     </div>
     <div class="tb"></div>
+    <div class="wing r"><span class="ln"></span><i class="tri-s"></i><span class="wbc"></span></div>
 
     <!-- RIGHT -->
     <div class="right">
