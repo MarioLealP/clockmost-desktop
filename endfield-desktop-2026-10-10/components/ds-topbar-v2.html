@@ -130,6 +130,88 @@
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
   .user .nm b { display: block; font: 700 11px var(--mono); letter-spacing: .2em; }
   .user .nm i { font-style: normal; font: 8px var(--mono); letter-spacing: .18em; color: var(--green); }
+
+  /* ================= QUICK SETTINGS (?state=quick) - its own recipe ================= */
+  .ti.open { color: var(--yellow); }
+  .qs { position: absolute; right: 16px; top: 62px; width: 432px; display: none; pointer-events: auto;
+    background: linear-gradient(180deg, rgba(30,31,36,.96), rgba(13,14,17,.97));
+    border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  body.st-quick .qs { display: block; }
+  /* notch pointing at the volume icon */
+  .qs::before { content: ""; position: absolute; top: -7px; right: var(--notch, 300px); width: 12px; height: 12px;
+    background: rgba(30,31,36,.96); border-left: 1px solid rgba(255,255,255,.12); border-top: 1px solid rgba(255,255,255,.12);
+    transform: rotate(45deg); }
+  .qs .bk { position: absolute; width: 14px; height: 14px; }
+  .qs .bk.tl { left: -1px; top: -1px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .qs .bk.br { right: -1px; bottom: -1px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  /* head: hatched strip with the user */
+  .qs .hd { position: relative; display: flex; align-items: center; gap: 12px; padding: 16px 18px 14px;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 1px, transparent 1px 7px); }
+  .qs .hd .av { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--ink); color: #111;
+    font: 700 13px var(--mono); letter-spacing: .1em; clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
+  .qs .hd b { display: block; font: 600 15px var(--body); }
+  .qs .hd .vb { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .qs .hd .vbar { width: 8px; height: 34px;
+    background: repeating-linear-gradient(180deg, rgba(241,241,244,.5) 0 2px, transparent 2px 4px, rgba(241,241,244,.5) 4px 5px, transparent 5px 8px); }
+  .qs .hd .vb .micro { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .qs .rule { height: 7px; margin: 0 18px; border-top: 1px solid rgba(255,255,255,.14);
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.3) 0 1px, transparent 1px 8px) 0 0 / 100% 3px no-repeat,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.4) 0 1px, transparent 1px 48px) 0 0 / 100% 6px no-repeat; }
+  .qs .body { padding: 14px 18px 0; }
+  .qs .lbl { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; }
+  .qs .lbl .label { font-size: 10px; }
+  .qs .lbl .ln { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  /* toggles: olive slab = on (like the active workspace), steel = off */
+  .tg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tgt { position: relative; height: 62px; padding: 10px 12px; display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-content: center;
+    background: rgba(51,54,60,.45); border: 1px solid rgba(255,255,255,.07); color: var(--dim); }
+  .tgt svg { grid-row: span 2; align-self: center; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .tgt b { font: 700 11px var(--mono); letter-spacing: .18em; color: var(--ink2); }
+  .tgt i { font-style: normal; font: 9px var(--mono); letter-spacing: .18em; color: var(--faint); margin-top: 3px; }
+  .tgt .ix { position: absolute; right: 8px; top: 6px; font: 8px var(--mono); letter-spacing: .1em; color: var(--ghost); }
+  .tgt.on { background: var(--olive); border-color: rgba(255,250,0,.4); color: #fffbb0; }
+  .tgt.on::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(rgba(255,250,0,.3) 1px, transparent 1.3px) 0 0 / 6px 6px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 45%, #000); mask-image: linear-gradient(90deg, transparent 45%, #000); }
+  .tgt.on b { color: #fffbb0; }
+  .tgt.on i { color: #d8d36a; }
+  .tgt.on .ix { color: #d8d36a; }
+  /* levels: segmented bars, last lit segment yellow */
+  .lv2 { display: grid; grid-template-columns: 20px 1fr 40px; align-items: center; column-gap: 12px; margin-bottom: 12px; color: var(--ink2); }
+  .lv2 svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .lv2 .nm { font: 9px var(--mono); letter-spacing: .2em; color: var(--dim); margin-bottom: 5px; }
+  .seg { display: flex; gap: 3px; }
+  .seg i { flex: 1; height: 8px; background: rgba(255,255,255,.08); }
+  .seg i.l { background: var(--ink); }
+  .seg i.y { background: var(--yellow); }
+  .lv2 .v { font: 700 16px var(--mono); letter-spacing: .06em; text-align: right; color: var(--ink); }
+  /* now playing: lavender slab, own art chamfer */
+  .qnp { position: relative; display: flex; align-items: center; gap: 12px; padding: 10px; margin: 4px 0 14px;
+    background: linear-gradient(90deg, rgba(207,198,244,.28), rgba(207,198,244,.05)); border: 1px solid rgba(207,198,244,.2); }
+  .qnp .art { width: 54px; height: 54px; flex: none; background: linear-gradient(135deg, #e7e1fc, #b3a7e3);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); position: relative; }
+  .qnp .art::after { content: ""; position: absolute; left: 6px; bottom: 6px; width: 26px; height: 6px;
+    background: repeating-linear-gradient(90deg, rgba(17,17,17,.5) 0 2px, transparent 2px 4px); }
+  .qnp .tx { flex: 1; min-width: 0; }
+  .qnp .tx b { display: block; font: 600 14px var(--body); }
+  .qnp .tx i { font-style: normal; font: 9px var(--mono); letter-spacing: .2em; color: #b9b2d6; }
+  .qnp .pr { height: 2px; margin-top: 8px; background: rgba(207,198,244,.2); }
+  .qnp .pr s { display: block; width: 28%; height: 100%; background: #cfc6f4; }
+  .qnp .ctl { display: flex; gap: 4px; color: var(--ink); }
+  .qnp .ctl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+  .qnp .ctl .pp { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: var(--ink); color: #111; }
+  .qnp .ctl .pp svg { fill: currentColor; stroke: none; width: 12px; height: 12px; }
+  .qnp .ctl span { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+  /* foot: dotted edge, barcode, square action buttons (power in crimson) */
+  .qs .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 18px 18px; border-top: 1px solid rgba(255,255,255,.08); }
+  .qs .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
+    background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
+  .qs .ft .acts { margin-left: auto; display: flex; gap: 6px; }
+  .qs .ft .a { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--ink2);
+    border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.03); }
+  .qs .ft .a svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .qs .ft .a.pw { color: var(--crimson); border-color: rgba(217,30,54,.5); }
 </style>
 </head>
 <body>
@@ -179,7 +261,7 @@
         <div class="wx"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><div class="ro"><span class="t">18°C</span><span class="f">LISBON · CLEAR</span></div></div>
         <span class="sep"></span>
         <div class="ti" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
-        <div class="ti" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
+        <div class="ti vol" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
         <div class="ti" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
         <div class="ti" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
         <span class="sep"></span>
@@ -190,8 +272,53 @@
         <div class="nm"><b>BENYLIN</b><i>● ONLINE</i></div>
       </div>
     </div>
+
+    <!-- QUICK SETTINGS -->
+    <div class="qs" style="--notch: 248px">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="hd">
+        <div class="av">BE</div>
+        <div><b>benylin@clockmost</b><span class="micro">UP 3D 04H · KERNEL 7.2.9-CACHYOS</span></div>
+        <div class="vb"><span class="micro">QS-02</span><span class="vbar"></span></div>
+      </div>
+      <div class="rule"></div>
+      <div class="body">
+        <div class="lbl"><span class="label">CONNECTIONS</span><span class="ln"></span><span class="micro">06</span></div>
+        <div class="tg">
+          <div class="tgt on"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="10"/><path d="M8 9V5h8v4M8 13v2M12 13v2M16 13v2"/></svg><b>ETHERNET</b><i>CONNECTED · 1G</i><span class="ix">01</span></div>
+          <div class="tgt on"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg><b>BLUETOOTH</b><i>ROBIN</i><span class="ix">02</span></div>
+          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><b>VPN</b><i>OFF</i><span class="ix">03</span></div>
+          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M4 4l16 16"/></svg><b>DO NOT DISTURB</b><i>OFF</i><span class="ix">04</span></div>
+          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg><b>NIGHT LIGHT</b><i>OFF · 21:00</i><span class="ix">05</span></div>
+          <div class="tgt"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10"/><path d="M7 12h4M9 10v4M15 11h.01M17 13h.01"/></svg><b>GAME MODE</b><i>OFF</i><span class="ix">06</span></div>
+        </div>
+        <div class="lbl" style="margin-top:16px"><span class="label">LEVELS</span><span class="ln"></span></div>
+        <div class="lv2"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><div><div class="nm">OUTPUT · DT 880</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">70</span></div>
+        <div class="lv2"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><div><div class="nm">MIC · USB PNP</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">55</span></div>
+        <div class="lbl" style="margin-top:6px"><span class="label">NOW PLAYING</span><span class="ln"></span><span class="micro">PHONOGRAPH</span></div>
+        <div class="qnp">
+          <div class="art"></div>
+          <div class="tx"><b>Glassy Sky</b><i>SAPPHIRE · 01:12 / 04:20</i><div class="pr"><s></s></div></div>
+          <div class="ctl"><span><svg viewBox="0 0 24 24"><path d="M18 6v12L8 12zM6 6v12"/></svg></span><span class="pp"><svg viewBox="0 0 24 24"><path d="M7 5v14M17 5v14" style="stroke:#111;stroke-width:3"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M6 6v12l10-6zM18 6v12"/></svg></span></div>
+        </div>
+      </div>
+      <div class="ft">
+        <span class="barcode"></span><span class="micro">CLOCKMOST · QS-02</span>
+        <div class="acts">
+          <span class="a"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></svg></span>
+          <span class="a"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <span class="a pw"><svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.3 7.5a8 8 0 1 0 11.4 0"/></svg></span>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="mock-note">ds-topbar v2 · HUD bar (appears on Win / top edge) · layout only</div>
 </div>
+<script>
+  // ?state=quick opens the quick settings panel (layout states, no motion)
+  const st = new URLSearchParams(location.search).get("state") || "bar";
+  document.body.classList.add("st-" + st);
+  if (st === "quick") document.querySelector(".ti.vol").classList.add("open");
+</script>
 </body>
 </html>
