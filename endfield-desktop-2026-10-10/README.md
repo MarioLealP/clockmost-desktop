@@ -95,8 +95,8 @@ and real motion are what make it.
 ## Next job
 
 1. Port `components/ds-spotify-v2.html` into `src/` (app window surface) on the shared engine, with the same look.
-2. Same for chat, then the toast.
-3. Compose `desktop.html`: wallpaper + drawer + a window entering + a toast, so Mario sees the motion together.
+2. Same for chat (done 10-12). The toast is NOT ported (Mario: "not worth it") - it stays a standalone mock.
+3. Compose `desktop.html`: wallpaper + drawer + the phonograph and chat as windows entering, so Mario sees the motion together.
 
 Show it to Mario and get his reaction before polishing. He decides one thing at a time.
 
