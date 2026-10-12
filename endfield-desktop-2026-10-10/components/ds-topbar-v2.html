@@ -318,6 +318,19 @@
   .wsp.on .w i { background: var(--c, #fffbb0); }
   .ti::after { content: ""; position: absolute; left: 11px; right: 11px; bottom: 4px; height: 2px; background: var(--c, transparent); opacity: .85; }
   .ti.open::after { background: var(--yellow); opacity: 1; }
+
+  /* ---- dropdown colour pass (flat colour, no glow) ---- */
+  .tgt::before { content: ""; position: absolute; left: 0; top: 0; width: 12px; height: 12px;
+    background: linear-gradient(135deg, var(--c, #33363C) 50%, transparent 50%); }
+  .tgt.on svg { color: var(--c); }
+  .lv2 > svg { box-sizing: content-box; padding: 4px; width: 16px; height: 16px; background: var(--c); color: #111; }
+  .ce .ty { border: 0; color: #111; background: var(--ink2); }
+  .ce .ty.url { background: var(--blue); color: #111; }
+  .ce .ty.cmd { background: var(--green); color: #111; }
+  .ce .ty.img { background: var(--violet); color: #111; }
+  .ce .ty.hex { background: var(--orange); color: #111; }
+  .ce.sel .ty { background: #111; color: var(--yellow); }
+  .grid7 .d.ev::after { background: var(--ec, var(--ink2)); width: 12px; margin-left: -6px; }
 </style>
 </head>
 <body>
@@ -385,7 +398,7 @@
     <div class="cal">
       <i class="bk tl"></i><i class="bk br"></i>
       <div class="mh"><b>OCTOBER <span>2026</span></b><div class="nav"><i>‹</i><i>›</i></div></div>
-      <div class="grid7"><span class="h wk">WK</span><span class="h">MO</span><span class="h">TU</span><span class="h">WE</span><span class="h">TH</span><span class="h">FR</span><span class="h">SA</span><span class="h">SU</span><span class="wk">W40</span><span class="d out">28</span><span class="d out">29</span><span class="d out">30</span><span class="d">01</span><span class="d">02</span><span class="d we">03</span><span class="d we">04</span><span class="wk">W41</span><span class="d">05</span><span class="d">06</span><span class="d">07</span><span class="d">08</span><span class="d">09</span><span class="d we">10</span><span class="d we">11</span><span class="wk now">W42</span><span class="d today">12</span><span class="d ev hot">13</span><span class="d ev">14</span><span class="d">15</span><span class="d ev">16</span><span class="d we">17</span><span class="d we">18</span><span class="wk">W43</span><span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d we ev">24</span><span class="d we">25</span><span class="wk">W44</span><span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d ev">29</span><span class="d">30</span><span class="d we">31</span><span class="d out">01</span></div>
+      <div class="grid7"><span class="h wk">WK</span><span class="h">MO</span><span class="h">TU</span><span class="h">WE</span><span class="h">TH</span><span class="h">FR</span><span class="h">SA</span><span class="h">SU</span><span class="wk">W40</span><span class="d out">28</span><span class="d out">29</span><span class="d out">30</span><span class="d">01</span><span class="d">02</span><span class="d we">03</span><span class="d we">04</span><span class="wk">W41</span><span class="d">05</span><span class="d">06</span><span class="d">07</span><span class="d">08</span><span class="d">09</span><span class="d we">10</span><span class="d we">11</span><span class="wk now">W42</span><span class="d today">12</span><span class="d ev hot" style="--ec:#d91e36">13</span><span class="d ev" style="--ec:#cfc6f4">14</span><span class="d">15</span><span class="d ev" style="--ec:#3FD0E8">16</span><span class="d we">17</span><span class="d we">18</span><span class="wk">W43</span><span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d we ev" style="--ec:#c9ccd3">24</span><span class="d we">25</span><span class="wk">W44</span><span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d ev" style="--ec:#c9ccd3">29</span><span class="d">30</span><span class="d we">31</span><span class="d out">01</span></div>
       <div class="ag">
         <div class="ai"><span class="dd">TUE 13</span><span class="tm">21:00</span><span class="nm"><i class="rail" style="background:var(--crimson)"></i>FFXIV raid · Savage night</span><span class="tag">IN 1D</span></div>
         
@@ -433,16 +446,16 @@
       <div class="body">
         <div class="lbl"><span class="label">CONNECTIONS</span><span class="ln"></span><span class="micro">06</span></div>
         <div class="tg">
-          <div class="tgt on"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="10"/><path d="M8 9V5h8v4M8 13v2M12 13v2M16 13v2"/></svg><b>ETHERNET</b><i>CONNECTED · 1G</i><span class="ix">01</span></div>
-          <div class="tgt on"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg><b>BLUETOOTH</b><i>ROBIN</i><span class="ix">02</span></div>
-          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><b>VPN</b><i>OFF</i><span class="ix">03</span></div>
-          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M4 4l16 16"/></svg><b>DO NOT DISTURB</b><i>OFF</i><span class="ix">04</span></div>
-          <div class="tgt"><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg><b>NIGHT LIGHT</b><i>OFF · 21:00</i><span class="ix">05</span></div>
-          <div class="tgt"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10"/><path d="M7 12h4M9 10v4M15 11h.01M17 13h.01"/></svg><b>GAME MODE</b><i>OFF</i><span class="ix">06</span></div>
+          <div class="tgt on" style="--c:#3FD0E8"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="10"/><path d="M8 9V5h8v4M8 13v2M12 13v2M16 13v2"/></svg><b>ETHERNET</b><i>CONNECTED · 1G</i><span class="ix">01</span></div>
+          <div class="tgt on" style="--c:#5aa7ff"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg><b>BLUETOOTH</b><i>ROBIN</i><span class="ix">02</span></div>
+          <div class="tgt" style="--c:#7ddb57"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><b>VPN</b><i>OFF</i><span class="ix">03</span></div>
+          <div class="tgt" style="--c:#ff9e2c"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M4 4l16 16"/></svg><b>DO NOT DISTURB</b><i>OFF</i><span class="ix">04</span></div>
+          <div class="tgt" style="--c:#cfc6f4"><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg><b>NIGHT LIGHT</b><i>OFF · 21:00</i><span class="ix">05</span></div>
+          <div class="tgt" style="--c:#ff1aac"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10"/><path d="M7 12h4M9 10v4M15 11h.01M17 13h.01"/></svg><b>GAME MODE</b><i>OFF</i><span class="ix">06</span></div>
         </div>
         <div class="lbl" style="margin-top:16px"><span class="label">LEVELS</span><span class="ln"></span></div>
-        <div class="lv2"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><div><div class="nm">OUTPUT · DT 880</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">70</span></div>
-        <div class="lv2"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><div><div class="nm">MIC · USB PNP</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">55</span></div>
+        <div class="lv2" style="--c:#3FD0E8"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg><div><div class="nm">OUTPUT · DT 880</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">70</span></div>
+        <div class="lv2" style="--c:#7ddb57"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><div><div class="nm">MIC · USB PNP</div><div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><span class="v">55</span></div>
         <div class="lbl" style="margin-top:6px"><span class="label">NOW PLAYING</span><span class="ln"></span><span class="micro">PHONOGRAPH</span></div>
         <div class="qnp">
           <div class="art"></div>
