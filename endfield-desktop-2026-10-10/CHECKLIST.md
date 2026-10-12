@@ -1,6 +1,6 @@
 # Rule checklist (fill one table per concept: done / partly done / not done + why)
 
-## 13-<name>
+## 13-<name> (harness concept - parked, see README)
 | rule | status | note |
 |---|---|---|
 | 1 fullscreen mosaic | | |

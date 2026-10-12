@@ -22,24 +22,21 @@ nothing; how things enter, layer and settle is the point.
 
 | path | what |
 |---|---|
-| `brief/12-endfield-space.md` | **the spec: rules 1-23. Read all of it.** |
+| `brief/12-endfield-space.md` | **the spec: rules 1-24. Read all of it.** |
 | `brief/11-endfield.md` | the earlier Endfield brief (base tokens) |
-| `refs/` | ~25 named reference screenshots + the rewards clip (`rewards-collect.mp4`, frame sheets, notes) |
-| `kit/harness.html` | the fake 1920x1080 side screen with windows, a HUD, and hooks your concept fills in |
-| `kit/CONCEPT-API.md` | the hook API (open/close/focus/snap/fullscreen/HUD...) |
-| `kit/build.py` | builds `concepts/<slug>.*` into `out/<slug>.html` |
-| `concepts/` | starting points: `12-endfield-space` (newest), `11-endfield`, `3-drafting` (best motion so far) |
-| `out/` | built pages; open them in a browser |
-| `opencode.json` | OpenCode permissions (edits, bash and web ask first) |
+| `refs/` | named reference screenshots + the rewards clip (`rewards-collect.mp4`, frame sheets, notes) |
+| **`src/`** | **the shared workplace - where finished parts live.** Plain JS/CSS, no build step, loaded with script tags |
+| `src/core.js` | the `EF` engine: SNAP/SETTLE/SOFT curves, rAF tweens (`EF.tween`, `?slow=N`), noise, topo contours, grain |
+| `src/tokens.css` | Endfield colours, chamfers, hatch, barcode, fonts as CSS variables |
+| `src/atoms/app-card.*` | the app card (`EF.appCard()`, `EF.appGrid()`); `app-card.html` = its gallery page |
+| `src/surfaces/drawer.*` | the app drawer (`EF.drawer()`), built on the card; `drawer.html` = its preview page |
+| `desktop.html` | the future fake desktop that composes everything. **Today only a smoke test** (proves core + tokens load) |
+| `components/` | standalone single-file mockups not yet moved into `src/`: `ds-spotify-v2` (phonograph, approved look), `ds-chat-v2` (Discord), `toast`, `topo` + its SVG motifs |
+| `concepts/12-endfield-space.*`, `kit/` | the older harness concept: camera, mosaic fullscreen, floor. Kept as a parts bin for the compose step |
+| `out/` | built harness pages; `out/shots/` = screenshots (git-ignored) |
+| `_hold-2026-10-12/` | retired files (old concepts 3/11/13, early card/drawer tests, old shots, tool leftovers). Purge once nothing is missed |
 
-Build and look:
-
-```
-python3 kit/build.py 13-my-concept     # -> out/13-my-concept.html
-```
-
-A concept = `concepts/<slug>.js` + optional `.css` + `.json` (`{"title": "...", "about": "one line"}`).
-**Don't edit `kit/harness.html`.** Put all of a concept's code in its own files.
+Direction: every part moves into `src/` (one shared engine), then `desktop.html` composes them into one moving screen.
 
 ## Base tokens (Endfield)
 
@@ -97,15 +94,9 @@ and real motion are what make it.
 
 ## Next job
 
-Build **13** from 12 (copy it to `concepts/13-....*`; don't overwrite 12) and add:
-- rule 15: 12's fullscreen exit still plays the mosaic in reverse. Exits must fade or cut in place;
-- rules 16/17: per-app entrances.
-  - Firefox: the fox and the search bar land first, then the rest fades in.
-  - Discord: the in-game chat (`refs/chat-*.png`).
-  - Workspace switch: the camera travels past the huge wall and floor numbers, then the location toast.
-- rule 13: the app drawer (`refs/drawer-*.png`);
-- rule 12: the reward reveal for "you got X" (a download is done, a screenshot is saved);
-- rules 18-23 across every component.
+1. Port `components/ds-spotify-v2.html` into `src/` (app window surface) on the shared engine, with the same look.
+2. Same for chat, then the toast.
+3. Compose `desktop.html`: wallpaper + drawer + a window entering + a toast, so Mario sees the motion together.
 
 Show it to Mario and get his reaction before polishing. He decides one thing at a time.
 

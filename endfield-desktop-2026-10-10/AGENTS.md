@@ -1,6 +1,6 @@
 # AGENTS.md — how to work in this folder
 
-You are continuing a design project for Mario. Read `README.md` first, then `brief/12-endfield-space.md` in full,
+You are continuing a design project for Mario. Read `README.md` first (its folder table explains `src/`), then `brief/12-endfield-space.md` in full,
 then look at every image in `refs/`. This file is about **how** you work. Follow it exactly.
 
 ## The method
@@ -16,7 +16,7 @@ then look at every image in `refs/`. This file is about **how** you work. Follow
    Keep it to 5-10 lines.
 3. **One small step at a time.** A step is one thing, such as "the Firefox entrance" or "exits fade in place".
    Never "build all of 13". Finish, check and log one step before starting the next.
-4. **Never overwrite.** New work goes in new files (`concepts/13-<name>.*`). Never edit `kit/harness.html`,
+4. **Never overwrite.** New work goes in new files (`src/...` or as the work order says). Never edit `kit/harness.html`,
    `kit/build.py`, `brief/`, `refs/`, or another concept's files. If you think one of them needs to change, write
    that in `WORKLOG.md` and ask Mario.
 5. **Check every step for real:**

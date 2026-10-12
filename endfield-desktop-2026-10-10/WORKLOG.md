@@ -439,3 +439,18 @@
 - Mario: top-right placement, no dark border, 2/3 size. Done: .notif 14 -> 9px, dark outline removed (plain
   orange diamond), ring kept (thin orange, blinking outward); rail badge bottom-right -> top-right, channel-row
   diamond + count pinned to the row's top-right corner. Checked in out/shots/chat2notif2.png.
+
+## 2026-10-11 - (unlogged) chat v2
+- `components/ds-chat-v2.html` appeared late 10-11 with no worklog entry (shots chat2*.png): a Discord-style
+  layout (server rail, channel list with yellow active row + orange diamond, message list, composer). Logged
+  here after the fact by Claude on 10-12.
+
+## 2026-10-12 - Claude (cleanup)
+- Mario pruned `components/` himself (bg variants, backups, copies, old drawer/app-card/toast-cutout, ds-chat v1).
+- Snapshot commit `41db4a0` in the recipe repo before anything moved (shots + .mimocode git-ignored).
+- Moved to `_hold-2026-10-12/`: components/ds-app-card + ds-app-drawer (replaced by src/), concepts 3/11/13 +
+  their out/ pages, out/shots (49 stale PNGs, some were frozen frame-1 captures), .mimocode/, opencode.json.
+- README: folder layout now explains src/ and the direction (everything into src/, compose in desktop.html);
+  Next job rewritten (port phonograph -> chat -> toast, then compose).
+- Working model from here: Claude writes bounded work orders, Pi (MiMo) does the long mechanical passes,
+  Claude reviews diff + screenshots before anything is accepted.
