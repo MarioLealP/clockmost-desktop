@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-dolphin v2 · depot</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: Dolphin's default layout (places + tree | details | info) dressed as the game's depot (refs/drawer-backpack-depot.png),
+     same family as the approved drawer: light head with icon block + barcode + capacity, filter pills, rarity bars ->
+     file-type colour underbars, dark foot with sort pill. Calm: colour lives only in the type bars and the selection. */
+  :root { --t-dir: #3FD0E8; --t-code: #7ddb57; --t-doc: #cfc6f4; --t-img: #ff1aac; --t-arc: #ff9e2c; --t-cfg: #5aa7ff; --t-dim: #6b6e76; }
+  .dp { position: absolute; inset: 0; display: flex; flex-direction: column; background: #131417; color: var(--ink2); font: 14px var(--body); }
+
+  /* light head (drawer / depot) */
+  .head { position: relative; height: 72px; flex: none; display: flex; align-items: stretch; color: #111;
+    background: linear-gradient(180deg, #f4f5f7, #e6e7ea); }
+  .head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #33363C; }
+  .head .ib { width: 72px; flex: none; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, #3FD0E8, #2aa2b8); color: #0d3a42; }
+  .head .ib svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: square; }
+  .head .tt { display: flex; flex-direction: column; justify-content: center; padding: 0 20px; }
+  .head .tt small { display: flex; align-items: center; gap: 8px; font: 7px var(--mono); letter-spacing: .14em; color: #6c6f76; }
+  .head .tt small i { width: 34px; height: 7px; background: repeating-linear-gradient(90deg, #33363C 0 2px, transparent 2px 4px, #33363C 4px 5px, transparent 5px 8px); }
+  .head .tt b { margin-top: 3px; font: 400 26px var(--body); letter-spacing: .01em; }
+  .head .tt b span { color: #8a8d94; }
+  .head .nav { display: flex; align-items: center; gap: 2px; padding: 0 10px; border-left: 1px solid rgba(17,17,17,.12); }
+  .head .nav span { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: #33363C; }
+  .head .nav span.off { color: #b4b6bb; }
+  .head .nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .head .cap { margin-left: auto; display: flex; align-items: center; gap: 14px; padding: 0 20px; font: 18px var(--body); color: #8a8d94; }
+  .head .cap b { color: #33363C; font-weight: 400; }
+  .head .cap .bar { width: 120px; height: 6px; background: #c9cbd0; }
+  .head .cap .bar s { display: block; width: 67%; height: 100%; background: #33363C; }
+  .head .wc { display: flex; align-items: center; gap: 4px; padding: 0 14px; border-left: 1px solid rgba(17,17,17,.12); }
+  .head .wc span { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: #33363C; }
+  .head .wc svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3; }
+  .head .wc span.x svg { width: 26px; height: 26px; stroke-width: 2.6; }
+
+  /* filter row */
+  .flt { height: 58px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 0 0 296px; background: #18191d; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .flt .all { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: 17px; background: #33363C; color: #f1f1f4; font: 600 14px var(--body); }
+  .flt .all svg { width: 15px; height: 15px; fill: currentColor; }
+  .flt .f { display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; color: var(--dim); font: 12px var(--body); }
+  .flt .f i { width: 10px; height: 10px; background: var(--c); }
+  .flt .sep { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .flt .srch { margin-left: auto; margin-right: 16px; width: 300px; height: 34px; display: flex; align-items: center; gap: 10px; padding: 0 14px;
+    border: 1px solid rgba(255,255,255,.18); border-radius: 6px; background: rgba(10,11,13,.6); font: 12px var(--mono); letter-spacing: .14em; color: #8a8e96; }
+  .flt .srch b { color: var(--yellow); }
+
+  .mid { flex: 1; min-height: 0; display: flex; }
+  /* places + tree */
+  .pl { width: 280px; flex: none; padding: 14px 10px; background: #15161a; border-right: 1px solid rgba(255,255,255,.06); }
+  .pl .lb { margin: 6px 10px 6px; font: 700 10px var(--mono); letter-spacing: .2em; color: var(--dim); }
+  .pl .lb:not(:first-child) { margin-top: 20px; }
+  .pl .it { position: relative; display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 10px; color: var(--ink2); }
+  .pl .it svg { width: 15px; height: 15px; fill: none; stroke: var(--dim); stroke-width: 2; }
+  .pl .it .pin { margin-left: auto; width: 10px; height: 12px; fill: none; stroke: var(--faint); stroke-width: 1.6; }
+  .pl .it.on { background: rgba(255,255,255,.07); color: var(--ink); }
+  .pl .it.on::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; background: var(--yellow); }
+  .pl .it .tw { width: 10px; font-size: 9px; color: var(--faint); }
+  .dv { margin: 6px 10px 12px; }
+  .dv .r { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink2); }
+  .dv .r small { font: 9px var(--mono); letter-spacing: .12em; color: var(--dim); }
+  .dv .bar { height: 4px; margin-top: 6px; background: rgba(255,255,255,.08); }
+  .dv .bar s { display: block; height: 100%; background: var(--ink2); }
+  .dv .bar s.hot { background: var(--crimson); }
+
+  /* details list */
+  .ls { flex: 1; min-width: 0; padding: 0 0 0 0; background: #131417; }
+  .row { display: grid; grid-template-columns: 1fr 110px 170px 120px; align-items: center; height: 38px; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,.035); }
+  .row.hd { height: 34px; font: 700 10px var(--mono); letter-spacing: .2em; color: var(--dim); border-bottom-color: rgba(255,255,255,.08); }
+  .row .n { display: flex; align-items: center; gap: 12px; min-width: 0; color: var(--ink); }
+  .row .n .fi { position: relative; width: 24px; height: 24px; flex: none; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.05); }
+  .row .n .fi svg { width: 14px; height: 14px; fill: none; stroke: var(--ink2); stroke-width: 2; }
+  .row .n .fi::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--c); }
+  .row.hid .n { color: var(--dim); }
+  .row .s, .row .d { font: 12px var(--mono); color: var(--dim); }
+  .row .t { font: 9px var(--mono); letter-spacing: .16em; color: var(--c); opacity: .85; }
+  .row.sel { background: rgba(255,250,0,.07); box-shadow: inset 3px 0 0 var(--yellow); }
+  .row.sel .n { color: #fff; }
+
+  /* info panel */
+  .info { width: 300px; flex: none; padding: 20px; background: #15161a; border-left: 1px solid rgba(255,255,255,.06); }
+  .info .pv { position: relative; height: 170px; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(207,198,244,.16), rgba(207,198,244,.04)); }
+  .info .pv svg { width: 64px; height: 64px; fill: none; stroke: #cfc6f4; stroke-width: 1.4; }
+  .info .pv::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--t-doc); }
+  .info .pv .cd { position: absolute; left: 8px; top: 8px; font: 700 7px var(--mono); padding: 1px 4px; background: #e8e9ec; color: #111; letter-spacing: .1em; }
+  .info h3 { margin: 16px 0 14px; font: 500 20px var(--body); color: var(--ink); }
+  .info .kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06); font: 10px var(--mono); letter-spacing: .14em; color: var(--dim); }
+  .info .kv b { color: var(--ink2); font-weight: 400; }
+  .info .bc { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+
+  /* dark foot (depot) */
+  .foot { height: 64px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 20px; background: #0e0f11; border-top: 1px solid rgba(255,255,255,.06); }
+  .foot .sort { display: flex; align-items: center; height: 38px; border-radius: 19px; background: #e9e9ee; color: #111; font: 15px var(--body); }
+  .foot .sort span { padding: 0 18px; display: flex; align-items: center; gap: 30px; }
+  .foot .sort span + span { border-left: 1px solid rgba(17,17,17,.2); gap: 8px; font-size: 13px; color: #33363C; }
+  .foot .ic { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--ink2); }
+  .foot .ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+  .foot .vsep { width: 1px; height: 22px; background: rgba(255,255,255,.14); }
+  .foot .st { font: 10px var(--mono); letter-spacing: .16em; color: var(--dim); }
+  .foot .st b { color: var(--ink2); font-weight: 400; }
+  .foot .end { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .foot .flb { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #e9e9ee; color: #111; }
+  .foot .flb svg { width: 16px; height: 16px; fill: currentColor; }
+  .foot .zm { width: 120px; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="dp">
+    <div class="head">
+      <div class="ib"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></div>
+      <div class="tt"><small><i></i>DOLPHIN 25.08 · BENYLIN@CLOCKMOST</small><b><span>Home › src › </span>clockmost-desktop</b></div>
+      <div class="nav">
+        <span><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><span class="off"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+      </div>
+      <div class="cap">Capacity <b>1.2 / 1.8 TB</b><span class="bar"><s></s></span></div>
+      <div class="wc"><span><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></span><span class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span></div>
+    </div>
+
+    <div class="flt">
+      <span class="all"><svg viewBox="0 0 16 16"><circle cx="3" cy="3" r="2"/><circle cx="8" cy="3" r="2"/><circle cx="13" cy="3" r="2"/><circle cx="3" cy="8" r="2"/><circle cx="8" cy="8" r="2"/><circle cx="13" cy="8" r="2"/><circle cx="3" cy="13" r="2"/><circle cx="8" cy="13" r="2"/><circle cx="13" cy="13" r="2"/></svg>All</span>
+      <span class="f" style="--c:var(--t-dir)"><i></i>Folders</span><span class="sep"></span>
+      <span class="f" style="--c:var(--t-code)"><i></i>Code</span><span class="sep"></span>
+      <span class="f" style="--c:var(--t-doc)"><i></i>Docs</span><span class="sep"></span>
+      <span class="f" style="--c:var(--t-img)"><i></i>Images</span><span class="sep"></span>
+      <span class="f" style="--c:var(--t-cfg)"><i></i>Config</span><span class="sep"></span>
+      <span class="f" style="--c:var(--t-arc)"><i></i>Archives</span>
+      <span class="srch"><b>›››</b> SEARCH FOLDER</span>
+    </div>
+
+    <div class="mid">
+      <aside class="pl">
+        <div class="lb">PINS</div>
+        <div class="it"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></svg>Home</div>
+        <div class="it"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12"/><path d="M8 20h8"/></svg>Desktop</div>
+        <div class="it"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg>Documents</div>
+        <div class="it"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Downloads</div>
+        <div class="it"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg>.config<svg class="pin" viewBox="0 0 10 12"><path d="M2 1h6M3 1v4L1 7h8L7 5V1M5 7v5"/></svg></div>
+        <div class="lb">TREE</div>
+        <div class="it"><span class="tw">▾</span>benylin</div>
+        <div class="it" style="padding-left:28px"><span class="tw">▾</span>Drives</div>
+        <div class="it" style="padding-left:50px"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10"/><path d="M7 12h.01"/></svg>Data</div>
+        <div class="it" style="padding-left:50px"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10"/><path d="M7 12h.01"/></svg>Games</div>
+        <div class="it" style="padding-left:28px"><span class="tw">▾</span>src</div>
+        <div class="it on" style="padding-left:50px"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg>clockmost-desktop</div>
+        <div class="it" style="padding-left:50px"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg>felt</div>
+        <div class="it" style="padding-left:28px"><span class="tw">▸</span>.config</div>
+        <div class="lb">DEVICES</div>
+        <div class="dv"><div class="r">Data <small>600 / 1800 GB</small></div><div class="bar"><s style="width:33%"></s></div></div>
+        <div class="dv"><div class="r">Games <small>754 / 920 GB</small></div><div class="bar"><s class="hot" style="width:82%"></s></div></div>
+      </aside>
+
+      <section class="ls">
+        <div class="row hd"><span>NAME</span><span>SIZE</span><span>MODIFIED ▾</span><span>TYPE</span></div>
+        <div class="row hid" style="--c:var(--t-dir)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span>.git</span><span class="s">—</span><span class="d">2026-10-12 21:40</span><span class="t">FOLDER</span></div>
+        <div class="row" style="--c:var(--t-dir)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span>components</span><span class="s">—</span><span class="d">2026-10-12 21:38</span><span class="t">FOLDER</span></div>
+        <div class="row" style="--c:var(--t-dir)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span>install</span><span class="s">—</span><span class="d">2026-10-09 18:26</span><span class="t">FOLDER</span></div>
+        <div class="row" style="--c:var(--t-dir)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span>orders</span><span class="s">—</span><span class="d">2026-10-12 19:31</span><span class="t">FOLDER</span></div>
+        <div class="row" style="--c:var(--t-dir)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span>packages</span><span class="s">—</span><span class="d">2026-10-05 09:20</span><span class="t">FOLDER</span></div>
+        <div class="row hid" style="--c:var(--t-cfg)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/></svg></span>.gitignore</span><span class="s">31 B</span><span class="d">2026-10-12 17:48</span><span class="t">CONFIG</span></div>
+        <div class="row" style="--c:var(--t-doc)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg></span>AGENTS.md</span><span class="s">5.2 KB</span><span class="d">2026-10-12 20:12</span><span class="t">MARKDOWN</span></div>
+        <div class="row sel" style="--c:var(--t-doc)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg></span>README.md</span><span class="s">7.0 KB</span><span class="d">2026-10-12 17:52</span><span class="t">MARKDOWN</span></div>
+        <div class="row sel" style="--c:var(--t-doc)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg></span>WORKLOG.md</span><span class="s">41.8 KB</span><span class="d">2026-10-12 21:40</span><span class="t">MARKDOWN</span></div>
+        <div class="row" style="--c:var(--t-code)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg></span>install.sh</span><span class="s">2.1 KB</span><span class="d">2026-10-09 18:22</span><span class="t">SHELL</span></div>
+        <div class="row" style="--c:var(--t-code)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg></span>shot.mjs</span><span class="s">1.8 KB</span><span class="d">2026-10-12 18:10</span><span class="t">JAVASCRIPT</span></div>
+        <div class="row" style="--c:var(--t-cfg)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span>kitty.conf</span><span class="s">3.4 KB</span><span class="d">2026-10-12 21:02</span><span class="t">CONFIG</span></div>
+        <div class="row" style="--c:var(--t-cfg)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span>packages.txt</span><span class="s">380 B</span><span class="d">2026-10-05 09:14</span><span class="t">TEXT</span></div>
+        <div class="row" style="--c:var(--t-img)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg></span>wallpaper.png</span><span class="s">1.8 MB</span><span class="d">2026-10-10 15:14</span><span class="t">IMAGE</span></div>
+        <div class="row" style="--c:var(--t-img)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg></span>endfield-wall-4k.png</span><span class="s">9.6 MB</span><span class="d">2026-10-03 22:41</span><span class="t">IMAGE</span></div>
+        <div class="row" style="--c:var(--t-arc)"><span class="n"><span class="fi"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><path d="M12 4v4M12 10v2M12 14v2"/></svg></span>recipe-2026-10-09.tar.zst</span><span class="s">18.2 MB</span><span class="d">2026-10-09 23:58</span><span class="t">ARCHIVE</span></div>
+      </section>
+
+      <aside class="info">
+        <div class="pv"><span class="cd">FL-2410</span><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></div>
+        <h3>README.md</h3>
+        <div class="kv">SIZE<b>7.0 KB</b></div>
+        <div class="kv">MODIFIED<b>2026-10-12 17:52</b></div>
+        <div class="kv">TYPE<b>MARKDOWN</b></div>
+        <div class="kv">OWNER<b>BENYLIN</b></div>
+        <div class="kv">GIT<b style="color:var(--yellow)">MODIFIED</b></div>
+        <div class="bc"><span class="barcode"></span><span class="micro">2 SELECTED · 48.8 KB</span></div>
+      </aside>
+    </div>
+
+    <div class="foot">
+      <span class="sort"><span>Modified ▾</span><span>DESC <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4"><path d="M6 4v16M3 17l3 3 3-3M12 6h9M12 11h7M12 16h5"/></svg></span></span>
+      <span class="vsep"></span>
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></span>
+      <span class="st"><b>5 FOLDERS · 11 FILES</b> · 2 SELECTED</span>
+      <div class="end">
+        <span class="flb"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 9v7l-4-2v-5z"/></svg></span>
+        <span class="st">ZOOM</span><div class="sld zm"><i style="width:40%"></i><b style="left:40%"></b></div>
+        <span class="vsep"></span>
+        <span class="st"><b>1.2 TB</b> FREE</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
