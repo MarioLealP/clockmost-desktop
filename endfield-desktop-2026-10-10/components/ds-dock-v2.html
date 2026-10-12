@@ -99,11 +99,6 @@
   .tile::before { content: ""; position: absolute; left: 0; top: 0; width: 12px; height: 12px; z-index: 1;
     background: linear-gradient(135deg, var(--c) 50%, transparent 50%); }
   .wb2 i { background: var(--c, rgba(241,241,244,.45)); }
-  /* the strip along the dock's bottom edge: dotted cyan base + each app's colour segment under its tile */
-  .strip { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; z-index: 0; pointer-events: none;
-    background: radial-gradient(rgba(63,208,232,.85) 1px, transparent 1.3px) 0 0 / 4px 5px; }
-  .slot::after { content: ""; position: absolute; left: -5px; right: -5px; top: calc(100% + 4px); height: 5px; background: var(--c); z-index: 1; }
-  .slot.dl::after { background: var(--yellow); }
   .slot.focus { transform: none; }
   .slot.focus .tile, .slot.focus .wb2 { transform: translateY(-10px); }
   .slot.focus::before { top: -19px; }
@@ -121,7 +116,7 @@
   </div>
 
   <div class="dock">
-    <i class="bk tl"></i><i class="bk br"></i><i class="strip"></i>
+    <i class="bk tl"></i><i class="bk br"></i>
     <div class="cap"><span class="label lab" style="font-size:10px">DOCK</span><span class="vbar"></span><span class="micro">09 PINNED</span></div>
     <div class="div"></div>
     <div class="drawer"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="k">WIN</span></div>
