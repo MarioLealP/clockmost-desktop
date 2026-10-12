@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-dock v2 · the bar's partner</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: same language as ds-topbar-v2 - hatched band material, tick ruler, brackets, olive = active,
+     structural yellow only for the focused app, window-count bars like the workspace plates. Square corners. */
+  :root { --olive: rgba(255,250,0,.34); }
+
+  .dock { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); height: 84px;
+    display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+  /* L1 plate: dark frost + diagonal hatch fading toward the centre (the bar's band, flipped) */
+  .dock::before { content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(16,17,20,0), rgba(16,17,20,.85) 30%, rgba(16,17,20,.85) 70%, rgba(16,17,20,0)),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 1px, transparent 1px 7px),
+      linear-gradient(180deg, rgba(30,31,36,.92), rgba(16,17,20,.9));
+    border: 1px solid rgba(255,255,255,.12);
+    -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); }
+  /* L2 tick ruler along the TOP edge (mirror of the bar's bottom edge) */
+  .dock::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 7px; z-index: -1; pointer-events: none;
+    background:
+      repeating-linear-gradient(90deg, rgba(241,241,244,.35) 0 1px, transparent 1px 64px) 0 0 / 100% 7px,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.18) 0 1px, transparent 1px 8px) 0 0 / 100% 3px no-repeat; }
+  .dock .bk { position: absolute; width: 12px; height: 12px; }
+  .dock .bk.tl { left: -2px; top: -2px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .dock .bk.br { right: -2px; bottom: -2px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+
+  /* end caps: small print */
+  .cap { flex: none; white-space: nowrap; display: flex; flex-direction: column; gap: 5px; padding: 0 6px; }
+  .cap .vbar { width: 52px; height: 7px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 4px, rgba(241,241,244,.5) 4px 5px, transparent 5px 8px); }
+  .cap.r { align-items: flex-end; }
+  .div { width: 1px; height: 44px; background: rgba(255,255,255,.10); margin: 0 2px; }
+
+  /* the drawer button: olive slab + 2x2 grid (same olive as the active workspace) */
+  .drawer { position: relative; flex: none; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+    background: var(--olive); border: 1px solid rgba(255,250,0,.45); color: #fffbb0; }
+  .drawer::after { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(rgba(255,250,0,.35) 1px, transparent 1.3px) 0 0 / 6px 6px;
+    -webkit-mask-image: linear-gradient(135deg, transparent 45%, #000); mask-image: linear-gradient(135deg, transparent 45%, #000); }
+  .drawer svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .drawer .k { position: absolute; left: 5px; bottom: 4px; font: 700 7px var(--mono); letter-spacing: .14em; color: #d8d36a; }
+
+  /* app slot: tile + window bars underneath */
+  .slot { position: relative; flex: none; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .tile { position: relative; width: 56px; height: 56px; overflow: hidden; color: var(--ink);
+    background: rgba(58,62,70,.55); border: 1px solid rgba(255,255,255,.10);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,.55); }
+  .tile .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+  .tile .lg { position: absolute; left: 50%; top: 44%; width: 28px; height: 28px; transform: translate(-50%, -50%); }
+  .tile .lt { position: absolute; left: 0; right: 0; top: 44%; transform: translateY(-50%); text-align: center; font: 700 20px var(--body); }
+  .tile svg.lg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: square; }
+  .tile .cd { position: absolute; left: 4px; bottom: 6px; font: 7px var(--mono); letter-spacing: .12em; color: var(--faint); }
+  .tile .ub { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--c, var(--cyan)); }
+  /* window-count bars (same as the workspace plates) */
+  .wb2 { display: flex; gap: 3px; height: 3px; }
+  .wb2 i { width: 8px; height: 3px; background: rgba(241,241,244,.45); }
+  /* focused app: lifted above the plate, yellow frame + underbar + bars */
+  .slot.focus { transform: translateY(-10px); }
+  .slot.focus .tile { border: 2px solid var(--yellow); box-shadow: 0 8px 20px rgba(0,0,0,.5), inset 0 2px 10px rgba(0,0,0,.5); }
+  .slot.focus .tile .ub { background: var(--yellow); }
+  .slot.focus .wb2 i { background: var(--yellow); }
+  .slot.focus::before { content: ""; position: absolute; top: -9px; left: 50%; width: 0; height: 0; margin-left: -4px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid var(--yellow); }
+
+  /* downloads stack */
+  .dl .tile { background: rgba(30,32,37,.7); }
+  .dl .stack i { position: absolute; left: 12px; right: 12px; height: 6px; border: 1px solid rgba(241,241,244,.5); }
+  .dl .cnt { position: absolute; right: 4px; top: 4px; font: 700 9px var(--mono); color: #111; background: var(--ink); padding: 1px 4px; }
+  .dl .prog { position: absolute; left: 6px; right: 6px; bottom: 7px; height: 2px; background: rgba(255,255,255,.15); }
+  .dl .prog s { display: block; width: 64%; height: 100%; background: var(--yellow); }
+
+  /* hover label: a small plate with a pointer */
+  .tip { position: absolute; bottom: 82px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+    padding: 7px 10px 6px; background: rgba(12,13,15,.94); border: 1px solid rgba(255,255,255,.16); }
+  .tip b { display: block; font: 700 11px var(--mono); letter-spacing: .2em; }
+  .tip span { font: 8px var(--mono); letter-spacing: .18em; color: var(--dim); }
+  .tip::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -5px; width: 10px; height: 10px;
+    background: rgba(12,13,15,.94); border-right: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); transform: rotate(45deg); }
+  .tip::before { content: ""; position: absolute; left: 0; top: 0; width: 3px; height: 100%; background: var(--violet); }
+
+  /* hidden state: just a handle */
+  .handle { position: absolute; left: 50%; bottom: 4px; width: 140px; height: 4px; margin-left: -70px; display: none;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.4) 0 6px, transparent 6px 9px); }
+  body.st-hidden .dock { display: none; }
+  body.st-hidden .handle { display: block; }
+  .flip { position: absolute; right: 16px; top: 14px; display: flex; gap: 8px; }
+  .flip a { font: 9px var(--mono); letter-spacing: .18em; color: var(--dim); text-decoration: none; padding: 5px 8px; border: 1px solid rgba(255,255,255,.12); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="win blur" style="left:300px;top:110px;width:1320px;height:760px">
+    <div class="wtop"><div class="wtitle">FIREFOX <span>· GIT.CLOCKMOST.COM</span></div></div>
+    <div class="wbody"></div>
+  </div>
+
+  <div class="dock">
+    <i class="bk tl"></i><i class="bk br"></i>
+    <div class="cap"><span class="label" style="font-size:10px">DOCK</span><span class="vbar"></span><span class="micro">09 PINNED</span></div>
+    <div class="div"></div>
+    <div class="drawer"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="k">WIN</span></div>
+    <div class="div"></div>
+
+    <div class="slot focus"><div class="tile" style="--c:#ff7a1a"><img class="topo" src="ds-topo-card.svg" alt=""><img class="lg" src="firefox.svg" alt=""><span class="cd">FX</span><span class="ub"></span></div><div class="wb2"><i></i><i></i></div></div>
+    <div class="slot"><div class="tile" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">D</span><span class="cd">DC</span><span class="ub"></span></div><span class="notif pin"></span><div class="wb2"><i></i></div></div>
+    <div class="slot"><div class="tile" style="--c:#cfc6f4"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span class="cd">PH</span><span class="ub"></span></div><div class="wb2"><i></i></div>
+      <div class="tip"><b>PHONOGRAPH</b><span>1 WINDOW · GLASSY SKY</span></div></div>
+    <div class="slot"><div class="tile" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 6l6 6-6 6M12 18h8"/></svg><span class="cd">KT</span><span class="ub"></span></div><div class="wb2"><i></i><i></i><i></i></div></div>
+    <div class="slot"><div class="tile" style="--c:#3FD0E8"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg><span class="cd">DL</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot"><div class="tile" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">S</span><span class="cd">ST</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot"><div class="tile" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v3"/></svg><span class="cd">KP</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot"><div class="tile" style="--c:#ff1aac"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><rect x="9" y="9" width="6" height="6"/></svg><span class="cd">SP</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot"><div class="tile" style="--c:#ff9e2c"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">L</span><span class="cd">LT</span><span class="ub"></span></div><div class="wb2"></div></div>
+
+    <div class="div"></div>
+    <div class="slot dl"><div class="tile"><div class="stack"><i style="top:14px"></i><i style="top:21px"></i><i style="top:28px"></i></div><span class="cnt">3</span><span class="prog"><s></s></span></div><div class="wb2"></div></div>
+    <div class="div"></div>
+    <div class="cap r"><span class="micro">5 RUNNING · 8 WIN</span><span class="vbar"></span><span class="micro">DK-02</span></div>
+  </div>
+  <div class="handle"></div>
+
+  <div class="flip"><a href="?">SHOWN</a><a href="?state=hidden">HIDDEN</a></div>
+  <div class="mock-note">ds-dock v2 · appears on Win / bottom edge · layout only</div>
+</div>
+<script>
+  document.body.classList.add("st-" + (new URLSearchParams(location.search).get("state") || "shown"));
+</script>
+</body>
+</html>
