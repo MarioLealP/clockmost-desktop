@@ -1,0 +1,204 @@
+/* EF chat — all CSS ported 1:1 from components/ds-chat-v2.html (order 02).
+   Scoped under .ef-chat so the surface can live inside a desktop window.
+   The page's html/body background became the root's own (no fixed/pseudo layers on this page;
+   .main::before stays the absolute backdrop layer it already was). Every value kept as is. */
+.ef-chat {
+  --ground: #0F0F10;
+  --steel: #33363C;
+  --yellow: #FFFA00;
+  --ink: #f1f1f4;
+  --dim: #7d8089;
+  --green: #7ddb57;
+  --blue: #5aa7ff;
+  --orange: #ff9e2c;
+  --crimson: #d91e36;
+  --rail: #101114;
+  --side: #15161a;
+  --chat: #1a1b1f;
+  --field: #26282d;
+}
+.ef-chat, .ef-chat * { box-sizing: border-box; }
+/* root = the page's html/body: fills its host, clips, stacks the app in a column */
+.ef-chat {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- window chrome (same as ds-spotify / ds-chat v1) ---- */
+.ef-chat .top { position: relative; flex: none; display: flex; align-items: center; padding: 22px 28px 20px; }
+.ef-chat .top::after { content: ""; position: absolute; left: 28px; right: 28px; bottom: 0; height: 1px; background: rgba(255,255,255,.10); }
+.ef-chat .title { font: 600 18px Consolas, monospace; letter-spacing: .2em; color: var(--ink); white-space: nowrap; }
+.ef-chat .title span { color: var(--dim); font-weight: 400; }
+.ef-chat .wctl { position: absolute; right: 28px; top: 29px; display: flex; gap: 10px; }
+.ef-chat .wb { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0;
+  background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px;
+  color: #c9ccd3; cursor: pointer; }
+.ef-chat .wb:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.38); color: #fff; }
+.ef-chat .wb svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: butt; }
+.ef-chat .micro2 { font: 9px Consolas, monospace; letter-spacing: .18em; color: #43454c; }
+
+/* ---- app body: server rail | channel sidebar | chat ---- */
+.ef-chat .app { flex: 1; min-height: 0; display: flex; }
+
+/* server rail: chamfered tiles, yellow active block + dot texture (rule 19 language) */
+.ef-chat .rail { width: 72px; flex: none; background: var(--rail) repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 2px, transparent 2px 8px);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 0; }
+.ef-chat .tw { position: relative; }
+.ef-chat .tw.on::before { content: ""; position: absolute; left: -16px; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 26px; border-radius: 0 3px 3px 0; background: var(--ink); }
+.ef-chat .tile { position: relative; width: 48px; height: 48px; background: var(--field); color: var(--dim);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font: 700 15px Consolas, monospace; letter-spacing: .04em; border-radius: 16px; }
+.ef-chat .tile:hover { color: var(--ink); background: #2f3238; }
+.ef-chat .tw.on .tile { background: var(--yellow); color: #111; }
+.ef-chat .tw.on .tile::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(rgba(17,17,17,.15) 1px, transparent 1.3px) 0 0 / 8px 8px; }
+.ef-chat .tw .badge { position: absolute; right: -3px; top: -3px; }
+/* rule 7 (refs/notify-diamond-a/b): notification = orange diamond, outline blinks outward */
+.ef-chat .notif { position: relative; width: 9px; height: 9px; flex: none; }
+.ef-chat .notif i { position: absolute; inset: 0; background: var(--orange); transform: rotate(45deg); }
+.ef-chat .notif i.ring { inset: -2px; background: transparent; border: 1.5px solid #ff7a1c; opacity: 0; }
+.ef-chat .rail .sep { width: 32px; height: 1px; background: rgba(255,255,255,.10); margin: 4px 0; }
+.ef-chat .rail .tile.dashed { background: rgba(125,219,87,.05); color: var(--green); }
+.ef-chat .rail .tile.dashed::after { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(rgba(125,219,87,.22) 1px, transparent 1.3px) 0 0 / 7px 7px; }
+.ef-chat .rail .tile.dashed:hover { background: rgba(125,219,87,.1); }
+
+/* channel sidebar */
+.ef-chat .side { width: 262px; flex: none; background: var(--side); display: flex; flex-direction: column; min-height: 0; }
+.ef-chat .shead { height: 56px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08); cursor: pointer; }
+.ef-chat .shead:hover { background: rgba(255,255,255,.03); }
+.ef-chat .shead .tx { min-width: 0; }
+.ef-chat .shead .nm { font: 700 14px Consolas, monospace; letter-spacing: .18em; }
+.ef-chat .shead .sm { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.ef-chat .shead .bc { width: 52px; height: 8px;
+  background: repeating-linear-gradient(90deg, rgba(201,204,211,.55) 0 2px, transparent 2px 4px, rgba(201,204,211,.55) 4px 5px, transparent 5px 8px); }
+.ef-chat .shead svg { width: 16px; height: 16px; fill: none; stroke: var(--dim); stroke-width: 2.4; margin-left: auto; }
+.ef-chat .chs { flex: 1; min-height: 0; overflow: hidden; padding: 10px 8px 0; }
+.ef-chat .cat { display: flex; align-items: center; gap: 8px; padding: 14px 8px 4px;
+  font: 700 11px Consolas, monospace; letter-spacing: .2em; color: var(--dim); cursor: pointer; }
+.ef-chat .cat svg { width: 10px; height: 10px; fill: none; stroke: var(--dim); stroke-width: 3; }
+.ef-chat .cat .hr { flex: 1; height: 1px; background: rgba(255,255,255,.10); }
+.ef-chat .ch { position: relative; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px;
+  border-radius: 4px; color: #9aa0a9; cursor: pointer;
+  font: 500 15px "Segoe UI", system-ui, sans-serif; }
+.ef-chat .ch svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; }
+.ef-chat .ch:hover { background: rgba(255,255,255,.05); color: var(--ink); }
+.ef-chat .ch.unread { color: var(--ink); font-weight: 700; }
+.ef-chat .ch.unread::before { content: ""; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 4px;
+  border-radius: 0 3px 3px 0; background: var(--ink); }
+.ef-chat .ch .men { position: absolute; top: 4px; right: 12px; display: flex; align-items: center; gap: 6px; }
+.ef-chat .ch .ncnt { font: 700 11px Consolas, monospace; letter-spacing: .06em; color: var(--orange); }
+.ef-chat .ch .dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+.ef-chat .ch.on { background: var(--yellow); color: #111; font-weight: 700; border-radius: 4px; }
+.ef-chat .ch.on::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(rgba(17,17,17,.13) 1px, transparent 1.3px) 0 0 / 8px 8px,
+    linear-gradient(115deg, transparent 62%, rgba(17,17,17,.07) 64% 72%, transparent 74%); }
+.ef-chat .ch.on .ncnt { color: #111; }
+.ef-chat .ch .lv { margin-left: auto; display: flex; gap: 6px; }
+.ef-chat .ch .lv i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.18); }
+
+/* user panel */
+.ef-chat .user { height: 58px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 10px;
+  background: var(--rail); }
+.ef-chat .user .av { width: 34px; height: 34px; border-radius: 50%; background: #443f56; color: #cfc6f4;
+  display: flex; align-items: center; justify-content: center;
+  font: 700 12px Consolas, monospace; position: relative; }
+.ef-chat .user .av::after { content: ""; position: absolute; right: -2px; bottom: -2px; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--green); border: 2px solid var(--rail); }
+.ef-chat .user .tx { min-width: 0; }
+.ef-chat .user .nm { font: 600 13px "Segoe UI", system-ui, sans-serif; }
+.ef-chat .user .st { font: 11px Consolas, monospace; letter-spacing: .08em; color: var(--dim); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.ef-chat .user .btns { margin-left: auto; display: flex; gap: 4px; }
+.ef-chat .ubtn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  border: 0; background: transparent; border-radius: 6px; color: var(--dim); cursor: pointer; }
+.ef-chat .ubtn:hover { background: rgba(255,255,255,.07); color: var(--ink); }
+.ef-chat .ubtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* ---- chat column: faint topo world behind the messages ---- */
+.ef-chat .main { position: relative; isolation: isolate; flex: 1; min-width: 0; display: flex; flex-direction: column;
+  background: var(--chat); }
+.ef-chat .main::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(rgba(15,15,16,.62), rgba(15,15,16,.82)), url(../assets/topo-floor-strip.svg) center / cover; }
+.ef-chat .chead { height: 56px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08); }
+.ef-chat .chead .hash { width: 22px; height: 22px; fill: none; stroke: var(--dim); stroke-width: 2; }
+.ef-chat .chead .nm { font: 700 16px "Segoe UI", system-ui, sans-serif; }
+.ef-chat .chead .topic { flex: 1; min-width: 0; padding-left: 12px; border-left: 1px solid rgba(255,255,255,.12);
+  font: 13px "Segoe UI", system-ui, sans-serif; color: var(--dim); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.ef-chat .chead .tools { display: flex; align-items: center; gap: 6px; }
+/* rule 17: yellow pattern block with the view's one tri-band underline */
+.ef-chat .chead .pat { position: relative; width: 150px; height: 38px; margin-left: 12px; background: var(--yellow);
+  border-radius: 4px;
+  background-image: repeating-linear-gradient(135deg, rgba(17,17,17,.14) 0 2px, transparent 2px 7px),
+    radial-gradient(rgba(17,17,17,.16) 1px, transparent 1.3px);
+  background-size: auto, 8px 8px;
+  display: flex; align-items: center; justify-content: center; color: #111; }
+.ef-chat .chead .pat svg { width: 20px; height: 20px; fill: none; stroke: #111; stroke-width: 3; stroke-linecap: butt; }
+.ef-chat .chead .pat::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, var(--yellow) 0 33%, #21e6e6 33% 66%, #e621c8 66% 100%); }
+.ef-chat .chead .search { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px;
+  background: #101114; border-radius: 6px; color: var(--dim); font: 12px Consolas, monospace; letter-spacing: .12em; }
+.ef-chat .chead .search svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+
+/* messages */
+.ef-chat .msgs { flex: 1; min-height: 0; overflow: hidden; padding: 18px 0 8px; }
+.ef-chat .daydiv { display: flex; align-items: center; gap: 12px; margin: 10px 16px 16px; }
+.ef-chat .daydiv .hr { flex: 1; height: 1px; background: rgba(255,255,255,.10); }
+.ef-chat .daydiv .lbl { font: 600 11px Consolas, monospace; letter-spacing: .14em; color: var(--dim); }
+.ef-chat .newdiv { display: flex; align-items: center; gap: 12px; margin: 14px 16px 10px; }
+.ef-chat .newdiv .ln { flex: 1; height: 1px; background: var(--crimson); }
+.ef-chat .newdiv .lbl { font: 700 10px Consolas, monospace; letter-spacing: .16em; color: #fff; background: var(--crimson);
+  padding: 3px 9px; border-radius: 3px; }
+.ef-chat .msg { position: relative; display: flex; gap: 12px; padding: 2px 16px; margin-top: 16px; }
+.ef-chat .msg.cont { margin-top: 0; padding-top: 0; }
+.ef-chat .msg:hover { background: rgba(255,255,255,.02); }
+.ef-chat .msg .av { width: 40px; height: 40px; flex: none; display: flex; align-items: center;
+  justify-content: center; font: 700 13px Consolas, monospace; border-radius: 50%; }
+.ef-chat .msg.cont .av { visibility: hidden; height: 0; width: 0; margin: 0; }
+.ef-chat .av.mu { background: #443f56; color: #cfc6f4; }
+.ef-chat .av.or { background: #2f4a3a; color: #9fe6b8; }
+.ef-chat .av.be { background: var(--yellow); color: #111; }
+.ef-chat .msg .body { min-width: 0; flex: 1; }
+.ef-chat .msg .head { display: flex; align-items: baseline; gap: 10px; }
+.ef-chat .msg .who { font: 600 15px "Segoe UI", system-ui, sans-serif; }
+.ef-chat .who.mu { color: #cfc6f4; } .ef-chat .who.or { color: #9fe6b8; } .ef-chat .who.be { color: var(--yellow); }
+.ef-chat .msg .ts { font: 11px Consolas, monospace; color: var(--dim); letter-spacing: .06em; }
+.ef-chat .msg .txt { margin-top: 2px; font: 15px "Segoe UI", system-ui, sans-serif; line-height: 1.45; color: #dcdee3; }
+.ef-chat .msg .replyref { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ef-chat .msg .replyref .bar { width: 28px; height: 10px; border-left: 2px solid rgba(255,255,255,.18);
+  border-top: 2px solid rgba(255,255,255,.18); border-top-left-radius: 6px; }
+.ef-chat .msg .replyref .rt { font: 12px "Segoe UI", system-ui, sans-serif; color: var(--dim); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.ef-chat .msg .replyref .rt b { color: var(--ink); font-weight: 600; }
+.ef-chat .rx { display: flex; gap: 6px; margin-top: 6px; }
+.ef-chat .chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 12px;
+  background: var(--field); border: 1px solid transparent; border-radius: 13px; cursor: pointer;
+  font: 600 12px Consolas, monospace; color: var(--dim); }
+.ef-chat .chip:hover { border-color: rgba(255,255,255,.2); }
+.ef-chat .chip.mine { background: rgba(255,250,0,.12); border-color: var(--yellow); color: var(--yellow); }
+.ef-chat .chip .em { font-size: 14px; }
+.ef-chat .chip .cnt { font-style: normal; }
+
+/* composer */
+.ef-chat .composer { flex: none; padding: 6px 16px 24px; }
+.ef-chat .cbox { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px;
+  background: var(--field); border-radius: 10px; }
+.ef-chat .cbox .plus { width: 28px; height: 28px; border-radius: 50%; background: var(--dim); color: var(--field);
+  display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer; }
+.ef-chat .cbox .plus svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: butt; }
+.ef-chat .cbox .ph { flex: 1; font: 15px "Segoe UI", system-ui, sans-serif; color: var(--dim); }
+.ef-chat .cbox .icons { display: flex; gap: 14px; color: var(--dim); }
+.ef-chat .cbox .icons svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round; cursor: pointer; }
+.ef-chat .cbox .icons svg:hover { color: var(--ink); }

@@ -490,3 +490,13 @@
 - Fixed one bug myself: artwork paths were page-relative (`../../components/...`), so mounting from any
   other folder broke them. SVGs copied to `src/assets/`; JS resolves ART against its own script URL, CSS uses
   `../assets/`. Verified by mounting from the folder root: 0.020%.
+
+## 2026-10-12 - Claude (order 02: chat port - worker run + review)
+- Worker: `claude-worker` (Claude Code, locked-down profile) on xiaomi/mimo-v2.6-pro via OpenRouter. $0.18.
+  Port done in ~9 min (src/apps/chat.{css,js,html}); then ~35 min chasing a ~40 ms capture-timing offset in the
+  slow-motion shot. Claude stopped it; it never wrote its own worklog entry.
+- Accepted. Re-checked: node --check OK; settled / channel switch / reaction diff exactly 0.000%; mounted from the
+  folder root 0.000% (asset path already right this time). Mid-motion 0.144% = elements a few px further along the
+  same slide (timing), not a look difference. Listeners removed in destroy(), scoped to the root.
+- Lesson (Claude's): pixel thresholds only for settled shots. Mid-motion shots are timing-sensitive - check them by
+  eye or with a loose bar (~0.5%), never the strict one, or the worker burns time on milliseconds.

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>App · chat (port of components/ds-chat-v2.html)</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="chat.css">
+  <style>
+    html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0F0F10; }
+    #screen { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #0F0F10; }
+  </style>
+</head>
+<body>
+<div id="screen"></div>
+
+<script src="../core.js"></script>
+<script src="chat.js"></script>
+<script>
+"use strict";
+const chat = EF.chat();
+document.getElementById("screen").appendChild(chat);
+window.chat = chat;
+chat.enter();
+</script>
+</body>
+</html>
