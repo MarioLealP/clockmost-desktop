@@ -93,11 +93,19 @@
   .ext .e.dwn { color: var(--yellow); }
   .wbx { display: flex; gap: 8px; }
   .wbx .wb { border-radius: 0; }
+  /* ---------- bookmarks (favourites) bar ---------- */
+  .bm { height: 38px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 16px; background: #141518; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .bm .b { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; font: 500 12px var(--body); color: var(--ink2); white-space: nowrap; }
+  .bm .b .sq { width: 14px; height: 14px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111; font: 700 8px var(--body); }
+  .bm .b.fd svg { width: 15px; height: 15px; fill: none; stroke: var(--ink2); stroke-width: 2; }
+  .bm .b.fd .cr { font: 9px var(--mono); color: var(--faint); }
+  .bm .sepv { width: 1px; height: 16px; background: rgba(255,255,255,.12); margin: 0 6px; }
+  .bm .end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
   .content { position: relative; flex: 1; min-height: 0; }
   .mock-note { left: 320px; }
 
   /* ---------- downloads dropdown (bar dropdown family) ---------- */
-  .dl { position: absolute; right: 130px; top: 8px; width: 420px; z-index: 5;
+  .dl { position: absolute; right: 130px; top: -30px; width: 420px; z-index: 5;
     background: linear-gradient(180deg, rgba(26,27,32,.97), rgba(12,13,16,.98)); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55); }
   .dl::before { content: ""; position: absolute; top: -7px; right: 21px; width: 12px; height: 12px; background: rgba(26,27,32,.97);
     border-left: 1px solid rgba(255,255,255,.12); border-top: 1px solid rgba(255,255,255,.12); transform: rotate(45deg); }
@@ -194,6 +202,22 @@
         <div class="wbx">
           <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button><button class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button><button class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
         </div>
+      </div>
+      <div class="bm">
+        <span class="b" style="--c:#7ddb57"><span class="sq">G</span>Gitea</span>
+        <span class="b" style="--c:#5aa7ff"><span class="sq">P</span>Plane</span>
+        <span class="b" style="--c:#d91e36"><span class="sq">Z</span>Zabbix</span>
+        <span class="b" style="--c:#ff9e2c"><span class="sq">A</span>Authentik</span>
+        <span class="b" style="--c:#cfc6f4"><span class="sq">F</span>Felt</span>
+        <span class="sepv"></span>
+        <span class="b fd"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Clockmost<span class="cr">▾</span></span>
+        <span class="b fd"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>FFXIV<span class="cr">▾</span></span>
+        <span class="b fd"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>PoE2<span class="cr">▾</span></span>
+        <span class="sepv"></span>
+        <span class="b" style="--c:#3FD0E8"><span class="sq">A</span>ArchWiki</span>
+        <span class="b" style="--c:#ff1aac"><span class="sq">Y</span>YouTube</span>
+        <span class="b" style="--c:#ff7a1a"><span class="sq">E</span>Endfield wiki</span>
+        <span class="end"><span class="micro">14 BOOKMARKS</span><span class="b fd"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Other bookmarks</span></span>
       </div>
       <div class="content">
           <div class="page">
