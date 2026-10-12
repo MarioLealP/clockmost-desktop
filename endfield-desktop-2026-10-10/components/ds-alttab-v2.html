@@ -7,7 +7,7 @@
 <style>
   /* v2 (drawer material): frosted glass panel like ds-app-drawer - solid white head fading into blurred dark
      glass, glass tiles (6px, inset shadow), mono names, colour underbars. Selected = yellow frame. */
-  .dim { position: absolute; inset: 0; background: rgba(8,8,9,.28); }
+  .stage.wall { background: #0F0F10 url(../wallpaper.png) center / cover; }
   .sw { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; overflow: hidden; border-radius: 2px;
     box-shadow: 0 20px 60px rgba(0,0,0,.45); }
   .sw .glass2 { position: absolute; inset: 0; z-index: 0;
@@ -53,12 +53,9 @@
 </head>
 <body>
 <div class="stage wall">
-  <div class="win blur" style="left:80px;top:90px;width:900px;height:620px"><div class="wtop"><div class="wtitle">FIREFOX</div></div><div class="wbody"></div></div>
-  <div class="win blur" style="left:1000px;top:150px;width:840px;height:700px"><div class="wtop"><div class="wtitle">KITTY</div></div><div class="wbody"></div></div>
-  <div class="dim"></div>
 
   <div class="sw">
-    <div class="glass2"></div>
+    <div class="glass2" id="glass"></div>
     <div class="hd">Windows<span class="cap">5 OPEN · 3 WORKSPACES</span></div>
     <div class="body">
       <div class="groups">
@@ -114,5 +111,22 @@
   </div>
   <div class="mock-note">ds-alttab v2 · held open · layout only</div>
 </div>
+<script>
+  /* the drawer's trick: cut a hole in the glass under every tile, so each tile blurs the real desktop */
+  function cut() {
+    const R = document.querySelector(".sw").getBoundingClientRect();
+    const hole = (r) => {
+      const x = r.left - R.left, y = r.top - R.top, w = r.width, h = r.height, k = 6;
+      return `M${x + k} ${y}H${x + w - k}A${k} ${k} 0 0 1 ${x + w} ${y + k}V${y + h - k}A${k} ${k} 0 0 1 ${x + w - k} ${y + h}` +
+        `H${x + k}A${k} ${k} 0 0 1 ${x} ${y + h - k}V${y + k}A${k} ${k} 0 0 1 ${x + k} ${y}Z`;
+    };
+    const d = `M0 0H${R.width}V${R.height}H0Z` + [...document.querySelectorAll(".card")].map((t) => hole(t.getBoundingClientRect())).join("");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${R.width}" height="${R.height}"><path fill="#000" fill-rule="evenodd" d="${d}"/></svg>`;
+    const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    const g = document.getElementById("glass");
+    g.style.maskImage = url; g.style.webkitMaskImage = url;
+  }
+  cut(); addEventListener("resize", cut);
+</script>
 </body>
 </html>
