@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-kitty · terminal theme</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ===== Endfield 16-colour ANSI palette (the terminal theme this mock documents) ===== */
+  :root {
+    --an-black:  #0d0d0e;  --an-red:     #d91e36;  --an-green:    #7ddb57;  --an-yellow:  #FFFA00;
+    --an-blue:   #5aa7ff;  --an-magenta: #ff1aac;  --an-cyan:     #3FD0E8;  --an-white:   #c9ccd3;
+    --an-brblack:#6b6e76;  --an-brred:   #ff5266;  --an-brgreen:  #a4f083;  --an-bryellow:#fffb5e;
+    --an-brblue: #8fc2ff;  --an-brmagenta:#ff5cc8; --an-brcyan:   #7ee4f2;  --an-brwhite: #f1f1f4;
+  }
+
+  /* ===== window: one large focused Kitty window, centred on the stage ===== */
+  .win { left: 210px; top: 36px; width: 1500px; height: 860px; }
+  /* the path in the title is content, not a label: keep it lowercase like the real title bar */
+  .wtitle .path { text-transform: lowercase; letter-spacing: .12em; }
+
+  /* ===== Kitty's own tab bar: 34px flat segments on the darkest rail ===== */
+  .wbody { display: flex; flex-direction: column; }
+  .tabbar { flex: none; height: 34px; display: flex; align-items: stretch; background: var(--rail);
+    border-bottom: 1px solid rgba(255,255,255,.08); }
+  .tabbar .tab { display: flex; align-items: center; gap: 8px; padding: 0 18px;
+    font: 700 11px var(--mono); letter-spacing: .16em; color: var(--dim);
+    border-right: 1px solid rgba(255,255,255,.06); }
+  .tabbar .tab.on { background: var(--yellow); color: #111; border-right-color: rgba(0,0,0,.18); }
+  .tabbar .tmeta { margin-left: auto; align-self: center; padding-right: 16px; }
+
+  /* ===== terminal body ===== */
+  .term { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--an-black);
+    padding: 18px 22px; font: 15px/1.5 var(--mono); letter-spacing: .02em; }
+  .ln { white-space: pre; }
+  .u   { color: var(--an-white); }
+  .dim { color: var(--an-brblack); }
+  .red { color: var(--an-red); }
+  .dir { color: var(--an-blue); }
+  .exe { color: var(--an-green); }
+  .cy  { color: var(--an-cyan); }
+  .yl  { color: var(--an-yellow); }
+  .pk  { color: var(--ink); }
+  /* yellow block cursor, no blink */
+  .cur { display: inline-block; width: 9px; height: 16px; background: var(--an-yellow); vertical-align: -3px; }
+  /* scrollbar hint: 3px faint thumb at the bottom (end of scrollback) */
+  .sbar { position: absolute; right: 3px; top: 12px; bottom: 12px; width: 3px; }
+  .sbar i { position: absolute; bottom: 0; width: 3px; height: 34%; background: rgba(241,241,244,.18); }
+
+  /* ===== palette legend strip: on the stage, below the window ===== */
+  .legend { position: absolute; left: 210px; top: 932px; width: 1500px; }
+  .lhead { display: flex; align-items: center; gap: 14px; }
+  .sws { display: flex; justify-content: center; gap: 16px; margin-top: 14px; }
+  .sw { display: flex; flex-direction: column; gap: 5px; }
+  .sw i { display: block; width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.14); }
+  .sw .micro { white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="win focus">
+    <div class="wtop">
+      <span class="wtitle">KITTY <span class="path">· ~/src/clockmost-desktop</span></span>
+      <div class="wctl">
+        <span class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span>
+        <span class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></span>
+        <span class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span>
+      </div>
+    </div>
+
+    <div class="wbody">
+      <div class="tabbar">
+        <div class="tab on">1&nbsp;&nbsp;FISH</div>
+        <div class="tab">2&nbsp;&nbsp;SSH CLOCKMOST-ADMIN<span class="notif"></span></div>
+        <div class="tab">3&nbsp;&nbsp;BTOP</div>
+        <div class="tmeta micro">KITTY 0.49 · 3 TABS</div>
+      </div>
+
+      <div class="term">
+        <div class="ln"><span class="cy">benylin@clockmost-desktop</span><span class="pk"> ~/src/clockmost-desktop</span><span class="yl"> main</span><span class="pk">&gt;</span> <span class="u">git status</span></div>
+        <div class="ln"><span class="u">On branch main</span></div>
+        <div class="ln"><span class="u">Changes not staged for commit:</span></div>
+        <div class="ln"><span class="dim">  (use "git add &lt;file&gt;..." to update what will be committed)</span></div>
+        <div class="ln"><span class="red">        modified:   components/ds-shell.css</span></div>
+        <div class="ln"><span class="red">        modified:   orders/STYLE.md</span></div>
+        <div class="ln"> </div>
+        <div class="ln"><span class="u">Untracked files:</span></div>
+        <div class="ln"><span class="dim">  (use "git add &lt;file&gt;..." to include in what will be committed)</span></div>
+        <div class="ln"><span class="red">        components/ds-kitty.html</span></div>
+        <div class="ln"> </div>
+        <div class="ln"><span class="cy">benylin@clockmost-desktop</span><span class="pk"> ~/src/clockmost-desktop</span><span class="yl"> main</span><span class="pk">&gt;</span> <span class="u">ls -la</span></div>
+        <div class="ln"><span class="u">total 232</span></div>
+        <div class="ln"><span class="dir">drwxr-xr-x  8 benylin benylin  4096 Oct 12 14:02 .</span></div>
+        <div class="ln"><span class="dir">drwxr-xr-x  6 benylin benylin  4096 Oct 10 09:41 ..</span></div>
+        <div class="ln"><span class="dim">-rw-r--r--  1 benylin benylin  2214 Oct 11 18:30 .editorconfig</span></div>
+        <div class="ln"><span class="u">-rw-r--r--  1 benylin benylin  8412 Oct 12 14:02 README.md</span></div>
+        <div class="ln"><span class="dir">drwxr-xr-x  2 benylin benylin  4096 Oct 12 12:20 components</span></div>
+        <div class="ln"><span class="dir">drwxr-xr-x  2 benylin benylin  4096 Oct 12 12:20 orders</span></div>
+        <div class="ln"><span class="exe">-rwxr-xr-x  1 benylin benylin  1024 Oct 10 10:15 shot-all.sh</span></div>
+        <div class="ln"> </div>
+        <div class="ln"><span class="cy">benylin@clockmost-desktop</span><span class="pk"> ~/src/clockmost-desktop</span><span class="yl"> main</span><span class="pk">&gt;</span> <span class="u">paru -Syu</span></div>
+        <div class="ln"><span class="cy">:: Synchronizing package databases...</span></div>
+        <div class="ln"><span class="dim"> core is up to date</span></div>
+        <div class="ln"><span class="u"> extra                    8.4 MiB   12.3 MiB/s</span></div>
+        <div class="ln"><span class="u"> multilib                 2.1 MiB    5.7 MiB/s</span></div>
+        <div class="ln"><span class="cy">:: Starting full system upgrade...</span></div>
+        <div class="ln"><span class="u"> linux      6.16.8-1 </span><span class="dim">-&gt;</span><span class="u"> 6.16.9-1</span></div>
+        <div class="ln"><span class="u"> mesa       25.2.2-1 </span><span class="dim">-&gt;</span><span class="u"> 25.2.3-1</span></div>
+        <div class="ln"><span class="u"> fish       4.0.2-1  </span><span class="dim">-&gt;</span><span class="u"> 4.0.3-1</span></div>
+        <div class="ln"> </div>
+        <div class="ln"><span class="cy">benylin@clockmost-desktop</span><span class="pk"> ~/src/clockmost-desktop</span><span class="yl"> main</span><span class="pk">&gt;</span> <b class="cur"></b></div>
+        <div class="sbar"><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="lhead">
+      <span class="label">ENDFIELD ANSI 16</span>
+      <span class="barcode"></span>
+      <span class="micro">ANS-16 · TERM THEME · KITTY 0.49</span>
+    </div>
+    <div class="sws">
+      <div class="sw"><i style="background:#0d0d0e"></i><span class="micro">#0D0D0E</span></div>
+      <div class="sw"><i style="background:#d91e36"></i><span class="micro">#D91E36</span></div>
+      <div class="sw"><i style="background:#7ddb57"></i><span class="micro">#7DDB57</span></div>
+      <div class="sw"><i style="background:#FFFA00"></i><span class="micro">#FFFA00</span></div>
+      <div class="sw"><i style="background:#5aa7ff"></i><span class="micro">#5AA7FF</span></div>
+      <div class="sw"><i style="background:#ff1aac"></i><span class="micro">#FF1AAC</span></div>
+      <div class="sw"><i style="background:#3FD0E8"></i><span class="micro">#3FD0E8</span></div>
+      <div class="sw"><i style="background:#c9ccd3"></i><span class="micro">#C9CCD3</span></div>
+      <div class="sw"><i style="background:#6b6e76"></i><span class="micro">#6B6E76</span></div>
+      <div class="sw"><i style="background:#ff5266"></i><span class="micro">#FF5266</span></div>
+      <div class="sw"><i style="background:#a4f083"></i><span class="micro">#A4F083</span></div>
+      <div class="sw"><i style="background:#fffb5e"></i><span class="micro">#FFFB5E</span></div>
+      <div class="sw"><i style="background:#8fc2ff"></i><span class="micro">#8FC2FF</span></div>
+      <div class="sw"><i style="background:#ff5cc8"></i><span class="micro">#FF5CC8</span></div>
+      <div class="sw"><i style="background:#7ee4f2"></i><span class="micro">#7EE4F2</span></div>
+      <div class="sw"><i style="background:#f1f1f4"></i><span class="micro">#F1F1F4</span></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

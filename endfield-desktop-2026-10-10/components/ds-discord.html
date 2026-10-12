@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-discord · layout mock</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ds-discord.html - Discord redesigned after Endfield's in-game chat (rule 17).
+     Layout only: no motion. ?state=empty shows the empty conversation panel. */
+  .win.max { inset: 0; }
+  .wbody { display: flex; gap: 24px; padding: 18px 28px 22px; }
+
+  /* ---------- top row: server tab strip (ref's centred tab bar on a hatch band) ---------- */
+  .tabs { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 2px, transparent 2px 8px), rgba(12,13,15,.92); }
+  .tab { position: relative; width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center;
+    border-radius: 2px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14);
+    font: 700 14px var(--mono); letter-spacing: .08em; color: var(--dim); }
+  .tab.on { background: var(--yellow); border-color: var(--yellow); color: #111; }
+  .tab.on::after { content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(0,0,0,.13) 0 2px, transparent 2px 7px); }
+  .tab .notif { position: absolute; right: -4px; top: -4px; }
+
+  /* ---------- left column: conversation card list (ref's cards) ---------- */
+  .cards-col { width: 400px; flex: none; display: flex; flex-direction: column; min-height: 0; }
+  .cards { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+  .cards .label { margin: 8px 0 0; }
+  .cards .label:first-child { margin-top: 0; }
+  .card { position: relative; height: 76px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 16px 0 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 36px), linear-gradient(180deg, #1b1d22, #121317);
+    border: 2px solid var(--steel); border-radius: 2px; }
+  .card .tile { width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center;
+    border-radius: 2px; background: var(--field); color: var(--ink2); font: 700 18px var(--mono); letter-spacing: .04em; }
+  .card .tile svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .card .rail { width: 3px; height: 44px; flex: none; background: var(--ink2); }        /* white = idle */
+  .card .rail.on { background: var(--green); }                                          /* green = active */
+  .card .tx { flex: 1; min-width: 0; padding-right: 42px; }
+  .card .cn { font: 600 15px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .pv { margin-top: 4px; font: 12px var(--body); color: var(--dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .wm { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px;
+    color: rgba(255,255,255,.07); font: 700 42px/36px var(--mono); text-align: center; pointer-events: none; }
+  .card .wm svg { width: 36px; height: 36px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  /* voice card: two tiny participant avatars + count */
+  .card .vline { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+  .card .vav { width: 18px; height: 18px; border-radius: 50%; background: var(--field); border: 1.5px solid var(--dim);
+    font: 700 8px/15px var(--mono); text-align: center; color: var(--ink2); }
+  .card .vline .micro { letter-spacing: .16em; }
+  /* selected card: solid yellow, dark text, chevron cut on the right edge (like the ref) */
+  .card.sel { background: var(--yellow); border-color: var(--yellow); color: #111;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 50%, 100% 100%, 0 100%); }
+  .card.sel .tile { background: rgba(0,0,0,.16); color: #111; }
+  .card.sel .rail { background: #111; }
+  .card.sel .cn { color: #111; }
+  .card.sel .pv { color: rgba(17,17,17,.7); }
+  .card.sel .wm { color: rgba(0,0,0,.13); }
+  /* column footer: SHOW ALL pill + ping micro */
+  .colfoot { margin-top: 14px; }
+  .showall { width: 100%; height: 30px; justify-content: space-between; border-radius: 15px; }
+  .showall svg { width: 14px; height: 14px; fill: none; stroke: #111; stroke-width: 2.6; stroke-linecap: square; }
+  .colfoot .micro { display: block; margin-top: 9px; }
+
+  /* ---------- right: conversation panel (ref's framed plate) ---------- */
+  .conv { flex: 1; min-width: 0; display: flex; flex-direction: column;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 2px;
+    background: linear-gradient(180deg, #17181c, #101115); }
+  /* header plate: yellow corner notch left, channel name + topic, yellow pattern block right */
+  .chead { position: relative; flex: none; height: 72px; display: flex; align-items: center; gap: 14px; padding: 0 20px; }
+  .chead::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: 0; height: 1px; background: rgba(255,255,255,.10); }
+  .notches { display: flex; gap: 5px; flex: none; }
+  .notches i { width: 6px; height: 22px; background: var(--yellow); transform: skewX(-18deg); }
+  .ctitle { min-width: 0; }
+  .cname { font: 600 20px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctitle .micro { display: block; margin-top: 4px; letter-spacing: .14em; text-transform: none; }
+  .patwrap { position: absolute; right: 118px; top: 0; width: 232px; }
+  .pat { height: 58px; display: flex; background: var(--yellow); }
+  .pat .hatch { flex: 1; background: repeating-linear-gradient(135deg, #111 0 3px, transparent 3px 8px); }
+  .pat .dotg { width: 70px; background: radial-gradient(#111 1.3px, transparent 1.7px) 0 0 / 8px 8px; }
+  .pat .gg { width: 46px; display: flex; align-items: center; justify-content: center; color: #111; }
+  .pat .gg svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .patwrap .triband { margin-top: 4px; }
+  .chead .barcode { position: absolute; right: 18px; top: 50%; margin-top: -6px; }
+
+  /* messages */
+  .msgs { flex: 1; min-height: 0; overflow: hidden; padding: 12px 36px; display: flex; flex-direction: column; gap: 7px; }
+  .grp { display: flex; flex-direction: column; gap: 4px; max-width: 700px; }
+  .grp.in { align-items: flex-start; }
+  .grp.out { align-self: flex-end; align-items: flex-end; }
+  .ghead { display: flex; align-items: baseline; gap: 10px; margin-left: 50px; }
+  .grp.out .ghead { margin-left: 0; margin-right: 50px; }
+  .who { font: 700 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+  .row { display: flex; align-items: flex-end; gap: 12px; }
+  .av { width: 38px; height: 38px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+    background: var(--field); font: 700 11px var(--mono); letter-spacing: .06em; }
+  .bub { max-width: 620px; padding: 8px 16px; border-radius: 12px; background: #24262c; color: var(--ink2);
+    font: 15px/1.45 var(--body); }
+  .grp.out .bub { background: #e8e9ee; color: #111; }
+  /* reply: small quote line above the bubble */
+  .quote { display: flex; align-items: center; gap: 8px; margin-left: 50px; }
+  .quote i { width: 2px; height: 14px; background: var(--faint); flex: none; }
+  .quote span { font: 10px var(--mono); letter-spacing: .08em; color: var(--faint); white-space: nowrap; }
+  .quote span b { font-weight: 700; color: var(--dim); }
+  /* reaction chip */
+  .react { display: inline-flex; align-items: center; gap: 7px; height: 22px; padding: 0 10px; margin-left: 50px;
+    border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18);
+    font: 12px var(--body); color: var(--ink2); }
+  .react b { font: 700 11px var(--mono); color: var(--ink); }
+  /* image message: 320x180 drawn screenshot */
+  .shotbox { width: 320px; height: 180px; border: 1px solid rgba(255,255,255,.22); border-radius: 2px; overflow: hidden;
+    background: #0c0c0e; }
+  .imgcap { margin-top: 6px; }
+  .sb-top { height: 18px; display: flex; align-items: center; padding: 0 6px; background: #17181c; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .sb-top .sb-dot { width: 4px; height: 4px; border-radius: 2px; background: var(--ghost); margin-right: 3px; }
+  .sb-top .sb-btns { margin-left: auto; display: flex; gap: 3px; }
+  .sb-top .sb-btns b { width: 7px; height: 7px; border: 1px solid var(--faint); }
+  .sb-cols { display: flex; height: calc(100% - 18px); }
+  .sb-left { width: 92px; padding: 8px 6px; display: flex; flex-direction: column; gap: 5px; background: #121317; }
+  .sb-card { height: 22px; border: 1px solid var(--steel); border-radius: 2px; background: #1b1d22; }
+  .sb-card.on { background: var(--yellow); border-color: var(--yellow); }
+  .sb-right { flex: 1; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+  .sb-hdr { height: 14px; border-bottom: 1px solid rgba(255,255,255,.14); }
+  .sb-bub { height: 16px; width: 62%; border-radius: 8px; background: #24262c; }
+  .sb-bub.lt { align-self: flex-end; background: #e8e9ee; width: 52%; }
+  /* NEW divider */
+  .newdiv { display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+  .newdiv i { flex: 1; height: 1px; background: var(--crimson); opacity: .55; }
+  .newdiv .tag { flex: none; }
+  /* composer: wide light pill, attach + emoji inside its ends */
+  .composer { flex: none; height: 76px; display: flex; align-items: center; justify-content: center; }
+  .cpill { width: 58%; height: 50px; border-radius: 25px; background: #e9e9ee; color: #111;
+    display: flex; align-items: center; gap: 14px; padding: 0 20px; }
+  .cpill .ctext { flex: 1; font: 15px var(--body); color: #1c1c1f; }
+  .cpill svg { width: 18px; height: 18px; flex: none; fill: none; stroke: #111; stroke-width: 2.8; stroke-linecap: butt; }
+
+  /* ---------- ?state=empty: the ref's empty state ---------- */
+  .empty { display: none; flex: 1; min-height: 0; position: relative; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  body.st-empty .empty { display: flex; }
+  body.st-empty .conv.chat { display: none; }
+  /* no conversation chosen: the selected card goes idle too (like the ref) */
+  body.st-empty .card.sel { background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 36px), linear-gradient(180deg, #1b1d22, #121317);
+    border-color: var(--steel); color: inherit; clip-path: none; }
+  body.st-empty .card.sel .tile { background: var(--field); color: var(--ink2); }
+  body.st-empty .card.sel .rail { background: var(--ink2); }
+  body.st-empty .card.sel .cn { color: var(--ink); }
+  body.st-empty .card.sel .pv { color: var(--dim); }
+  body.st-empty .card.sel .wm { color: rgba(255,255,255,.07); }
+  .egrid { position: absolute; inset: 0; pointer-events: none;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.055) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,.055) 0 1px, transparent 1px 44px);
+    -webkit-mask-image: radial-gradient(ellipse 44% 52% at 50% 50%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 44% 52% at 50% 50%, #000 30%, transparent 78%); }
+  .ediamond { position: absolute; left: 50%; top: 50%; width: 230px; height: 230px; margin: -115px 0 0 -115px;
+    border: 1px solid rgba(255,255,255,.07); transform: rotate(45deg); pointer-events: none; }
+  .ediamond.b { width: 170px; height: 170px; margin: -85px 0 0 -30px; }
+  .erow { position: relative; display: flex; align-items: center; gap: 20px; }
+  .eline { width: 190px; height: 1px; background: rgba(255,255,255,.13); }
+  .echoose { padding: 9px 20px; background: var(--field); border: 1px solid rgba(255,255,255,.14); border-radius: 2px;
+    font: 15px var(--body); color: var(--ink2); }
+  .empty .micro { position: relative; letter-spacing: .3em; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+<div class="win max">
+  <div class="wtop">
+    <div class="wtitle">// DISCORD <span>/ CLOCKMOST</span></div>
+    <div class="mid">
+      <div class="tabs">
+        <span class="kbd">Q</span>
+        <div class="tab on">CM</div>
+        <div class="tab">FL<i class="notif"></i></div>
+        <div class="tab">PK</div>
+        <div class="tab">DM</div>
+        <span class="kbd">E</span>
+      </div>
+    </div>
+    <div class="wctl">
+      <button type="button" class="wb" title="Minimize"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button type="button" class="wb" title="Maximize"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+      <button type="button" class="wb" title="Close"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+    </div>
+  </div>
+  <div class="wbody">
+
+    <!-- left: card list -->
+    <div class="cards-col">
+      <div class="cards">
+        <div class="label">CHANNELS</div>
+        <div class="card sel">
+          <div class="tile">#</div><i class="rail on"></i>
+          <div class="tx"><div class="cn"># felt-dev</div><div class="pv">muse: can you look at the mockups when you get a…</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="card">
+          <div class="tile">#</div><i class="rail"></i>
+          <div class="tx"><div class="cn"># packages</div><div class="pv">orin: render job queued for the rig, ETA 40 min</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="card">
+          <div class="tile">#</div><i class="rail on"></i>
+          <div class="tx"><div class="cn"># infra-alerts</div><div class="pv">backup check finished · 2 warnings</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="card">
+          <div class="tile">#</div><i class="rail"></i>
+          <div class="tx"><div class="cn"># welcome</div><div class="pv">muse: new rig photos are up in felt-dev</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="card">
+          <div class="tile">#</div><i class="rail"></i>
+          <div class="tx"><div class="cn"># music-share</div><div class="pv">orin: last stardust on repeat today</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="card">
+          <div class="tile">#</div><i class="rail on"></i>
+          <div class="tx"><div class="cn"># homelab</div><div class="pv">kuri: NAS share moved over, old one stays till friday</div></div>
+          <div class="wm">#</div>
+        </div>
+        <div class="label">VOICE</div>
+        <div class="card">
+          <div class="tile"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div><i class="rail on"></i>
+          <div class="tx"><div class="cn">General</div>
+            <div class="vline"><span class="vav">MU</span><span class="vav">OR</span><span class="micro">2 IN VOICE</span></div>
+          </div>
+          <div class="wm"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg></div>
+        </div>
+        <div class="label">DIRECT</div>
+        <div class="card">
+          <div class="tile">MU</div><i class="rail"></i>
+          <div class="tx"><div class="cn">muse</div><div class="pv">can you look at the mockups when you get a…</div></div>
+          <div class="wm"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        </div>
+        <div class="card">
+          <div class="tile">OR</div><i class="rail"></i>
+          <div class="tx"><div class="cn">orin</div><div class="pv">that's the discord mock on the side monitor…</div></div>
+          <div class="wm"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        </div>
+        <div class="card">
+          <div class="tile">KU</div><i class="rail"></i>
+          <div class="tx"><div class="cn">kuri</div><div class="pv">I'll take a look at the demo tonight</div></div>
+          <div class="wm"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        </div>
+      </div>
+      <div class="colfoot">
+        <div class="pill showall">SHOW ALL
+          <svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>
+        </div>
+        <div class="micro">42ms · UID 6349456094</div>
+      </div>
+    </div>
+
+    <!-- right: conversation panel -->
+    <div class="conv chat">
+      <div class="chead">
+        <div class="notches"><i></i><i></i></div>
+        <div class="ctitle">
+          <div class="cname">felt-dev</div>
+          <div class="micro">the felt rig: calibration, render pipeline, and what broke today</div>
+        </div>
+        <div class="patwrap">
+          <div class="pat">
+            <div class="hatch"></div>
+            <div class="dotg"></div>
+            <div class="gg"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/></svg></div>
+          </div>
+          <div class="triband"></div>
+        </div>
+        <div class="barcode"></div>
+      </div>
+
+      <div class="msgs">
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--violet)">muse</span><span class="micro">12:02</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--violet); color:var(--violet)">MU</div>
+            <div class="bub">the felt rig calibration landed - offsets look clean, numbers in the shared folder</div>
+          </div>
+        </div>
+
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--green)">orin</span><span class="micro">12:05</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--green); color:var(--green)">OR</div>
+            <div class="bub">render pipeline held a six hour run with no drops</div>
+          </div>
+          <div class="react">🔑 <b>2</b></div>
+        </div>
+
+        <div class="grp out">
+          <div class="ghead"><span class="micro">12:11</span></div>
+          <div class="row">
+            <div class="bub">nice. folding the app-card into the drawer tonight, then the panel spacing pass</div>
+            <div class="av" style="border:2px solid var(--cyan); color:var(--cyan)">BE</div>
+          </div>
+        </div>
+
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--violet)">muse</span><span class="micro">12:31</span></div>
+          <div class="quote"><i></i><span><b>benylin</b> · nice. folding the app-card into the drawer tonight…</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--violet); color:var(--violet)">MU</div>
+            <div class="bub">can you look at the mockups when you get a minute? the left column felt cramped</div>
+          </div>
+        </div>
+
+        <div class="grp out">
+          <div class="ghead"><span class="micro">12:33</span></div>
+          <div class="row">
+            <div class="bub">widened the card list to 400 and split it into channels, voice and direct</div>
+            <div class="av" style="border:2px solid var(--cyan); color:var(--cyan)">BE</div>
+          </div>
+        </div>
+
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--green)">orin</span><span class="micro">12:40</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--green); color:var(--green)">OR</div>
+            <div>
+              <div class="shotbox">
+                <div class="sb-top"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span>
+                  <span class="sb-btns"><b></b><b></b><b></b></span>
+                </div>
+                <div class="sb-cols">
+                  <div class="sb-left">
+                    <div class="sb-card"></div><div class="sb-card on"></div><div class="sb-card"></div><div class="sb-card"></div>
+                  </div>
+                  <div class="sb-right">
+                    <div class="sb-hdr"></div><div class="sb-bub"></div><div class="sb-bub lt"></div><div class="sb-bub"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="micro imgcap">mockups-10-12.png · 1280x720</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--green)">orin</span><span class="micro">12:41</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--green); color:var(--green)">OR</div>
+            <div class="bub">that's the discord mock on the side monitor - cards left, conversation right</div>
+          </div>
+        </div>
+
+        <div class="newdiv"><i></i><span class="tag">NEW</span></div>
+
+        <div class="grp in">
+          <div class="ghead"><span class="who" style="color:var(--violet)">muse</span><span class="micro">12:52</span></div>
+          <div class="row">
+            <div class="av" style="border:2px solid var(--violet); color:var(--violet)">MU</div>
+            <div class="bub">backup check finished - two warnings on the old NAS share, nothing urgent</div>
+          </div>
+        </div>
+
+        <div class="grp out">
+          <div class="ghead"><span class="micro">12:55</span></div>
+          <div class="row">
+            <div class="bub">good. locking the layout tonight - the desktop pass is done</div>
+            <div class="av" style="border:2px solid var(--cyan); color:var(--cyan)">BE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="cpill">
+          <svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5" transform="rotate(45 12 12)"/></svg>
+          <span class="ctext">Message #felt-dev</span>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9 10h.01M15 10h.01M8.5 14.5a4.5 4.5 0 0 0 7 0"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ?state=empty -->
+    <div class="conv empty">
+      <div class="egrid"></div>
+      <div class="ediamond"></div>
+      <div class="ediamond b"></div>
+      <div class="erow">
+        <i class="eline"></i>
+        <div class="echoose">- Choose a conversation -</div>
+        <i class="eline"></i>
+      </div>
+      <div class="micro">EMPTY</div>
+    </div>
+
+  </div>
+</div>
+</div>
+<script>
+"use strict";
+/* layout only: ?state=empty swaps the conversation panel for the empty state (no motion) */
+if (new URLSearchParams(location.search).get("state") === "empty") document.body.classList.add("st-empty");
+</script>
+</body>
+</html>

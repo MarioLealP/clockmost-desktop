@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-notify · notification popups + center</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ===== top bar: plain 40px frost strip, bell at the right (placement only) ===== */
+  .topbar { position: absolute; left: 0; right: 0; top: 0; height: 40px; z-index: 20;
+    display: flex; align-items: center; justify-content: flex-end; padding: 0 16px;
+    border: 0; border-bottom: 1px solid rgba(255,255,255,.10); border-radius: 0; }
+  .bell { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--ink2); }
+  .bell svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: square; }
+  .bell.on { color: var(--yellow); }
+
+  /* ===== dimmed window behind (Dolphin prop) ===== */
+  .bgwin { left: 130px; top: 132px; width: 1170px; height: 560px; opacity: .62; }
+  .bgwin .wbody { display: flex; }
+  .bgwin .places { width: 230px; flex: none; padding: 18px 0; border-right: 1px solid rgba(255,255,255,.08); }
+  .bgwin .places .pl { padding: 9px 22px; font: 13px var(--body); color: var(--dim); }
+  .bgwin .files { flex: 1; min-width: 0; padding: 10px 24px; }
+  .bgwin .frow { display: grid; grid-template-columns: 1fr 90px 130px; gap: 18px; padding: 11px 4px;
+    border-bottom: 1px solid rgba(255,255,255,.06); font: 13px var(--body); color: var(--dim); }
+  .bgwin .frow .sz, .bgwin .frow .dt { text-align: right; font: 11px var(--mono); letter-spacing: .1em; color: var(--faint); }
+  .bgwin .foot { position: absolute; left: 24px; bottom: 14px; display: flex; align-items: center; gap: 14px; }
+
+  /* ===== notification popups: top-right stack, 380px, each its own recipe ===== */
+  .stack { position: absolute; right: 16px; top: 48px; width: 380px; display: flex; flex-direction: column; gap: 10px; }
+  .pop { width: 380px; border-radius: 2px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4); }
+  .pop .head { display: flex; align-items: center; gap: 12px; }
+  .pop .tile { width: 32px; height: 32px; flex: none; border-radius: 6px; background: var(--field);
+    border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; justify-content: center;
+    font: 600 14px var(--body); color: var(--ink); }
+  .pop .who { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .pop .ttl { margin-top: 9px; font: 600 15px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pop .msg { margin-top: 3px; font: 13px var(--body); color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pop .x { margin-left: auto; width: 20px; height: 20px; flex: none; display: flex; align-items: center; justify-content: center;
+    color: var(--dim); }
+  .pop .x svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: butt; }
+  .pop .acts { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
+  .pop .acts .chip { height: 24px; border-radius: 12px; }
+  .pop .code { margin-left: auto; }
+
+  /* 1. Discord - blue edge, slightly blue plate, chips + notif diamond */
+  .pop.discord { padding: 13px 14px 13px 17px; border-left: 3px solid var(--blue);
+    background: linear-gradient(180deg, #1b1d25, #12141a); border-top: 1px solid rgba(255,255,255,.10);
+    border-right: 1px solid rgba(255,255,255,.10); border-bottom: 1px solid rgba(255,255,255,.10); }
+
+  /* 2. Downloads - green edge, slightly green plate, finished progress bar */
+  .pop.dl { padding: 13px 14px 13px 17px; border-left: 3px solid var(--green);
+    background: linear-gradient(180deg, #171a16, #101310); border-top: 1px solid rgba(255,255,255,.10);
+    border-right: 1px solid rgba(255,255,255,.10); border-bottom: 1px solid rgba(255,255,255,.10); }
+  .pop.dl .bar { position: relative; height: 3px; margin-top: 11px; background: rgba(255,255,255,.12); border-radius: 2px; }
+  .pop.dl .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--green); border-radius: 2px; }
+
+  /* 3. Spectacle - violet edge, slightly violet plate, 96x54 thumbnail at the right */
+  .pop.shot { padding: 13px 14px 13px 17px; border-left: 3px solid var(--violet);
+    background: linear-gradient(180deg, #191722, #121016); border-top: 1px solid rgba(255,255,255,.10);
+    border-right: 1px solid rgba(255,255,255,.10); border-bottom: 1px solid rgba(255,255,255,.10); }
+  .pop.shot .main { display: flex; gap: 14px; align-items: flex-start; margin-top: 9px; }
+  .pop.shot .col { min-width: 0; flex: 1; }
+  .pop.shot .thumb { width: 96px; height: 54px; flex: none; border: 1px solid rgba(255,255,255,.18);
+    background: var(--ground); overflow: hidden; }
+
+  /* ===== notification center: dropped from the bell, .panel + brackets ===== */
+  .center { position: absolute; right: 16px; top: 48px; width: 420px; height: 760px; z-index: 10;
+    display: flex; flex-direction: column; padding: 22px 22px 18px; }
+  .center .chead { display: flex; align-items: baseline; gap: 12px; }
+  .center .hr { margin: 14px 0 0; }
+  .center .dnd { display: flex; align-items: center; gap: 12px; padding: 13px 0 13px; }
+  .center .dnd .cap { font: 11px var(--mono); letter-spacing: .16em; color: var(--faint); margin-left: auto; margin-right: 10px; }
+  .center .grp { margin-top: 22px; }
+  .center .ghead { display: flex; align-items: baseline; gap: 10px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.10); }
+  .center .ghead .clr { margin-left: auto; font: 10px var(--mono); letter-spacing: .16em; color: var(--blue); }
+  .center .item { display: flex; align-items: center; gap: 12px; padding: 14px 2px;
+    border-bottom: 1px solid rgba(255,255,255,.06); }
+  .center .item .it { flex: 1; min-width: 0; font: 13px var(--body); color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .center .item .it2 { flex: 1; min-width: 0; font: 13px var(--body); color: var(--ink2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .center .item .tm { flex: none; }
+  .center .end { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+  .center .end .hr { flex: 1; margin: 0; }
+  .center .foot { margin-top: auto; padding-top: 16px; }
+  .center .smallprint { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .center .clearall { display: flex; align-items: center; justify-content: center; width: 100%; height: 36px;
+    border-radius: 6px; background: var(--field); border: 1px solid rgba(255,255,255,.12);
+    font: 700 11px var(--mono); letter-spacing: .22em; color: var(--ink2); }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- dimmed window behind: Dolphin (prop) -->
+  <div class="win blur bgwin">
+    <div class="wtop">
+      <div class="wtitle">DOLPHIN <span>— HOME / PICTURES</span></div>
+      <div class="wctl">
+        <button type="button" class="wb" title="Minimize"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button type="button" class="wb" title="Maximize"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+        <button type="button" class="wb" title="Close"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="wbody">
+      <div class="places">
+        <div class="label" style="padding: 0 22px 10px;">PLACES</div>
+        <div class="pl">Home</div>
+        <div class="pl">Documents</div>
+        <div class="pl">Downloads</div>
+        <div class="pl">Pictures</div>
+        <div class="pl">Music</div>
+        <div class="pl">Drives / Data</div>
+      </div>
+      <div class="files">
+        <div class="frow"><span>Wallpapers</span><span class="sz">—</span><span class="dt">2026-09-02</span></div>
+        <div class="frow"><span>Screenshots</span><span class="sz">—</span><span class="dt">2026-10-12</span></div>
+        <div class="frow"><span>refs-board-10.png</span><span class="sz">2.1 MB</span><span class="dt">2026-10-11</span></div>
+        <div class="frow"><span>endfield-wall-a.jpg</span><span class="sz">5.8 MB</span><span class="dt">2026-10-04</span></div>
+        <div class="frow"><span>topo-floor-preview.svg</span><span class="sz">44 KB</span><span class="dt">2026-09-28</span></div>
+        <div class="frow"><span>shot-2026-10-08.png</span><span class="sz">1.3 MB</span><span class="dt">2026-10-08</span></div>
+        <div class="frow"><span>ref-board-09.png</span><span class="sz">3.4 MB</span><span class="dt">2026-09-19</span></div>
+        <div class="frow"><span>wall-clockmost.png</span><span class="sz">6.2 MB</span><span class="dt">2026-09-11</span></div>
+        <div class="foot">
+          <span class="barcode"></span>
+          <span class="micro">DL-2210 · 8 ITEMS · 15.4 MB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- top bar strip: bell at the right -->
+  <div class="topbar frost">
+    <div class="bell" id="bell" title="Notifications">
+      <svg viewBox="0 0 24 24"><path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15L6 17zM10 21a2 2 0 0 0 4 0"/></svg>
+    </div>
+  </div>
+
+  <!-- state: popups -->
+  <div id="state-popups">
+   <div class="stack">
+    <!-- 1. Discord: blue edge, notif diamond, two action chips -->
+    <div class="pop discord">
+      <div class="head">
+        <div class="tile">D</div>
+        <div class="who"><span class="label">DISCORD</span><span class="micro">NOW</span></div>
+        <span class="notif"></span>
+        <div class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div>
+      </div>
+      <div class="ttl">muse in #felt-dev</div>
+      <div class="msg">can you look at the mockups when you get a minute?</div>
+      <div class="acts">
+        <span class="chip">REPLY</span>
+        <span class="chip">MARK READ</span>
+        <span class="micro code">NTF-01 · MSG · P2</span>
+      </div>
+    </div>
+
+    <!-- 2. Downloads: green edge, finished progress bar, folder chip -->
+    <div class="pop dl" id="pop-dl">
+      <div class="head">
+        <div class="tile">D</div>
+        <div class="who"><span class="label">DOWNLOADS</span><span class="micro">2 MIN</span></div>
+        <div class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div>
+      </div>
+      <div class="ttl">Download finished</div>
+      <div class="msg">cachyos-260809.iso · 2.9 GB</div>
+      <div class="bar"><i></i></div>
+      <div class="acts">
+        <span class="chip">OPEN FOLDER</span>
+        <span class="micro code">DL-2608 · SHA256 OK</span>
+      </div>
+    </div>
+
+    <!-- 3. Spectacle: violet edge, 96x54 thumbnail of the tiny desktop -->
+    <div class="pop shot" id="pop-shot">
+      <div class="head">
+        <div class="tile">S</div>
+        <div class="who"><span class="label">SPECTACLE</span><span class="micro">5 MIN</span></div>
+        <div class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div>
+      </div>
+      <div class="main">
+        <div class="col">
+          <div class="ttl">Screenshot saved</div>
+          <div class="msg">~/Pictures/Screenshots/2026-10-12_20-41.png</div>
+          <div class="acts"><span class="micro code">SHOT-04 · PNG · 1920×1080</span></div>
+        </div>
+        <div class="thumb">
+          <svg viewBox="0 0 96 54" width="96" height="54">
+            <rect width="96" height="54" fill="#0c0c0d"/>
+            <rect x="0" y="0" width="96" height="5" fill="#1c1e24"/>
+            <rect x="82" y="1.5" width="3" height="2" fill="#7d8089"/>
+            <rect x="10" y="10" width="52" height="34" fill="#17181c" stroke="#7d8089" stroke-width="1"/>
+            <rect x="10" y="10" width="52" height="6" fill="#2c2f36"/>
+            <rect x="33" y="21" width="24" height="2" fill="#9a9da5"/>
+            <rect x="33" y="26" width="18" height="2" fill="#7d8089"/>
+            <rect x="33" y="31" width="21" height="2" fill="#7d8089"/>
+            <rect x="30" y="48" width="36" height="4" fill="#2c2f36"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- state: center -->
+  <div id="state-center" style="display:none">
+    <div class="panel center">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="chead">
+        <span class="label">NOTIFICATIONS</span>
+        <span class="micro">7 UNREAD</span>
+      </div>
+      <div class="hr"></div>
+      <div class="dnd">
+        <span class="label">DO NOT DISTURB</span>
+        <span class="cap">OFF</span>
+        <span class="tgl"></span>
+      </div>
+      <div class="hr"></div>
+
+      <div class="grp">
+        <div class="ghead"><span class="label">DISCORD</span><span class="micro">3</span><span class="clr">CLEAR</span></div>
+        <div class="item"><span class="it">muse in #felt-dev</span><span class="micro tm">NOW</span></div>
+        <div class="item"><span class="it2">kuri in #felt-dev</span><span class="micro tm">2 MIN</span></div>
+        <div class="item"><span class="it2">voice chat ended · Orange Juice</span><span class="micro tm">18 MIN</span></div>
+      </div>
+
+      <div class="grp">
+        <div class="ghead"><span class="label">Clockmost / Zabbix</span><span class="micro">2</span><span class="clr">CLEAR</span></div>
+        <div class="item"><span class="tag">HIGH</span><span class="it">Disk usage 82% on /mnt/data</span><span class="micro tm">6 MIN</span></div>
+        <div class="item"><span class="it2">CPU load back under 2.0 on clockmost</span><span class="micro tm">1 HR</span></div>
+      </div>
+
+      <div class="grp">
+        <div class="ghead"><span class="label">DOWNLOADS</span><span class="micro">1</span><span class="clr">CLEAR</span></div>
+        <div class="item"><span class="it2">Download finished · cachyos-260809.iso</span><span class="micro tm">12 MIN</span></div>
+      </div>
+
+      <div class="grp">
+        <div class="ghead"><span class="label">SPECTACLE</span><span class="micro">1</span><span class="clr">CLEAR</span></div>
+        <div class="item"><span class="it2">Screenshot saved · 2026-10-12_20-41.png</span><span class="micro tm">24 MIN</span></div>
+      </div>
+
+      <div class="end">
+        <i class="hr"></i><span class="micro">END OF LIST · 7 ENTRIES</span><i class="hr"></i>
+      </div>
+
+      <div class="foot">
+        <div class="smallprint">
+          <span class="barcode"></span>
+          <span class="micro">NC-07 · CLOCKMOST · 4 GROUPS</span>
+        </div>
+        <div class="clearall">CLEAR ALL</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mock-note" id="note">DS-NOTIFY · STATE: POPUPS</div>
+</div>
+<script>
+"use strict";
+/* states are static: ?state=popups (default) or ?state=center - no motion in layout mocks */
+const state = new URLSearchParams(location.search).get("state") || "popups";
+const isCenter = state === "center";
+document.getElementById("state-popups").style.display = isCenter ? "none" : "";
+document.getElementById("state-center").style.display = isCenter ? "" : "none";
+document.getElementById("bell").classList.toggle("on", isCenter);
+document.getElementById("note").textContent = "DS-NOTIFY · STATE: " + (isCenter ? "CENTER" : "POPUPS");
+</script>
+</body>
+</html>

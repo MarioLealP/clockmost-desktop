@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-dolphin · file manager</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ===== window shell: Dolphin maximized - top row, sidebar, details list, info panel, status bar ===== */
+  .win.max { inset: 0; }
+  .wbody { display: flex; flex-direction: column; }
+  .shell { flex: 1; min-height: 0; display: flex; }
+
+  /* ===== top row (the .wtop title bar): title, nav, breadcrumb, view modes, search, window buttons ===== */
+  .wtop .nav { display: flex; gap: 4px; }
+  .nbtn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0;
+    border: 0; background: transparent; border-radius: 6px; color: var(--ink2); }
+  .nbtn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: square; }
+  .nbtn.dim { color: var(--ghost); }
+
+  /* breadcrumb: flat chips, last segment --ink, separators dim */
+  .crumb { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+  .cseg { height: 24px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 2px;
+    background: rgba(255,255,255,.05); white-space: nowrap; }
+  .cseg.home { font: 11px var(--mono); letter-spacing: .18em; color: var(--dim); }
+  .cseg.path { font: 13px var(--body); color: var(--ink2); }
+  .cseg.cur { font: 13px var(--body); color: var(--ink); }
+  .csep { color: var(--faint); font: 12px var(--mono); }
+
+  /* view-mode buttons (icons / details / tree) - details is active, its icon yellow */
+  .views { display: flex; gap: 8px; }
+  .vbtn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0;
+    background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; color: var(--ink2); }
+  .vbtn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .vbtn.on { color: var(--yellow); }
+
+  .wtop .search { width: 280px; flex: none; }
+  .wtop .wctl { margin-left: 0; }
+
+  /* ===== left sidebar, 280px, --side ===== */
+  .sidebar { width: 280px; flex: none; background: var(--side); border-right: 1px solid rgba(255,255,255,.08);
+    display: flex; flex-direction: column; padding: 18px 0 14px; }
+  .sec + .sec { margin-top: 22px; }
+  .sec .label { display: block; padding: 0 18px; margin-bottom: 8px; }
+
+  /* pins */
+  .prow { height: 32px; display: flex; align-items: center; gap: 10px; padding: 0 18px;
+    font: 13px var(--body); color: var(--ink2); white-space: nowrap; }
+  .prow svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor;
+    stroke-width: 2.6; stroke-linecap: square; color: var(--dim); }
+  .prow .pin { margin-left: auto; width: 11px; height: 11px; color: var(--faint); }
+
+  /* tree */
+  .trow { height: 28px; display: flex; align-items: center; gap: 7px; padding-right: 10px;
+    font: 13px var(--body); color: var(--ink2); white-space: nowrap; }
+  .trow .tri { width: 9px; height: 9px; flex: none; fill: currentColor; stroke: none; color: var(--dim); }
+  .trow .leaf { width: 9px; height: 9px; flex: none; }
+  .trow .gi { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor;
+    stroke-width: 2.6; stroke-linecap: square; color: var(--dim); }
+  .trow .nm { overflow: hidden; text-overflow: ellipsis; }
+  .lvl0 { padding-left: 12px; }
+  .lvl1 { padding-left: 32px; }
+  .lvl2 { padding-left: 54px; }
+  .trow.sel { background: var(--yellow); color: #111; border-radius: 2px; margin: 0 8px 0 8px; padding-left: 46px; }
+  .trow.sel .gi, .trow.sel .tri { color: #111; }
+
+  /* devices */
+  .dev { padding: 8px 18px 4px; }
+  .dev .dtop { display: flex; align-items: center; gap: 9px; font: 11px var(--mono);
+    letter-spacing: .12em; color: var(--ink2); }
+  .dev .dtop svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor;
+    stroke-width: 2.6; stroke-linecap: square; color: var(--dim); }
+  .dev .dtop .sz { color: var(--dim); }
+  .dev .bar { height: 3px; margin: 9px 0 6px 23px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .dev .bar i { display: block; height: 100%; border-radius: 2px; background: var(--ink2); }
+  .dev.crit .bar i { background: var(--crimson); }
+  .dev .dmic { margin-left: 23px; }
+
+  /* sidebar foot: small print */
+  .sfoot { margin-top: auto; padding: 12px 18px 0; display: flex; align-items: center; gap: 12px; }
+  .sfoot .micro { white-space: nowrap; }
+
+  /* ===== main area: details list ===== */
+  .list { flex: 1; min-width: 0; padding: 12px 28px 0; }
+  .lgrid { display: grid; grid-template-columns: 1fr 140px 220px 180px; align-items: center; }
+  .lhead { height: 36px; border-bottom: 1px solid rgba(255,255,255,.10); }
+  .lhead .label { display: flex; align-items: center; gap: 8px; }
+  .lhead .sarr { width: 8px; height: 8px; fill: currentColor; stroke: none; color: var(--ink2); }
+  .lrow { position: relative; height: 32px; padding-left: 12px; font: 11px var(--mono);
+    letter-spacing: .08em; color: var(--dim); }
+  .lrow:nth-child(even) { background: rgba(255,255,255,.022); }
+  .lrow .nm { display: flex; align-items: center; gap: 11px; min-width: 0;
+    font: 13px var(--body); letter-spacing: 0; color: var(--ink); }
+  .lrow .nm svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor;
+    stroke-width: 2.6; stroke-linecap: square; color: var(--ink2); }
+  .lrow .nm span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lrow.hid { opacity: .55; }
+  .lrow.sel { background: rgba(255,255,255,.06); }
+  .lrow.sel::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--yellow); }
+
+  /* ===== right: info panel, 300px, .panel look ===== */
+  .infocol { width: 312px; flex: none; padding: 12px 12px 12px 0; display: flex; }
+  .info { flex: 1; display: flex; flex-direction: column; padding: 26px 24px 20px; }
+  .info .big { width: 64px; height: 64px; margin: 18px auto 0; fill: none; stroke: var(--ink2);
+    stroke-width: 1.6; stroke-linecap: square; }
+  .info .fname { margin-top: 18px; text-align: center; font: 600 20px var(--body); color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .irows { margin-top: 26px; }
+  .irow { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 11px 0; border-top: 1px solid rgba(255,255,255,.08); }
+  .irow .v { font: 11px var(--mono); letter-spacing: .12em; color: var(--ink2); text-align: right; }
+  .ifoot { margin-top: auto; padding-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+
+  /* ===== bottom status bar, 32px ===== */
+  .status { flex: none; height: 32px; display: flex; align-items: center; gap: 16px; padding: 0 20px;
+    border-top: 1px solid rgba(255,255,255,.10); }
+  .status .right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .status .sld { width: 120px; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="win max focus">
+
+    <!-- ================= top row: title, nav, breadcrumb, view modes, search, window buttons ================= -->
+    <div class="wtop">
+      <div class="wtitle">DOLPHIN</div>
+      <div class="nav">
+        <button type="button" class="nbtn" title="Back"><svg viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
+        <button type="button" class="nbtn dim" title="Forward"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="nbtn" title="Up"><svg viewBox="0 0 24 24"><path d="M12 20V5M6 11l6-6 6 6"/></svg></button>
+      </div>
+      <div class="crumb">
+        <span class="cseg home">HOME</span><span class="csep">›</span>
+        <span class="cseg path">src</span><span class="csep">›</span>
+        <span class="cseg cur">clockmost-desktop</span>
+      </div>
+      <div class="views">
+        <button type="button" class="vbtn" title="Icons"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></button>
+        <button type="button" class="vbtn on" title="Details"><svg viewBox="0 0 24 24"><path d="M4 6h3M10 6h10M4 12h3M10 12h10M4 18h3M10 18h10"/></svg></button>
+        <button type="button" class="vbtn" title="Tree"><svg viewBox="0 0 24 24"><path d="M6 4v16"/><path d="M6 9h5"/><path d="M6 15h5"/><path d="M13 9h7"/><path d="M13 15h7"/></svg></button>
+      </div>
+      <div class="field sm search"><b>›››</b> SEARCH</div>
+      <div class="wctl">
+        <button type="button" class="wb" title="Minimize"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button type="button" class="wb" title="Maximize"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+        <button type="button" class="wb" title="Close"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+      </div>
+    </div>
+
+    <div class="wbody">
+      <div class="shell">
+
+        <!-- ================= left sidebar: PINS / TREE / DEVICES ================= -->
+        <aside class="sidebar">
+          <div class="sec">
+            <div class="label">PINS</div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>Home
+            </div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Desktop
+            </div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Documents
+            </div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Downloads
+            </div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>.config
+              <svg class="pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 5 3 3H7l3-3z"/><path d="M12 12v8"/></svg>
+            </div>
+            <div class="prow">
+              <svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>Pictures
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="label">TREE</div>
+            <div class="trow lvl0">
+              <svg class="tri" viewBox="0 0 24 24"><path d="M5 9l7 8 7-8z"/></svg>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>
+              <span class="nm">benylin</span>
+            </div>
+            <div class="trow lvl1">
+              <svg class="tri" viewBox="0 0 24 24"><path d="M5 9l7 8 7-8z"/></svg>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">Drives</span>
+            </div>
+            <div class="trow lvl2">
+              <i class="leaf"></i>
+              <svg class="gi" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12"/><path d="M3 13h18"/><path d="M15 16.5h3"/></svg>
+              <span class="nm">Data</span>
+            </div>
+            <div class="trow lvl2">
+              <i class="leaf"></i>
+              <svg class="gi" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12"/><path d="M3 13h18"/><path d="M15 16.5h3"/></svg>
+              <span class="nm">Games</span>
+            </div>
+            <div class="trow lvl1">
+              <svg class="tri" viewBox="0 0 24 24"><path d="M5 9l7 8 7-8z"/></svg>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">src</span>
+            </div>
+            <div class="trow lvl2 sel">
+              <i class="leaf"></i>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">clockmost-desktop</span>
+            </div>
+            <div class="trow lvl2">
+              <i class="leaf"></i>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">felt</span>
+            </div>
+            <div class="trow lvl1">
+              <svg class="tri" viewBox="0 0 24 24"><path d="M9 5l8 7-8 7z"/></svg>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">.config</span>
+            </div>
+            <div class="trow lvl1">
+              <svg class="tri" viewBox="0 0 24 24"><path d="M9 5l8 7-8 7z"/></svg>
+              <svg class="gi" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>
+              <span class="nm">Downloads</span>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="label">DEVICES</div>
+            <div class="dev">
+              <div class="dtop">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12"/><path d="M3 13h18"/><path d="M15 16.5h3"/></svg>
+                Data <span class="sz">· 1.8 TB</span>
+              </div>
+              <div class="bar"><i style="width:33%"></i></div>
+              <div class="micro dmic">600 GB USED · 33%</div>
+            </div>
+            <div class="dev crit">
+              <div class="dtop">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12"/><path d="M3 13h18"/><path d="M15 16.5h3"/></svg>
+                Games <span class="sz">· 920 GB</span>
+              </div>
+              <div class="bar"><i style="width:82%"></i></div>
+              <div class="micro dmic">754 GB USED · 82%</div>
+            </div>
+          </div>
+
+          <div class="sfoot">
+            <span class="barcode"></span>
+            <span class="micro">TR-03 · 09 NODES</span>
+          </div>
+        </aside>
+
+        <!-- ================= main area: DETAILS view ================= -->
+        <main class="list">
+          <div class="lgrid lhead">
+            <span class="label">NAME</span>
+            <span class="label">SIZE</span>
+            <span class="label">MODIFIED <svg class="sarr" viewBox="0 0 24 24"><path d="M6 9l6 7 6-7z"/></svg></span>
+            <span class="label">TYPE</span>
+          </div>
+          <div class="lrows">
+            <div class="lgrid lrow hid">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>.git</span></span>
+              <span>—</span><span>2026-10-12 00:52</span><span>FOLDER</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>design</span></span>
+              <span>—</span><span>2026-10-12 00:58</span><span>FOLDER</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>install</span></span>
+              <span>—</span><span>2026-10-09 18:26</span><span>FOLDER</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>packages</span></span>
+              <span>—</span><span>2026-10-05 09:20</span><span>FOLDER</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>scripts</span></span>
+              <span>—</span><span>2026-10-08 14:37</span><span>FOLDER</span>
+            </div>
+            <div class="lgrid lrow hid">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>.gitignore</span></span>
+              <span>12 B</span><span>2026-09-02 14:30</span><span>IGNORE</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>AGENTS.md</span></span>
+              <span>5.2 KB</span><span>2026-10-11 23:58</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>CHANGELOG.md</span></span>
+              <span>3.3 KB</span><span>2026-10-08 17:26</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>CHECKLIST.md</span></span>
+              <span>6.1 KB</span><span>2026-10-12 00:41</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>LICENSE</span></span>
+              <span>1.1 KB</span><span>2026-03-14 11:02</span><span>TEXT</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>Makefile</span></span>
+              <span>940 B</span><span>2026-10-06 15:40</span><span>MAKEFILE</span>
+            </div>
+            <div class="lgrid lrow sel">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>README.md</span></span>
+              <span>7.0 KB</span><span>2026-10-10 01:09</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow sel">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>TODO.md</span></span>
+              <span>4.4 KB</span><span>2026-10-11 22:47</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>WORKLOG.md</span></span>
+              <span>9.8 KB</span><span>2026-10-12 00:52</span><span>MARKDOWN</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>install.sh</span></span>
+              <span>2.1 KB</span><span>2026-10-09 18:22</span><span>SHELL</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>packages.txt</span></span>
+              <span>380 B</span><span>2026-10-05 09:14</span><span>TEXT</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>shell.conf</span></span>
+              <span>2.2 KB</span><span>2026-10-01 16:08</span><span>CONFIG</span>
+            </div>
+            <div class="lgrid lrow">
+              <span class="nm"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>wallpaper.png</span></span>
+              <span>4.8 MB</span><span>2026-09-27 21:03</span><span>IMAGE</span>
+            </div>
+          </div>
+        </main>
+
+        <!-- ================= right: info panel ================= -->
+        <div class="infocol">
+          <div class="panel info">
+            <i class="bk tl"></i><i class="bk br"></i>
+            <svg class="big" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
+            <div class="fname">README.md</div>
+            <div class="irows">
+              <div class="irow"><span class="label">SIZE</span><span class="v">7.0 KB</span></div>
+              <div class="irow"><span class="label">MODIFIED</span><span class="v">2026-10-10 01:09</span></div>
+              <div class="irow"><span class="label">TYPE</span><span class="v">MARKDOWN</span></div>
+              <div class="irow"><span class="label">OWNER</span><span class="v">BENYLIN</span></div>
+            </div>
+            <div class="ifoot">
+              <span class="barcode"></span>
+              <span class="micro">FL-2410 · MD · REV.014</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= bottom status bar ================= -->
+      <div class="status">
+        <span class="label">5 FOLDERS · 13 FILES · 2 SELECTED (11.4 KB)</span>
+        <div class="right">
+          <span class="label">1.2 TB FREE</span>
+          <div class="sld"><i style="width:58%"></i><b style="left:58%"></b></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

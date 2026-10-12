@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-alttab - alt-tab switcher (layout mock 09)</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* page-specific styles only: the switcher plate, its window cards + miniature previews, and the
+     dimmed windows behind. Layout mock - no motion, no JS. Frame pieces come from ds-shell.css. */
+
+  /* ---- dim layer: the whole desktop goes dark while the switcher is held open ---- */
+  .dim { position: absolute; inset: 0; z-index: 10; background: rgba(8,8,9,.55); }
+
+  /* ---- simple content for the windows behind (blocks only, they sit under the dim) ---- */
+  .bgbars { display: flex; height: 100%; }
+  .bgbars .s { flex: none; width: 150px; padding: 16px 14px; background: var(--side);
+    border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; gap: 10px; }
+  .bgbars .m { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .bgbars i { display: block; height: 8px; background: rgba(255,255,255,.07); }
+  .bgbars i.big { height: 26px; width: 62%; background: rgba(255,255,255,.12); }
+  .bgterm { height: 100%; padding: 16px 20px; background: #0b0c0e; font: 12px/2 var(--mono); color: var(--dim); }
+  .bgterm .p { color: var(--ink2); }
+  .bgrows { height: 100%; padding: 14px 18px; display: flex; flex-direction: column; gap: 11px; }
+  .bgrows i { display: block; height: 8px; background: rgba(255,255,255,.07); }
+
+  /* ---- the switcher plate: frosted bar behind the cards, corner brackets ---- */
+  .plate { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 20;
+    padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+  .ptop { display: flex; align-items: center; }
+  .pcode { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  /* ---- window cards ---- */
+  .row { display: flex; gap: 16px; }
+  .card { width: 300px; }
+  .pv { width: 300px; height: 200px; overflow: hidden; border-radius: 2px;
+    border: 1px solid rgba(255,255,255,.16); background: var(--ground); }
+  .card.on .pv { border: 2px solid var(--yellow); }   /* selected = structural yellow frame */
+  .cap { display: flex; align-items: center; gap: 10px; margin-top: 12px; height: 38px; }
+  .cap .t { min-width: 0; }
+  .cap .label { white-space: nowrap; }
+  .card.on .cap .label { color: var(--ink); }         /* selected caption reads bright */
+  .cap .micro { margin-top: 4px; }
+  .under { width: 28px; height: 4px; margin-top: 8px; background: transparent; }
+  .card.on .under { background: var(--yellow); }      /* small yellow block under the caption */
+  .t22 { flex: none; width: 22px; height: 22px; border-radius: 2px; display: flex; align-items: center;
+    justify-content: center; background: var(--field); border: 1px solid rgba(255,255,255,.14);
+    font: 700 11px var(--body); color: var(--ink2); }
+  .t22 img { width: 22px; height: 22px; display: block; }
+
+  /* ---- miniature previews: simplified blocks of each app ---- */
+  /* Firefox = sidebar + content blocks */
+  .m-ff { display: flex; height: 100%; }
+  .m-ff .sb { flex: none; width: 72px; padding: 10px 8px; background: var(--side);
+    border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-ff .ct { flex: 1; padding: 12px; display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-ff i { display: block; height: 6px; border-radius: 1px; background: rgba(255,255,255,.08); }
+  .m-ff .sb i { background: rgba(255,255,255,.10); }
+  .m-ff .hd { height: 16px; width: 70%; background: rgba(255,255,255,.15); }
+
+  /* Discord = rail + list + bubbles */
+  .m-dc { display: flex; height: 100%; }
+  .m-dc .rail { flex: none; width: 30px; padding: 8px 0; background: var(--rail);
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+  .m-dc .rail i { width: 16px; height: 16px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .m-dc .list { flex: none; width: 76px; padding: 10px 8px; background: var(--side);
+    display: flex; flex-direction: column; justify-content: space-between; }
+  .m-dc .list i { display: block; height: 6px; border-radius: 1px; background: rgba(255,255,255,.09); }
+  .m-dc .chat { flex: 1; padding: 12px 10px; background: var(--chat); display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-dc .chat i { display: block; height: 20px; border-radius: 2px; background: rgba(255,255,255,.07); }
+
+  /* Phonograph = lavender square + list lines */
+  .m-ph { display: flex; gap: 12px; height: 100%; padding: 12px; background: #121217; }
+  .m-ph .art { flex: none; align-self: center; width: 132px; height: 132px; border-radius: 2px;
+    background: linear-gradient(180deg, #d9d2f7, var(--violet)); }
+  .m-ph .lst { flex: 1; align-self: stretch; display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-ph .lr { display: flex; align-items: center; gap: 8px; }
+  .m-ph .lr i { display: block; height: 6px; border-radius: 1px; background: rgba(255,255,255,.10); flex: 1; }
+  .m-ph .lr b { flex: none; width: 18px; height: 4px; background: rgba(255,255,255,.13); }
+
+  /* Kitty = mono text lines */
+  .m-kt { height: 100%; padding: 12px 14px; background: #0b0c0e; white-space: nowrap;
+    font: 8px/2 var(--mono); letter-spacing: .04em; color: var(--dim); }
+  .m-kt .p { color: var(--ink2); }
+  .m-kt .cur { display: inline-block; width: 5px; height: 9px; vertical-align: -1px; background: var(--ink2); }
+
+  /* Dolphin = sidebar + rows */
+  .m-dp { display: flex; height: 100%; }
+  .m-dp .sb { flex: none; width: 76px; padding: 10px 8px; background: var(--rail);
+    border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-dp .sb i { display: block; height: 6px; border-radius: 1px; background: rgba(255,255,255,.10); }
+  .m-dp .rows { flex: 1; padding: 12px; display: flex; flex-direction: column;
+    justify-content: space-between; }
+  .m-dp .r { display: flex; align-items: center; gap: 8px; }
+  .m-dp .r i { display: block; height: 6px; border-radius: 1px; background: rgba(255,255,255,.09); }
+
+  /* ---- key hint line under the row ---- */
+  .hint { display: flex; justify-content: center; align-items: center; gap: 10px; }
+  .hint i { font-style: normal; color: var(--ghost); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- 2-3 dimmed windows behind, simple .win.blur frames -->
+  <div class="win blur" style="left:64px; top:110px; width:820px; height:540px;">
+    <div class="wtop"><div class="wtitle">FIREFOX <span>· ENDFIELD WIKI</span></div>
+      <div class="wctl"><div class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div></div></div>
+    <div class="wbody"><div class="bgbars">
+      <div class="s"><i></i><i></i><i></i><i></i></div>
+      <div class="m"><i class="big"></i><i></i><i></i><i style="width:80%"></i><i></i><i style="width:55%"></i></div>
+    </div></div>
+  </div>
+
+  <div class="win blur" style="left:1050px; top:48px; width:700px; height:440px;">
+    <div class="wtop"><div class="wtitle">DOLPHIN <span>· HOME</span></div>
+      <div class="wctl"><div class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div></div></div>
+    <div class="wbody"><div class="bgbars">
+      <div class="s"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="m"><i></i><i style="width:75%"></i><i></i><i style="width:60%"></i></div>
+    </div></div>
+  </div>
+
+  <div class="win blur" style="left:1120px; top:560px; width:640px; height:400px;">
+    <div class="wtop"><div class="wtitle">KITTY <span>· ~/src/clockmost-desktop</span></div>
+      <div class="wctl"><div class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></div>
+        <div class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div></div></div>
+    <div class="wbody"><div class="bgterm">
+      <div><span class="p">benylin@clockmost</span> ~/src/clockmost-desktop (main)&gt; git status</div>
+      <div>On branch main</div>
+      <div>Changes not staged for commit:</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;modified:&nbsp;&nbsp; components/ds-alttab.html</div>
+      <div><span class="p">benylin@clockmost</span> ~/src/clockmost-desktop (main)&gt; █</div>
+    </div></div>
+  </div>
+
+  <!-- full-screen dim while the switcher is held -->
+  <div class="dim"></div>
+
+  <!-- the switcher, held open -->
+  <div class="plate frost">
+    <div class="bk tl"></div><div class="bk br"></div>
+
+    <div class="ptop">
+      <div class="label">WINDOWS · 5 OPEN · ALL WORKSPACES</div>
+      <div class="pcode"><span class="barcode"></span><span class="micro">SW-09 · HELD · SR-1415</span></div>
+    </div>
+
+    <div class="row">
+      <!-- 1 · Firefox -->
+      <div class="card">
+        <div class="pv"><div class="m-ff">
+          <div class="sb"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="ct"><i class="hd"></i><i></i><i style="width:85%"></i><i></i><i style="width:70%"></i><i></i>
+            <i style="width:90%"></i><i></i><i style="width:58%"></i><i></i><i style="width:76%"></i></div>
+        </div></div>
+        <div class="cap"><div class="t22"><img src="firefox.svg" alt=""></div>
+          <div class="t"><div class="label">FIREFOX · ENDFIELD WIKI</div><div class="micro">WS 02</div></div></div>
+        <div class="under"></div>
+      </div>
+
+      <!-- 2 · Discord (selected) -->
+      <div class="card on">
+        <div class="pv"><div class="m-dc">
+          <div class="rail"><i></i><i></i><i></i><i></i></div>
+          <div class="list"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="chat"><i style="width:80%"></i><i style="width:62%"></i><i style="width:72%"></i>
+            <i style="width:50%"></i><i style="width:84%"></i><i style="width:44%"></i><i style="width:66%"></i></div>
+        </div></div>
+        <div class="cap"><div class="t22">D</div>
+          <div class="t"><div class="label">DISCORD · #ENDFIELD-GENERAL</div><div class="micro">WS 02</div></div></div>
+        <div class="under"></div>
+      </div>
+
+      <!-- 3 · Phonograph -->
+      <div class="card">
+        <div class="pv"><div class="m-ph">
+          <div class="art"></div>
+          <div class="lst">
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+            <div class="lr"><i></i><b></b></div>
+          </div>
+        </div></div>
+        <div class="cap"><div class="t22">P</div>
+          <div class="t"><div class="label">PHONOGRAPH · GLASSY SKY</div><div class="micro">WS 02</div></div></div>
+        <div class="under"></div>
+      </div>
+
+      <!-- 4 · Kitty -->
+      <div class="card">
+        <div class="pv"><div class="m-kt">
+          <div><span class="p">benylin@clockmost</span> ~/src&gt; git status</div>
+          <div>On branch main</div>
+          <div>Your branch is up to date with 'origin/main'.</div>
+          <div>Changes not staged for commit:</div>
+          <div>&nbsp;&nbsp;modified:&nbsp; components/ds-alttab.html</div>
+          <div>&nbsp;&nbsp;modified:&nbsp; orders/09-report.md</div>
+          <div> </div>
+          <div><span class="p">benylin@clockmost</span> ~/src&gt; kit/shot.sh 09-1.png</div>
+          <div>wrote out/shots/09-1.png</div>
+          <div><span class="p">benylin@clockmost</span> ~/src&gt; <i class="cur"></i></div>
+        </div></div>
+        <div class="cap"><div class="t22">K</div>
+          <div class="t"><div class="label">KITTY · ~/SRC/CLOCKMOST-DESKTOP</div><div class="micro">WS 02</div></div></div>
+        <div class="under"></div>
+      </div>
+
+      <!-- 5 · Dolphin -->
+      <div class="card">
+        <div class="pv"><div class="m-dp">
+          <div class="sb"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="rows">
+            <div class="r"><i style="width:46%"></i><i style="width:16%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:38%"></i><i style="width:12%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:52%"></i><i style="width:14%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:42%"></i><i style="width:18%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:34%"></i><i style="width:12%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:48%"></i><i style="width:10%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:40%"></i><i style="width:16%"></i><i style="width:22%"></i></div>
+            <div class="r"><i style="width:30%"></i><i style="width:12%"></i><i style="width:22%"></i></div>
+          </div>
+        </div></div>
+        <div class="cap"><div class="t22">D</div>
+          <div class="t"><div class="label">DOLPHIN · HOME</div><div class="micro">WS 02</div></div></div>
+        <div class="under"></div>
+      </div>
+    </div>
+
+    <div class="hint micro">
+      <span class="kbd">ALT</span><span class="kbd">TAB</span><span>NEXT</span>
+      <i>/</i>
+      <span class="kbd">SHIFT</span><span>BACK</span>
+      <i>/</i>
+      <span>RELEASE TO SWITCH</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
