@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-firefox v3 · intel archive</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v3: inspired by the game's INTEL ARCHIVE + vertical mission tabs (refs/light-page-intel-archive.png,
+     refs/tabs-vertical-states.png) - rule 23: a light-grey page with dark sections. The chrome is light;
+     the website is the dark section. Yellow = selected / NEW, cyan = progress. */
+  :root { --paper: #e9eaed; --paper2: #f4f5f7; --rule: #3a3c41; --gink: #2b2d31; --gdim: #7d8089; --cyanp: #2aa8e0; }
+  .ffl { position: absolute; inset: 0; color: var(--gink);
+    background:
+      radial-gradient(ellipse 700px 420px at 72% 6%, rgba(255,255,255,.95), transparent 70%),
+      radial-gradient(rgba(43,45,49,.10) 1px, transparent 1.3px) 0 0 / 22px 22px,
+      linear-gradient(180deg, #f1f2f4, #e3e4e8); }
+  /* the long thin rules with a break in the middle (ref top + bottom) */
+  .hr2 { position: absolute; left: 40px; right: 40px; height: 6px; }
+  .hr2::before, .hr2::after { content: ""; position: absolute; top: 2px; height: 1px; background: var(--rule); }
+  .hr2::before { left: 0; width: 41%; }
+  .hr2::after { right: 0; width: 41%; }
+  .hr2 i { position: absolute; left: 41%; right: 41%; top: 1px; height: 3px; background: rgba(58,60,65,.18); }
+  .hr2 i::after { content: ""; position: absolute; left: 50%; top: -3px; width: 1px; height: 9px; background: var(--rule); }
+  /* header */
+  .crumb { position: absolute; left: 40px; top: 18px; }
+  .crumb small { display: block; font: 700 7px var(--mono); letter-spacing: .16em; color: var(--gdim); }
+  .crumb b { display: block; margin-top: 2px; font: 500 16px var(--body); letter-spacing: .04em; }
+  .sow { position: absolute; left: 40px; top: 60px; width: 330px; height: 16px; display: flex; align-items: center; gap: 8px; padding: 0 6px;
+    background: linear-gradient(90deg, rgba(43,45,49,.18), rgba(43,45,49,.05)); font: 700 10px var(--mono); letter-spacing: .14em; color: var(--gdim); }
+  .sow s { display: block; width: 60px; height: 2px; background: var(--gdim); }
+  .xc { position: absolute; right: 40px; top: 16px; width: 34px; height: 34px; border-radius: 50%; background: var(--gink); color: var(--paper2);
+    display: flex; align-items: center; justify-content: center; }
+  .xc svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.4; }
+  .mm { position: absolute; right: 84px; top: 22px; display: flex; gap: 6px; }
+  .mm span { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(43,45,49,.4); color: var(--gink); }
+  .mm svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 3; }
+  .rb { position: absolute; right: 40px; top: 60px; display: flex; align-items: center; gap: 10px; }
+  .rb .bc { width: 70px; height: 9px; background: repeating-linear-gradient(90deg, var(--gink) 0 2px, transparent 2px 4px, var(--gink) 4px 5px, transparent 5px 8px); opacity: .6; }
+  .rb .bars { display: flex; gap: 2px; align-items: flex-end; }
+  .rb .bars i { width: 6px; background: var(--gink); }
+  /* address row: centred between the rules */
+  .addr { position: absolute; left: 380px; right: 380px; top: 36px; height: 40px; display: flex; align-items: stretch;
+    background: rgba(255,255,255,.75); border: 1px solid rgba(43,45,49,.35); }
+  .addr .nav { display: flex; align-items: center; gap: 2px; padding: 0 8px; border-right: 1px solid rgba(43,45,49,.2); }
+  .addr .nav span { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--gink); }
+  .addr .nav span.off { color: rgba(43,45,49,.3); }
+  .addr .nav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .addr .sid { display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--gink); color: var(--paper2); font: 700 9px var(--mono); letter-spacing: .18em; }
+  .addr .sid svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.6; }
+  .addr .u { flex: 1; display: flex; align-items: center; padding: 0 14px; font: 14px var(--body); white-space: nowrap; overflow: hidden; }
+  .addr .u b { font-weight: 600; }
+  .addr .u span { color: var(--gdim); }
+  .addr .ex { display: flex; align-items: center; gap: 2px; padding: 0 8px; border-left: 1px solid rgba(43,45,49,.2); }
+  .addr .ex span { position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--gink); }
+  .addr .ex svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .addr .ex .nw2 { position: absolute; right: -2px; top: 0; font: 700 7px var(--mono); padding: 1px 3px; background: var(--yellow); color: #111; }
+  /* bookmarks: plain text on paper with tiny black squares */
+  .bms { position: absolute; left: 380px; right: 380px; top: 88px; display: flex; align-items: center; gap: 18px; font: 12px var(--body); color: var(--gink); }
+  .bms span { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .bms span::before { content: ""; width: 7px; height: 7px; background: var(--gink); }
+  .bms span.fd::before { width: 9px; height: 7px; background: none; border: 1.5px solid var(--gink); }
+  .bms .end { margin-left: auto; font: 9px var(--mono); letter-spacing: .16em; color: var(--gdim); }
+  .bms .end::before { display: none; }
+
+  /* left: vertical mission-style tabs */
+  .lt { position: absolute; left: 40px; top: 130px; width: 360px; bottom: 60px; display: flex; flex-direction: column; }
+  .dev { display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 10px; background: #17181b; color: #d8d9de; }
+  .dev .v { font: 700 13px var(--mono); }
+  .dev b { font: 700 9px var(--mono); letter-spacing: .14em; }
+  .dev i { font-style: normal; font: 6px var(--mono); letter-spacing: .1em; color: #7d8089; line-height: 1.2; }
+  .tab { position: relative; padding: 14px 44px 14px 18px; background: rgba(255,255,255,.55); border-bottom: 1px solid rgba(43,45,49,.18); }
+  .tab b { display: block; font: 500 17px var(--body); color: #5d6068; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab i { display: block; margin-top: 3px; font-style: normal; font: 13px var(--body); color: #9a9da4; }
+  .tab .gl { position: absolute; right: 16px; top: 50%; width: 14px; height: 14px; margin-top: -7px; fill: none; stroke: #a7aab0; stroke-width: 1.4; }
+  .tab.sel { overflow: hidden; background: var(--yellow); }
+  .tab.sel::before { content: ""; position: absolute; inset: 0; background: radial-gradient(rgba(17,17,17,.14) 1px, transparent 1.3px) 0 0 / 7px 7px; }
+  .tab.sel::after { content: "V"; position: absolute; right: 30px; top: -24px; font: 900 120px var(--body); color: rgba(17,17,17,.06); line-height: 1; }
+  .tab.sel b { position: relative; color: #111; font-size: 20px; font-weight: 600; }
+  .tab.sel i { position: relative; color: #3a3a1a; }
+  .tab.sel .gl { stroke: #111; }
+  .tab.hov { background: rgba(205,207,212,.8); }
+  .newt { display: flex; align-items: center; gap: 10px; padding: 12px 18px; font: 700 10px var(--mono); letter-spacing: .2em; color: var(--gdim); border: 1px dashed rgba(43,45,49,.3); margin-top: 10px; }
+  .lfoot { margin-top: auto; display: flex; align-items: center; gap: 10px; font: 8px var(--mono); letter-spacing: .16em; color: var(--gdim); }
+
+  /* pinned: dark archive cards (the dark sections) */
+  .pins { position: absolute; left: 420px; top: 130px; display: grid; grid-template-columns: repeat(4, 160px); gap: 12px; }
+  .pc { position: relative; height: 120px; overflow: hidden; color: #e8e9ec;
+    background: linear-gradient(160deg, #3a3c42, #17181b 70%); border-left: 3px solid var(--yellow); }
+  .pc .cd { position: absolute; left: 10px; top: 8px; font: 700 7px var(--mono); letter-spacing: .12em; padding: 1px 4px; background: #e8e9ec; color: #111; }
+  .pc .nw { position: absolute; right: 0; top: 0; font: 700 9px var(--mono); padding: 2px 6px; background: var(--yellow); color: #111; }
+  .pc .dots { position: absolute; right: 10px; top: 26px; width: 44px; height: 30px; background: radial-gradient(rgba(232,233,236,.35) 1px, transparent 1.3px) 0 0 / 6px 6px; }
+  .pc .big { position: absolute; left: 12px; top: 18px; font: 300 56px var(--body); color: rgba(232,233,236,.18); line-height: 1; }
+  .pc .nm { position: absolute; left: 10px; bottom: 30px; font: 700 10px var(--mono); letter-spacing: .2em; }
+  .pc .ct { position: absolute; left: 10px; right: 8px; bottom: 6px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .pc .ct i { font-style: normal; font: 12px var(--body); color: #c9ccd3; }
+  .pc .ct b { font: 600 18px var(--body); padding: 0 6px; color: #fff; }
+
+  /* the website = the big dark section, framed like the archive's hero card */
+  .site { position: absolute; left: 420px; right: 40px; top: 264px; bottom: 60px; overflow: hidden; border-left: 3px solid var(--cyanp); }
+  .site .corner { position: absolute; left: 12px; top: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; }
+  .site .corner b { font: 700 7px var(--mono); padding: 1px 4px; background: #e8e9ec; color: #111; letter-spacing: .1em; }
+  .site .prog { position: absolute; left: 0; right: 0; top: 0; height: 3px; z-index: 3; background: rgba(42,168,224,.25); }
+  .site .prog s { display: block; width: 100%; height: 100%; background: var(--cyanp); }
+  /* downloads: light card with black header strip */
+  .dlw { position: absolute; right: 60px; top: 82px; width: 400px; z-index: 6; background: var(--paper2); color: var(--gink);
+    border: 1px solid rgba(43,45,49,.35); box-shadow: 0 18px 40px rgba(0,0,0,.25); }
+  .dlw .dev { height: 26px; }
+  .dlw .row { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid rgba(43,45,49,.14); }
+  .dlw .row b { display: block; font: 600 14px var(--body); }
+  .dlw .row i { font-style: normal; font: 12px var(--body); color: var(--gdim); }
+  .dlw .row .num { font: 600 16px var(--body); padding: 0 6px; background: var(--gink); color: #fff; }
+  .dlw .row .num.p { background: var(--cyanp); }
+  .dlw .pb { grid-column: 1 / -1; height: 3px; margin-top: 8px; background: rgba(42,168,224,.2); }
+  .dlw .pb s { display: block; width: 64%; height: 100%; background: var(--cyanp); }
+  .dlw .ft { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; font: 8px var(--mono); letter-spacing: .16em; color: var(--gdim); }
+  .wire { position: absolute; border: 1px solid rgba(43,45,49,.3); }
+  .wire::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent calc(50% - .5px), rgba(43,45,49,.3) 50%, transparent calc(50% + .5px)); }
+
+  .page { position: absolute; inset: 0; overflow: hidden; background: #16181b; font-family: var(--body); }
+  .ghead2 { height: 72px; display: flex; align-items: center; gap: 14px; padding: 0 32px;
+    background: #1b1e22; border-bottom: 1px solid #2a2e33; }
+  .grepo { font-size: 17px; color: #c5cbd2; }
+  .grepo .gorg { color: #6ea8e0; }
+  .grepo .gslash { color: #5a6069; margin: 0 4px; }
+  .grepo .gname { font-weight: 600; color: #e2e6ea; }
+  .gpriv { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px;
+    border: 1px solid #3a4048; border-radius: 11px; font-size: 11px; color: #9aa3ad; letter-spacing: .04em; }
+  .gpriv svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .gstats { margin-left: auto; display: flex; gap: 10px; }
+  .gbtn { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px;
+    border: 1px solid #3a4048; border-radius: 6px; font-size: 12px; color: #9aa3ad; }
+  .gbtn svg { width: 13px; height: 13px; }
+  .gbtn svg.fill { fill: #9aa3ad; stroke: none; }
+  .gbtn svg.line { fill: none; stroke: #9aa3ad; stroke-width: 2; }
+  .gbtn b { color: #d3d8dd; font-weight: 600; }
+  .gwrap { width: 1180px; margin: 0 auto; padding: 24px 0 40px; }
+  .gtable { background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grow { display: grid; grid-template-columns: 300px 1fr 140px; align-items: center;
+    padding: 0 18px; height: 52px; border-bottom: 1px solid #26292e; }
+  .grow:last-child { border-bottom: 0; }
+  .grow.gcolhead { height: 42px; background: #191c20; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: #6d757f; }
+  .gcell { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 14px; color: #c9d0d7; }
+  .gcell svg { width: 16px; height: 16px; flex: none; }
+  .gcell.folder svg { fill: #6f97b8; }
+  .gcell.file svg { fill: none; stroke: #8b949e; stroke-width: 1.8; }
+  .gmsg { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #8b949e; }
+  .gdate { text-align: right; font-size: 12px; color: #6d757f; }
+  .greadme { margin-top: 22px; background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grbar { height: 42px; display: flex; align-items: center; padding: 0 18px; background: #191c20;
+    border-bottom: 1px solid #26292e; font-size: 13px; color: #9aa3ad; }
+  .grbody { padding: 22px 26px 26px; }
+  .grbody h1 { margin: 0 0 14px; font-size: 21px; font-weight: 600; color: #e2e6ea; }
+  .grbody p { margin: 0 0 12px; font-size: 14px; line-height: 1.65; color: #a7afb8; max-width: 860px; }
+  .grbody code { font: 12px var(--mono); color: #c9d0d7; background: #26292e; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="ffl">
+    <div class="crumb"><small>▲▲ FIREFOX 157.0</small><b>// BROWSER / CLOCKMOST</b></div>
+    <div class="sow">S.O.W.<s></s>9 TABS · 3 SPACES</div>
+    <div class="mm"><span><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></span></div>
+    <div class="xc"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></div>
+    <div class="rb"><span class="bc"></span><span class="bars"><i style="height:6px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:12px"></i></span></div>
+    <div class="hr2" style="top:104px"><i></i></div>
+
+    <div class="addr">
+      <div class="nav"><span><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><span class="off"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></span></div>
+      <div class="sid"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>GITEA</div>
+      <div class="u"><b>git.clockmost.com</b><span>/Benylin/clockmost-desktop</span></div>
+      <div class="ex"><span><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v3"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><i class="nw2">2</i></span><span><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1-5.4-3-5.4 3 1.2-6.1L3.3 9.4l6.1-.8z"/></svg></span></div>
+    </div>
+    <div class="bms"><span>Gitea</span><span>Plane</span><span>Zabbix</span><span>Authentik</span><span>Felt</span><span class="fd">Clockmost</span><span class="fd">FFXIV</span><span class="fd">PoE2</span><span>ArchWiki</span><span>Endfield wiki</span><span class="end">14 BOOKMARKS · OTHER ›</span></div>
+
+    <div class="lt">
+      <div class="dev"><span class="v">▼</span><b>SPACE · CLOCKMOST</b><i>TABS FOR THE CLOCKMOST SPACE<br>PERSONAL · GAMES · CTRL 1-3</i></div>
+      <div class="tab sel"><b>Benylin/clockmost-desktop</b><i>git.clockmost.com · 2 min</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div><div class="tab "><b>Glassy Sky · Sapphire</b><i>youtube.com · playing</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div><div class="tab "><b>Problems · Zabbix</b><i>zabbix.clockmost.com · 1 high</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div><div class="tab "><b>Clockmost Desktop · Plane</b><i>plane.clockmost.com</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div><div class="tab "><b>felt-dashboard</b><i>localhost:5173 · felt group</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div><div class="tab "><b>KeePassXC User Guide</b><i>keepassxc.org</i><svg class="gl" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12"/><path d="M1 13L13 1"/></svg></div>
+      <div class="newt">+ NEW TAB <span style="margin-left:auto">CTRL T</span></div>
+      <div class="lfoot"><span class="barcode" style="filter:invert(1)"></span>9 TABS · 2 GROUPS</div>
+    </div>
+
+    <div class="pins"><div class="pc"><span class="cd">00.101</span><span class=nw>NEW</span><span class="dots"></span><span class="big">G</span><span class="nm">GITEA</span><span class="ct"><i>Notifications</i><b style="background:#2b2d31">12</b></span></div><div class="pc"><span class="cd">00.102</span><span class=nw>NEW</span><span class="dots"></span><span class="big">Z</span><span class="nm">ZABBIX</span><span class="ct"><i>Problems</i><b style="background:#d91e36">1</b></span></div><div class="pc"><span class="cd">00.103</span><span class=nw>NEW</span><span class="dots"></span><span class="big">P</span><span class="nm">PLANE</span><span class="ct"><i>Open cards</i><b style="background:#2b2d31">7</b></span></div><div class="pc"><span class="cd">00.104</span><span class=nw>NEW</span><span class="dots"></span><span class="big">Y</span><span class="nm">YOUTUBE</span><span class="ct"><i>Watch later</i><b style="background:#2b2d31">23</b></span></div></div>
+    <div class="wire" style="left:1120px;top:130px;width:170px;height:56px"></div>
+    <div class="wire" style="left:1300px;top:130px;width:170px;height:56px"></div>
+
+    <div class="site">
+      <div class="prog"><s></s></div>
+      <div class="corner"><b>00.105</b><b>GIT.CLOCKMOST.COM</b></div>
+          <div class="page">
+            <div class="ghead2">
+              <div class="grepo"><span class="gorg">Benylin</span><span class="gslash">/</span><span class="gname">clockmost-desktop</span></div>
+              <span class="gpriv"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private</span>
+              <div class="gstats">
+                <span class="gbtn"><svg class="fill" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1-5.4-3-5.4 3 1.2-6.1L3.3 9.4l6.1-.8z"/></svg>Star <b>12</b></span>
+                <span class="gbtn"><svg class="line" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg>Watch <b>3</b></span>
+              </div>
+            </div>
+
+            <div class="gwrap">
+              <div class="gtable">
+                <div class="grow gcolhead"><span>Name</span><span>Last commit</span><span style="text-align:right">Updated</span></div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>design</span>
+                  <span class="gmsg">design: ds-shell.css house style, STYLE.md, layout orders 03-06</span>
+                  <span class="gdate">Oct 12, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>install</span>
+                  <span class="gmsg">install: fix plasma panel restore on the side monitor</span>
+                  <span class="gdate">Oct 9, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>packages</span>
+                  <span class="gmsg">pkg: bump endfield-shell to 0.9.2</span>
+                  <span class="gdate">Oct 5, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>README.md</span>
+                  <span class="gmsg">docs: folder table explains src/</span>
+                  <span class="gdate">Oct 2, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>TODO.md</span>
+                  <span class="gmsg">todo: note chat redo on hold</span>
+                  <span class="gdate">Sep 28, 2026</span>
+                </div>
+              </div>
+
+              <div class="greadme">
+                <div class="grbar">README.md</div>
+                <div class="grbody">
+                  <h1>clockmost-desktop</h1>
+                  <p>Mario's daily-driver desktop: KDE Plasma with a custom shell dressed in the visual language of
+                    Arknights: Endfield — but built as real functional apps, not game screens. Windows, a dock, a top
+                    bar, a browser, a music player. The skin is Endfield; the content is a working desktop.</p>
+                  <p>Every piece starts as a static 1920x1080 layout mock in <code>components/</code>, sharing one house
+                    style in <code>ds-shell.css</code>, so the whole desktop can be reviewed before anything is wired
+                    up. Design notes and work orders live in <code>orders/</code>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+    </div>
+
+    <div class="dlw">
+      <div class="dev"><span class="v">▼</span><b>DOWNLOADS</b><i>2 ITEMS · ~/DOWNLOADS</i></div>
+      <div class="row"><span><b>clockmost-desktop-recipe.tar.zst</b><i>18.2 MB · SHA256 OK</i></span><span class="num">DONE</span></div>
+      <div class="row"><span><b>cachyos-260809.iso</b><i>1.9 / 2.9 GB · 42 MB/s</i></span><span class="num p">64%</span><div class="pb"><s></s></div></div>
+      <div class="ft"><span>DL-2608</span><span>SHOW ALL ›</span></div>
+    </div>
+
+    <div class="hr2" style="bottom:36px"><i></i></div>
+  </div>
+</div>
+</body>
+</html>
