@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-kitty v2 · device console</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: inspired by the game's "reconnect" device screen (refs/layer-stack-reconnect.png) + the centred tab bar
+     (refs/tabs-centered.png). Steel ground, muted olive slabs behind the text, binary column, crosshair ring,
+     DEVICE TYPE strip. The ANSI 16 palette is the real Kitty theme (unchanged from v1). Square corners, no glows. */
+  :root {
+    --an-black:  #0d0d0e;  --an-red:     #d91e36;  --an-green:    #7ddb57;  --an-yellow:  #FFFA00;
+    --an-blue:   #5aa7ff;  --an-magenta: #ff1aac;  --an-cyan:     #3FD0E8;  --an-white:   #c9ccd3;
+    --an-brblack:#6b6e76;  --an-brred:   #ff5266;  --an-brgreen:  #a4f083;  --an-bryellow:#fffb5e;
+    --an-brblue: #8fc2ff;  --an-brmagenta:#ff5cc8; --an-brcyan:   #7ee4f2;  --an-brwhite: #f1f1f4;
+    --olive: rgba(200,196,58,.16);
+  }
+  .k { position: absolute; left: 160px; top: 70px; width: 1600px; height: 900px; display: flex; flex-direction: column;
+    background: #121316; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 80px rgba(0,0,0,.6); overflow: hidden; }
+
+  /* DEVICE TYPE strip = the title bar */
+  .dev { position: relative; height: 40px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 0 0 16px; background: #0a0a0b; }
+  .dev .v { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: var(--an-yellow); color: #111; font: 700 12px var(--mono); }
+  .dev b { font: 700 11px var(--mono); letter-spacing: .2em; color: #e8e9ec; }
+  .dev .mi { font: 6px var(--mono); letter-spacing: .1em; color: #6b6e76; line-height: 1.25; }
+  .dev .path { font: 12px var(--mono); letter-spacing: .06em; color: var(--an-white); }
+  .dev .path s { text-decoration: none; color: var(--an-brblack); }
+  .dev .wc { margin-left: auto; display: flex; height: 100%; }
+  .dev .wc span { width: 46px; height: 100%; display: flex; align-items: center; justify-content: center; color: #c9ccd3; border-left: 1px solid rgba(255,255,255,.06); }
+  .dev .wc svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 3; }
+  .dev .wc span.x { background: var(--an-red); color: #fff; }
+
+  /* centred tab band: hatch fading in from the sides, active tab = yellow plate hanging below */
+  .tabs { position: relative; height: 46px; flex: none; display: flex; justify-content: center; align-items: flex-start; gap: 8px;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 1px, transparent 1px 7px), #1b1c20;
+    border-bottom: 1px solid rgba(255,255,255,.08); z-index: 2; }
+  .tabs::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, #1b1c20 30%, #1b1c20 70%, transparent); }
+  .tabs > * { position: relative; }
+  .tabs .kbd { margin-top: 12px; border-radius: 0; }
+  .t { min-width: 170px; height: 46px; display: flex; flex-direction: column; justify-content: center; padding: 0 14px; color: var(--an-brblack); }
+  .t b { font: 700 11px var(--mono); letter-spacing: .18em; }
+  .t i { font-style: normal; font: 8px var(--mono); letter-spacing: .14em; color: #4a4d54; margin-top: 3px; }
+  .t.on { height: 62px; background: var(--an-yellow); color: #111; position: relative; overflow: hidden; }
+  .t.on::after { content: ""; position: absolute; inset: 0; background: url(ds-topo-card.svg) center / cover; opacity: .18; mix-blend-mode: multiply; }
+  .t.on i { color: rgba(17,17,17,.6); }
+  .t .notif.pin { top: 6px; right: 8px; }
+  .t:not(.on) { position: relative; }
+
+  /* the console */
+  .term { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--an-black);
+    font: 15px/1.55 var(--mono); padding: 30px 40px 0 110px; color: var(--an-white); }
+  /* L1 muted olive slabs (layer-stack ref) */
+  .term .slab { position: absolute; top: 0; bottom: 0; background: var(--olive); }
+  .term .slab.a { left: 0; width: 70px; }
+  .term .slab.b { right: 230px; width: 160px; background: rgba(200,196,58,.06); clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%); }
+  /* L2 binary column in the left slab */
+  .term .bin { position: absolute; left: 12px; top: 20px; font: 10px/1.5 var(--mono); color: rgba(200,196,58,.4); white-space: pre; }
+  /* L3 crosshair ring, bottom right */
+  .term .ring { position: absolute; right: 120px; bottom: -120px; width: 380px; height: 380px; border-radius: 50%; border: 1px solid rgba(241,241,244,.06); }
+  .term .ring::before { content: ""; position: absolute; inset: 40px; border-radius: 50%; border: 1px dashed rgba(241,241,244,.05); }
+  .term .ring::after { content: ""; position: absolute; left: 50%; top: -20px; bottom: -20px; width: 1px; background: rgba(241,241,244,.06); }
+  /* L4 corner L-brackets + triangle markers */
+  .term .lk { position: absolute; width: 40px; height: 40px; border: 0 solid rgba(241,241,244,.18); }
+  .term .lk.tl { left: 84px; top: 14px; border-left-width: 2px; border-top-width: 2px; }
+  .term .lk.br { right: 18px; bottom: 18px; border-right-width: 2px; border-bottom-width: 2px; }
+  .term .trg { position: absolute; right: 30px; top: 30px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid rgba(241,241,244,.3); }
+  /* L5 small print top-right */
+  .term .sp { position: absolute; right: 30px; top: 50px; text-align: right; font: 8px/1.6 var(--mono); letter-spacing: .14em; color: #44474d; }
+  .term .sp .bc { display: inline-block; width: 70px; height: 8px; background: repeating-linear-gradient(90deg, #44474d 0 2px, transparent 2px 4px, #44474d 4px 5px, transparent 5px 8px); }
+  .term .ln { position: relative; white-space: pre; }
+  /* the prompt line: a tag-like segment in front of each prompt */
+  .pr { display: inline-block; padding: 0 6px; margin-right: 6px; background: var(--an-cyan); color: #111; font-weight: 700; }
+  .u{color:var(--an-white)} .dim{color:var(--an-brblack)} .red{color:var(--an-red)} .dir{color:var(--an-blue)} .exe{color:var(--an-green)}
+  .cy{color:var(--an-cyan)} .yl{color:var(--an-yellow)} .mg{color:var(--an-magenta)} .gr{color:var(--an-green)}
+  .cur { display: inline-block; width: 9px; height: 17px; background: var(--an-yellow); vertical-align: -3px; }
+  .blank { height: 12px; }
+
+  /* status strip (kitty can't draw this itself - it's the shell's tab_bar/status line, keep it slim) */
+  .st { height: 30px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #0a0a0b; font: 9px var(--mono); letter-spacing: .16em; color: #6b6e76; }
+  .st .seg { display: flex; align-items: center; gap: 6px; }
+  .st .seg i { width: 8px; height: 8px; background: var(--c); }
+  .st .end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .st .bc { width: 50px; height: 7px; background: repeating-linear-gradient(90deg, #6b6e76 0 2px, transparent 2px 4px, #6b6e76 4px 5px, transparent 5px 8px); }
+
+  /* palette legend under the window (documents the real Kitty theme) */
+  .pal { position: absolute; left: 160px; top: 990px; display: flex; align-items: center; gap: 14px; }
+  .pal .sw { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pal .sw i { width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.15); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="k">
+    <div class="dev">
+      <span class="v">▼</span><b>KITTY</b>
+      <span class="mi">DEVICE TYPE.TTY 0.49<br>INSTRUCTIONS FOR CLOCKMOST PERSONNEL</span>
+      <span class="path">~/src/<s>clockmost-desktop</s></span>
+      <div class="wc"><span><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></span><span class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span></div>
+    </div>
+    <div class="tabs">
+      <span class="kbd">⌃⇧←</span>
+      <div class="t on"><b>1 · FISH</b><i>~/src/clockmost-desktop</i></div>
+      <div class="t"><b>2 · SSH</b><i>clockmost-admin</i><span class="notif pin"></span></div>
+      <div class="t"><b>3 · BTOP</b><i>cpu 12% · mem 41%</i></div>
+      <span class="kbd">⌃⇧→</span>
+    </div>
+    <div class="term">
+      <i class="slab a"></i><i class="slab b"></i>
+      <span class="bin">10 01 0
+0100 1
+1 0101
+01 10
+0001 01
+1010
+0 1101
+10 01 0
+0100 1
+1 0101
+01 10
+0001 01
+1010
+0 1101
+10 01 0
+0100 1
+1 0101
+01 10
+0001 01
+1010</span>
+      <i class="ring"></i><i class="lk tl"></i><i class="lk br"></i><i class="trg"></i>
+      <div class="sp"><span class="bc"></span><br>TTY-01 · 1600×860<br>FISH 4.9.3 · UTF-8</div>
+
+      <div class="ln"><span class="pr">BENYLIN</span><span class="dir">~/src/clockmost-desktop</span> <span class="yl">main</span> <span class="dim">›</span> git status</div>
+      <div class="ln">On branch <span class="yl">main</span></div>
+      <div class="ln">Changes not staged for commit:</div>
+      <div class="ln dim">  (use "git add &lt;file&gt;..." to update what will be committed)</div>
+      <div class="ln red">        modified:   components/ds-kitty-v2.html</div>
+      <div class="ln red">        modified:   components/index.html</div>
+      <div class="blank"></div>
+      <div class="ln"><span class="pr">BENYLIN</span><span class="dir">~/src/clockmost-desktop</span> <span class="yl">main</span> <span class="dim">›</span> ls -la</div>
+      <div class="ln"><span class="dir">drwxr-xr-x</span>  8 benylin benylin  4096 Oct 12 21:02 <span class="dir">.</span></div>
+      <div class="ln"><span class="dim">-rw-r--r--</span>  1 benylin benylin   210 Oct 12 17:48 <span class="dim">.gitignore</span></div>
+      <div class="ln"><span class="dir">drwxr-xr-x</span>  2 benylin benylin  4096 Oct 12 21:02 <span class="dir">components</span></div>
+      <div class="ln"><span class="dir">drwxr-xr-x</span>  2 benylin benylin  4096 Oct 12 19:31 <span class="dir">orders</span></div>
+      <div class="ln"><span class="exe">-rwxr-xr-x</span>  1 benylin benylin  1820 Oct 12 18:10 <span class="exe">shot.sh</span></div>
+      <div class="ln"><span class="u">-rw-r--r--</span>  1 benylin benylin 37090 Oct 12 21:02 README.md</div>
+      <div class="blank"></div>
+      <div class="ln"><span class="pr">BENYLIN</span><span class="dir">~/src/clockmost-desktop</span> <span class="yl">main</span> <span class="dim">›</span> paru -Syu</div>
+      <div class="ln"><span class="cy">::</span> Synchronizing package databases...</div>
+      <div class="ln dim">  cachyos-v3              412.6 KiB  2.1 MiB/s</div>
+      <div class="ln"><span class="cy">::</span> Starting full system upgrade...</div>
+      <div class="ln">  linux-cachyos   <span class="dim">7.2.9-1</span> <span class="mg">→</span> <span class="gr">7.2.10-1</span></div>
+      <div class="ln">  plasma-desktop  <span class="dim">6.7.5-1</span> <span class="mg">→</span> <span class="gr">6.8.0-1</span></div>
+      <div class="ln">  firefox         <span class="dim">157.0-1</span> <span class="mg">→</span> <span class="gr">157.0.1-1</span></div>
+      <div class="blank"></div>
+      <div class="ln"><span class="pr">BENYLIN</span><span class="dir">~/src/clockmost-desktop</span> <span class="yl">main</span> <span class="dim">›</span> <span class="cur"></span></div>
+    </div>
+    <div class="st">
+      <span class="seg" style="--c:#7ddb57"><i></i>FISH</span>
+      <span class="seg" style="--c:#FFFA00"><i></i>GIT · MAIN · 2 CHANGED</span>
+      <span class="seg" style="--c:#3FD0E8"><i></i>CACHYOS · 3 UPDATES</span>
+      <span class="end"><span>UTF-8 · 160×44</span><span class="bc"></span></span>
+    </div>
+  </div>
+
+  <div class="pal">
+    <span class="label">ENDFIELD ANSI 16</span>
+    <div class="sw"><i style="background:#0d0d0e"></i><span class="micro">0</span></div><div class="sw"><i style="background:#d91e36"></i><span class="micro">1</span></div><div class="sw"><i style="background:#7ddb57"></i><span class="micro">2</span></div><div class="sw"><i style="background:#FFFA00"></i><span class="micro">3</span></div><div class="sw"><i style="background:#5aa7ff"></i><span class="micro">4</span></div><div class="sw"><i style="background:#ff1aac"></i><span class="micro">5</span></div><div class="sw"><i style="background:#3FD0E8"></i><span class="micro">6</span></div><div class="sw"><i style="background:#c9ccd3"></i><span class="micro">7</span></div>
+    <div class="sw"><i style="background:#6b6e76"></i><span class="micro">8</span></div><div class="sw"><i style="background:#ff5266"></i><span class="micro">9</span></div><div class="sw"><i style="background:#a4f083"></i><span class="micro">10</span></div><div class="sw"><i style="background:#fffb5e"></i><span class="micro">11</span></div><div class="sw"><i style="background:#8fc2ff"></i><span class="micro">12</span></div><div class="sw"><i style="background:#ff5cc8"></i><span class="micro">13</span></div><div class="sw"><i style="background:#7ee4f2"></i><span class="micro">14</span></div><div class="sw"><i style="background:#f1f1f4"></i><span class="micro">15</span></div>
+  </div>
+  <div class="mock-note">ds-kitty v2 · device console · layout only</div>
+</div>
+</body>
+</html>
