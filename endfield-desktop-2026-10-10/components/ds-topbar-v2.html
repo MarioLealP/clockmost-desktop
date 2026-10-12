@@ -312,6 +312,12 @@
   .cal .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 18px 18px; }
   .cal .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
     background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
+
+  /* ---- colour pass (moderate): window bars in app colours (same as the dock), tray icons get colour underbars ---- */
+  .wsp .w i { background: var(--c, rgba(241,241,244,.28)); }
+  .wsp.on .w i { background: var(--c, #fffbb0); }
+  .ti::after { content: ""; position: absolute; left: 11px; right: 11px; bottom: 4px; height: 2px; background: var(--c, transparent); opacity: .85; }
+  .ti.open::after { background: var(--yellow); opacity: 1; }
 </style>
 </head>
 <body>
@@ -330,9 +336,9 @@
     <div class="left">
       <div class="mark"><b>CLOCKMOST</b><i><span class="bc"></span><span class="micro">DT-01 · CACHYOS</span></i></div>
       <div class="ws">
-        <div class="wsp"><span class="n">01</span><span class="w"><i></i></span></div>
-        <div class="wsp on"><span class="n">02</span><span class="w"><i></i><i></i><i></i></span></div>
-        <div class="wsp"><span class="n">03</span><span class="w"><i></i></span><span class="notif pin"></span></div>
+        <div class="wsp"><span class="n">01</span><span class="w"><i style="--c:#7ddb57"></i></span></div>
+        <div class="wsp on"><span class="n">02</span><span class="w"><i style="--c:#ff7a1a"></i><i style="--c:#cfc6f4"></i><i style="--c:#5aa7ff"></i></span></div>
+        <div class="wsp"><span class="n">03</span><span class="w"><i style="--c:#ff1aac"></i></span><span class="notif pin"></span></div>
       </div>
       <div class="focus"><b>PHONOGRAPH</b><span><i class="tri-m"></i><span class="micro">GLASSY SKY · 3 WINDOWS</span></span></div>
     </div>
@@ -360,12 +366,12 @@
       <div class="tray">
         <div class="wx"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><div class="ro"><span class="t">18°C</span><span class="f">LISBON · CLEAR</span></div></div>
         <span class="sep"></span>
-        <div class="ti clip" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
-        <div class="ti vol" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
-        <div class="ti" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
-        <div class="ti" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
+        <div class="ti clip" style="--c:#ff1aac" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
+        <div class="ti vol" style="--c:#3FD0E8" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
+        <div class="ti" style="--c:#5aa7ff" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
+        <div class="ti" style="--c:#7ddb57" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
         <span class="sep"></span>
-        <div class="ti" title="notifications"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span class="notif pin"></span></span></div>
+        <div class="ti" style="--c:#ff9e2c" title="notifications"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span class="notif pin"></span></span></div>
       </div>
       <div class="user">
         <div class="av">BE</div>

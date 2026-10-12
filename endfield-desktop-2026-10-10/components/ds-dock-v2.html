@@ -106,6 +106,9 @@
   .cap .run { color: var(--cyan); }
   .cap .win2 { color: var(--magenta); }
   .cap .lab { color: var(--yellow); }
+  /* dotted cyan line along the bottom edge (no per-app segments - Mario: those were too much) */
+  .strip { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; pointer-events: none;
+    background: radial-gradient(rgba(63,208,232,.85) 1px, transparent 1.3px) 0 0 / 4px 5px; }
 </style>
 </head>
 <body>
@@ -116,7 +119,7 @@
   </div>
 
   <div class="dock">
-    <i class="bk tl"></i><i class="bk br"></i>
+    <i class="bk tl"></i><i class="bk br"></i><i class="strip"></i>
     <div class="cap"><span class="label lab" style="font-size:10px">DOCK</span><span class="vbar"></span><span class="micro">09 PINNED</span></div>
     <div class="div"></div>
     <div class="drawer"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="k">WIN</span></div>
