@@ -89,6 +89,32 @@
   body.st-hidden .handle { display: block; }
   .flip { position: absolute; right: 16px; top: 14px; display: flex; gap: 8px; }
   .flip a { font: 9px var(--mono); letter-spacing: .18em; color: var(--dim); text-decoration: none; padding: 5px 8px; border: 1px solid rgba(255,255,255,.12); }
+
+  /* ---- colour pass: each app wears its colour ---- */
+  .tile { background:
+      linear-gradient(180deg, rgba(58,62,70,.5) 25%, color-mix(in srgb, var(--c, #3FD0E8) 42%, rgba(30,32,37,.6)) 100%); }
+  .tile .lt, .tile svg.lg { color: var(--c); }
+  .tile .lt { text-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
+  .tile svg.lg { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 60%, transparent)); }
+  .tile .cd { color: color-mix(in srgb, var(--c) 70%, #fff); opacity: .7; }
+  /* coloured corner cut, top-left */
+  .tile::before { content: ""; position: absolute; left: 0; top: 0; width: 12px; height: 12px; z-index: 1;
+    background: linear-gradient(135deg, var(--c) 50%, transparent 50%); }
+  .wb2 i { background: var(--c, rgba(241,241,244,.45)); }
+  /* the strip along the dock's bottom edge: dotted cyan base + each app's colour segment under its tile */
+  .strip { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; z-index: 0; pointer-events: none;
+    background: radial-gradient(rgba(63,208,232,.85) 1px, transparent 1.3px) 0 0 / 4px 5px; }
+  .slot::after { content: ""; position: absolute; left: -5px; right: -5px; top: calc(100% + 4px); height: 5px; background: var(--c); z-index: 1; }
+  .slot.dl::after { background: var(--yellow); }
+  .slot.focus { transform: none; }
+  .slot.focus .tile, .slot.focus .wb2 { transform: translateY(-10px); }
+  .slot.focus::before { top: -19px; }
+  /* glowing floor under the focused tile */
+  .slot.focus .tile { box-shadow: 0 10px 26px color-mix(in srgb, var(--c) 45%, transparent), inset 0 2px 10px rgba(0,0,0,.5); }
+  .drawer { background: linear-gradient(180deg, rgba(255,250,0,.30), rgba(255,250,0,.55)); }
+  .cap .run { color: var(--cyan); }
+  .cap .win2 { color: var(--magenta); }
+  .cap .lab { color: var(--yellow); }
 </style>
 </head>
 <body>
@@ -99,27 +125,27 @@
   </div>
 
   <div class="dock">
-    <i class="bk tl"></i><i class="bk br"></i>
-    <div class="cap"><span class="label" style="font-size:10px">DOCK</span><span class="vbar"></span><span class="micro">09 PINNED</span></div>
+    <i class="bk tl"></i><i class="bk br"></i><i class="strip"></i>
+    <div class="cap"><span class="label lab" style="font-size:10px">DOCK</span><span class="vbar"></span><span class="micro">09 PINNED</span></div>
     <div class="div"></div>
     <div class="drawer"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span class="k">WIN</span></div>
     <div class="div"></div>
 
-    <div class="slot focus"><div class="tile" style="--c:#ff7a1a"><img class="topo" src="ds-topo-card.svg" alt=""><img class="lg" src="firefox.svg" alt=""><span class="cd">FX</span><span class="ub"></span></div><div class="wb2"><i></i><i></i></div></div>
-    <div class="slot"><div class="tile" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">D</span><span class="cd">DC</span><span class="ub"></span></div><span class="notif pin"></span><div class="wb2"><i></i></div></div>
-    <div class="slot"><div class="tile" style="--c:#cfc6f4"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span class="cd">PH</span><span class="ub"></span></div><div class="wb2"><i></i></div>
+    <div class="slot focus" style="--c:#ff7a1a"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><img class="lg" src="firefox.svg" alt=""><span class="cd">FX</span><span class="ub"></span></div><div class="wb2"><i></i><i></i></div></div>
+    <div class="slot" style="--c:#5aa7ff"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">D</span><span class="cd">DC</span><span class="ub"></span></div><span class="notif pin"></span><div class="wb2"><i></i></div></div>
+    <div class="slot" style="--c:#cfc6f4"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span class="cd">PH</span><span class="ub"></span></div><div class="wb2"><i></i></div>
       <div class="tip"><b>PHONOGRAPH</b><span>1 WINDOW · GLASSY SKY</span></div></div>
-    <div class="slot"><div class="tile" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 6l6 6-6 6M12 18h8"/></svg><span class="cd">KT</span><span class="ub"></span></div><div class="wb2"><i></i><i></i><i></i></div></div>
-    <div class="slot"><div class="tile" style="--c:#3FD0E8"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg><span class="cd">DL</span><span class="ub"></span></div><div class="wb2"></div></div>
-    <div class="slot"><div class="tile" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">S</span><span class="cd">ST</span><span class="ub"></span></div><div class="wb2"></div></div>
-    <div class="slot"><div class="tile" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v3"/></svg><span class="cd">KP</span><span class="ub"></span></div><div class="wb2"></div></div>
-    <div class="slot"><div class="tile" style="--c:#ff1aac"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><rect x="9" y="9" width="6" height="6"/></svg><span class="cd">SP</span><span class="ub"></span></div><div class="wb2"></div></div>
-    <div class="slot"><div class="tile" style="--c:#ff9e2c"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">L</span><span class="cd">LT</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot" style="--c:#7ddb57"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 6l6 6-6 6M12 18h8"/></svg><span class="cd">KT</span><span class="ub"></span></div><div class="wb2"><i></i><i></i><i></i></div></div>
+    <div class="slot" style="--c:#3FD0E8"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg><span class="cd">DL</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot" style="--c:#5aa7ff"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">S</span><span class="cd">ST</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot" style="--c:#7ddb57"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v3"/></svg><span class="cd">KP</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot" style="--c:#ff1aac"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><svg class="lg" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><rect x="9" y="9" width="6" height="6"/></svg><span class="cd">SP</span><span class="ub"></span></div><div class="wb2"></div></div>
+    <div class="slot" style="--c:#ff9e2c"><div class="tile"><img class="topo" src="ds-topo-card.svg" alt=""><span class="lt">L</span><span class="cd">LT</span><span class="ub"></span></div><div class="wb2"></div></div>
 
     <div class="div"></div>
-    <div class="slot dl"><div class="tile"><div class="stack"><i style="top:14px"></i><i style="top:21px"></i><i style="top:28px"></i></div><span class="cnt">3</span><span class="prog"><s></s></span></div><div class="wb2"></div></div>
+    <div class="slot dl" style="--c:#FFFA00"><div class="tile"><div class="stack"><i style="top:14px"></i><i style="top:21px"></i><i style="top:28px"></i></div><span class="cnt">3</span><span class="prog"><s></s></span></div><div class="wb2"></div></div>
     <div class="div"></div>
-    <div class="cap r"><span class="micro">5 RUNNING · 8 WIN</span><span class="vbar"></span><span class="micro">DK-02</span></div>
+    <div class="cap r"><span class="micro"><span class="run">5 RUNNING</span> · <span class="win2">8 WIN</span></span><span class="vbar"></span><span class="micro">DK-02</span></div>
   </div>
   <div class="handle"></div>
 
