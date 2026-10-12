@@ -38,6 +38,7 @@ Do not copy its rules into your page and do not edit it. Your own CSS goes in yo
 - Small print in every component: a barcode, a micro code line (e.g. `SR-1415 · 33 RPM · SIDE A`), a label.
   Keep it faint (`--faint` / `--ghost`), it is texture, not content.
 - Corners: 2px on plates and windows, 6px on fields and buttons, pills round. No other radii.
+- Exception: **people avatars are circles** (Discord etc. - profile pictures and animated avatar frames are made for circles), with circular status dots. Servers in Discord: circles, active = rounded square.
 - Real content, Mario's world: user `benylin`, host `clockmost`, apps Firefox / Discord / Phonograph (Spotify) /
   Kitty / Dolphin / Steam / KeePassXC / Spectacle. No lorem ipsum. No text on characters' clothes (no characters).
 - Icons: simple line icons as inline SVG, stroke = currentColor, stroke-width ~2.4-3.2, square caps. The window

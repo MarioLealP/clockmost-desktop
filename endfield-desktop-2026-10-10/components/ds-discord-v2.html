@@ -123,6 +123,16 @@
   .mm small { font-size: 12px; color: var(--faint); }
   .mm.off { opacity: .45; }
   .mm.off b { color: var(--dim); }
+
+  /* people are circles (avatars + avatar decorations are made for circles), status dots too.
+     Servers: circles, the active one rounded-square - Discord's own convention for server art. */
+  .m .av, .mm .av, .up .av, .vc i { border-radius: 50%; }
+  .mm .av::after, .up .av::after { border-radius: 50%; }
+  .vc i.spk { outline: none; box-shadow: 0 0 0 2px var(--s1), 0 0 0 4px var(--green); }
+  .sv { border-radius: 50%; }
+  .sv.on { border-radius: 14px; }
+  .sv.add { border-radius: 50%; }
+  .sv .mb { border-radius: 9px; }
 </style>
 </head>
 <body>
