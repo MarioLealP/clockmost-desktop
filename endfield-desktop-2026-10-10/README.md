@@ -28,10 +28,10 @@ nothing; how things enter, layer and settle is the point.
 | **`src/`** | **the shared workplace - where finished parts live.** Plain JS/CSS, no build step, loaded with script tags |
 | `src/core.js` | the `EF` engine: SNAP/SETTLE/SOFT curves, rAF tweens (`EF.tween`, `?slow=N`), noise, topo contours, grain |
 | `src/tokens.css` | Endfield colours, chamfers, hatch, barcode, fonts as CSS variables |
-| `src/atoms/app-card.*` | the app card (`EF.appCard()`, `EF.appGrid()`); `app-card.html` = its gallery page |
-| `src/surfaces/drawer.*` | the app drawer (`EF.drawer()`), built on the card; `drawer.html` = its preview page |
+| `src/apps/phonograph.*`, `src/apps/chat.*` | the phonograph (Spotify) and chat (Discord) as reusable app surfaces (`EF.phonograph()`, `EF.chat()`); each `.html` = its preview page |
+| `src/assets/` | shared SVGs (topo card art, topo floor strip) |
 | `desktop.html` | the future fake desktop that composes everything. **Today only a smoke test** (proves core + tokens load) |
-| `components/` | standalone single-file mockups not yet moved into `src/`: `ds-spotify-v2` (phonograph, approved look), `ds-chat-v2` (Discord), `toast`, `topo` + its SVG motifs |
+| `components/` | standalone mockups. **`ds-app-drawer.html` = THE drawer** (Mario 10-12), with `ds-app-card.html`. Also the originals of the ported apps (`ds-spotify-v2`, `ds-chat-v2`), `toast` (stays standalone), `topo` + SVG motifs |
 | `concepts/12-endfield-space.*`, `kit/` | the older harness concept: camera, mosaic fullscreen, floor. Kept as a parts bin for the compose step |
 | `out/` | built harness pages; `out/shots/` = screenshots (git-ignored) |
 | `_hold-2026-10-12/` | retired files (old concepts 3/11/13, early card/drawer tests, old shots, tool leftovers). Purge once nothing is missed |

@@ -504,3 +504,7 @@
 ## 2026-10-12 - Claude (restore)
 - components/ds-app-drawer.html + ds-app-card.html moved back out of _hold (Mario is using ds-app-drawer as the
   drawer - Claude had wrongly called it superseded by src/surfaces/drawer).
+
+## 2026-10-12 - Claude (one drawer)
+- Mario: components/ds-app-drawer.html is THE drawer. Retired src/surfaces/drawer.* + src/atoms/app-card.* (Pi's
+  darker rebuild) to _hold-2026-10-12/src/. README updated. Mocks are layout-only from now on (no animation work).
