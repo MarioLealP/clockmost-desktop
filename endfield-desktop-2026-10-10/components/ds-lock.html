@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-lock · SDDM lock / login screen</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ===== big clock (left third in lock; top-centre, 64px in login) ===== */
+  .clock { font: 300 120px/1 var(--mono); letter-spacing: .06em; color: var(--ink); }
+  .clockblock { position: absolute; left: 120px; top: 392px; width: 640px; }
+  .clockblock .label { margin-top: 26px; }
+  .clockblock .triband { margin-top: 24px; }
+  .clockblock .status { margin-top: 24px; display: flex; flex-direction: column; gap: 9px; }
+
+  .loginclock { position: absolute; left: 0; right: 0; top: 118px; text-align: center; }
+  .loginclock .clock { font-size: 64px; }
+  .loginclock .label { margin-top: 20px; }
+  .loginclock .triband { margin: 22px auto 0; }
+
+  /* ===== user plate (lock, centre-right) ===== */
+  .plate { position: absolute; left: 1040px; top: 376px; width: 420px; padding: 32px 28px 24px; }
+  .prow { display: flex; align-items: center; gap: 18px; }
+  .avatar { width: 72px; height: 72px; flex: none; border-radius: 2px; background: var(--field);
+    border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center;
+    font: 700 22px var(--mono); letter-spacing: .12em; color: var(--ink); }
+  .uname { font: 22px var(--body); color: var(--ink); }
+  .prow .micro { margin-top: 6px; }
+  .plate .field { margin-top: 26px; }
+  .pw .typed { letter-spacing: .42em; color: var(--ink); }
+  .actrow { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+  .actrow .kbd { font-size: 13px; }
+  .actrow .tag { margin-left: auto; }
+  .plate .hr { margin-top: 22px; }
+  .smallprint { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
+
+  /* ===== login: user picker + session chips ===== */
+  .picker { position: absolute; left: 50%; top: 360px; transform: translateX(-50%); display: flex; gap: 28px; }
+  .ucol { width: 280px; }
+  .ucard { padding: 28px 24px 26px; text-align: center; }
+  .ucard.picked { border: 2px solid var(--yellow); padding: 26px 22px 24px; }
+  .ucard.guest { opacity: .55; }
+  .ucard .avatar { margin: 0 auto; }
+  .ucard .uname { margin-top: 16px; }
+  .ucard .micro { margin-top: 7px; }
+  .ucol .field { margin-top: 20px; }
+  .sessions { position: absolute; left: 50%; top: 640px; transform: translateX(-50%); display: flex; gap: 10px; }
+  .loginfoot { position: absolute; left: 50%; top: 692px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; }
+
+  /* ===== screen chrome (both states) ===== */
+  .corner-bl { position: absolute; left: 16px; bottom: 28px; }
+  .corner-br { position: absolute; right: 16px; bottom: 12px; display: flex; gap: 8px; }
+  .wb.us { font: 700 9px var(--mono); letter-spacing: .06em; }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- ============ state: lock (default) ============ -->
+  <div id="state-lock">
+    <div class="clockblock">
+      <div class="clock">20:41</div>
+      <div class="label">MONDAY · 12 OCTOBER 2026</div>
+      <div class="triband"></div>
+      <div class="status">
+        <div class="micro">CLOCKMOST.COM · TANG OK · VAULT OK</div>
+        <div class="micro">NOW PLAYING · GLASSY SKY</div>
+      </div>
+    </div>
+
+    <div class="panel plate">
+      <div class="bk tl"></div>
+      <div class="bk br"></div>
+      <div class="prow">
+        <div class="avatar">BE</div>
+        <div>
+          <div class="uname">benylin</div>
+          <div class="micro">LOCKED 20:39 · 2 MIN</div>
+        </div>
+      </div>
+      <div class="field pw"><b>›››</b><span class="typed">••••••</span></div>
+      <div class="actrow">
+        <span class="kbd">↵</span>
+        <span class="micro">UNLOCK</span>
+        <span class="tag">CAPS LOCK</span>
+      </div>
+      <div class="hr"></div>
+      <div class="smallprint">
+        <span class="barcode"></span>
+        <span class="micro">LK-2039 · GREETER · TTY2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ state: login ============ -->
+  <div id="state-login" style="display:none">
+    <div class="loginclock">
+      <div class="clock">20:41</div>
+      <div class="label">MONDAY · 12 OCTOBER 2026</div>
+      <div class="triband"></div>
+    </div>
+
+    <div class="picker">
+      <div class="ucol">
+        <div class="panel ucard picked">
+          <div class="avatar">BE</div>
+          <div class="uname">benylin</div>
+          <div class="micro">LOCAL · UID 1000</div>
+        </div>
+        <div class="field pw"><b>›››</b> PASSWORD</div>
+      </div>
+      <div class="ucol">
+        <div class="panel ucard guest">
+          <div class="avatar">GU</div>
+          <div class="uname">guest</div>
+          <div class="micro">TEMP SESSION · NO VAULT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sessions">
+      <span class="chip on">PLASMA (WAYLAND)</span>
+      <span class="chip">PLASMA (X11)</span>
+    </div>
+
+    <div class="loginfoot">
+      <span class="barcode"></span>
+      <span class="micro">SDDM · GREETER 0.21 · SEAT0</span>
+    </div>
+  </div>
+
+  <!-- ============ screen chrome (both states) ============ -->
+  <div class="corner-bl"><div class="micro">CACHYOS · PLASMA 6.8</div></div>
+  <div class="corner-br">
+    <div class="wb us">US</div>
+    <div class="wb"><svg viewBox="0 0 24 24"><path d="M4.5 10.5a11 11 0 0 1 15 0"/><path d="M8 14a6.5 6.5 0 0 1 8 0"/><path d="M11 17.5h2"/></svg></div>
+    <div class="wb"><svg viewBox="0 0 24 24"><path d="M12 4v7"/><path d="M7.5 7a7.5 7.5 0 1 0 9 0"/></svg></div>
+  </div>
+
+  <div class="mock-note" id="note">DS-LOCK · STATE: LOCK</div>
+</div>
+<script>
+const state = new URLSearchParams(location.search).get("state") || "lock";
+const isLogin = state === "login";
+document.getElementById("state-lock").style.display = isLogin ? "none" : "";
+document.getElementById("state-login").style.display = isLogin ? "" : "none";
+document.getElementById("note").textContent = isLogin ? "DS-LOCK · STATE: LOGIN" : "DS-LOCK · STATE: LOCK";
+</script>
+</body>
+</html>

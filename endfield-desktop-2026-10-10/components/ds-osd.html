@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>12 · OSD + power menu</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ---- the dimmed app window behind (order: one dimmed .win.blur) ---- */
+  .win.dimmed { filter: brightness(.52) saturate(.85); }
+  .page { padding: 44px 56px; max-width: 1040px; }
+  .page h2 { margin: 10px 0 18px; font: 600 30px var(--body); letter-spacing: .01em; color: var(--ink); }
+  .page p { margin: 0 0 16px; font: 15px/1.65 var(--body); color: var(--ink2); }
+  .page .hr { margin: 22px 0; width: 100%; }
+
+  /* ---- state: osd - three OSD plates side by side at y ~ 900 ---- */
+  .osdrow { position: absolute; left: 0; right: 0; top: 874px; z-index: 2;
+    display: flex; justify-content: center; gap: 40px; }
+  .osdcol { width: 320px; }
+  .osdcol .cap { margin-bottom: 10px; }
+  .osd { width: 320px; height: 64px; border-radius: 2px; display: flex; align-items: center;
+    gap: 12px; padding: 0 14px; }
+  .osd .ico { width: 26px; height: 26px; flex: none; fill: none; stroke: var(--ink2);
+    stroke-width: 2.6; stroke-linecap: square; }
+  .osd .ico.crimson { stroke: var(--crimson); }
+  .osd .col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .osd .num { font: 600 18px var(--mono); letter-spacing: .06em; color: var(--ink); }
+  /* segmented level bar: 20 segments */
+  .segbar { display: flex; gap: 3px; height: 10px; }
+  .segbar i { flex: 1; background: rgba(255,255,255,.12); }
+  .segbar i.on { background: var(--ink); }
+  .segbar i.hot { background: var(--yellow); }
+  /* media osd */
+  .art { width: 40px; height: 40px; flex: none; border-radius: 2px; background: var(--violet);
+    position: relative; overflow: hidden; }
+  .art::after { content: ""; position: absolute; inset: 0; opacity: .45;
+    background: radial-gradient(rgba(255,255,255,.5) 1px, transparent 1.3px) 0 0 / 6px 6px; }
+  .mtitle { font: 600 14px var(--body); color: var(--ink); }
+  .prog { height: 3px; border-radius: 2px; background: rgba(255,255,255,.14); position: relative; }
+  .prog i { position: absolute; left: 0; top: 0; bottom: 0; width: 27.7%; border-radius: 2px; background: var(--ink); }
+
+  /* ---- state: power ---- */
+  .dim { position: absolute; inset: 0; z-index: 20; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); background: rgba(8,8,9,.88); }
+  .powerwrap { position: absolute; inset: 0; z-index: 21;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ptime { font: 600 64px var(--mono); letter-spacing: .12em; color: var(--ink); line-height: 1; }
+  .psub { margin-top: 14px; display: flex; align-items: center; gap: 14px; }
+  .pplate { margin-top: 30px; padding: 28px; }
+  .optrow { display: flex; gap: 8px; }
+  .opt { width: 160px; height: 160px; border-radius: 2px; background: rgba(20,21,24,.72);
+    border: 1px solid rgba(255,255,255,.14);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .opt svg { width: 48px; height: 48px; fill: none; stroke: var(--ink2);
+    stroke-width: 2.8; stroke-linecap: square; }
+  .opt.hot { border: 2px solid var(--yellow); }
+  .opt.hot svg { stroke: var(--yellow); }
+  .pesc { margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- dimmed app window behind the OSDs -->
+  <div class="win blur dimmed" style="left:24px; top:24px; width:1872px; height:1032px;">
+    <div class="wtop">
+      <div class="wtitle">Firefox <span>· archwiki.org</span></div>
+      <div class="wctl">
+        <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="wbody">
+      <div class="page">
+        <div class="micro">Archwiki.org · audio · pipewire · edited 2026-09-30</div>
+        <h2>PipeWire</h2>
+        <p>PipeWire is a low-latency graph-based audio, video and device server for Linux. It routes sound between
+          applications and hardware, covers the use cases of PulseAudio and JACK, and keeps per-application volume,
+          capture and screen sharing in one place.</p>
+        <p>Configuration lives in <b style="font-family:var(--mono); color:var(--ink)">~/.config/pipewire</b>.
+          The session manager, WirePlumber, picks the devices and the graph connects them. Inspect the running graph
+          with <b style="font-family:var(--mono); color:var(--ink)">pw-top</b> and list a node with
+          <b style="font-family:var(--mono); color:var(--ink)">pw-cli ls Node</b>.</p>
+        <div class="hr"></div>
+        <p>For the DT 880 on the USB DAC, set the sample rate to 96 kHz in the device profile and leave the quantum
+          at 1024 for playback, 256 for the headset mic. Latency under 10 ms is comfortable for voice; music players
+          do not need more than the defaults.</p>
+        <p>Volume handling replaces the PulseAudio layers: application streams show up as nodes with their own
+          volumes, and the sink keeps the hardware mix. The shell volume keys talk to the default sink, so a
+          per-application mixer is only needed when one app should be quieter than the rest.</p>
+        <p>Bluetooth headsets switch to the headset profile on capture, which drops the output sample rate. If the
+          music keeps playing while the mic is open and sounds thin, that profile switch is the reason, not the
+          player. WirePlumber's headset-separator policy keeps A2DP and HSP on separate nodes so the switch is
+          visible in the graph before it happens.</p>
+        <p>Screen capture and window sharing go through the portal: the picker grants one source per request and the
+          permission is not remembered unless the session says so. OBS, Spectacle and the browser share the same
+          portal, so fixing one fixes all three.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- state: osd -->
+  <div id="s-osd">
+    <div class="osdrow">
+
+      <div class="osdcol">
+        <div class="micro cap">VOLUME KEY</div>
+        <div class="osd frost">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <div class="col">
+            <div class="label">Output · DT 880</div>
+            <div class="segbar">
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="hot"></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+          <div class="num">70</div>
+        </div>
+      </div>
+
+      <div class="osdcol">
+        <div class="micro cap">MIC KEY</div>
+        <div class="osd frost">
+          <svg class="ico crimson" viewBox="0 0 24 24"><path d="M15 9.3V4a3 3 0 0 0-5.9-.6"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1"/><path d="M17 17a7 7 0 0 1-12-5v-2m14 0v2c0 .8-.1 1.6-.3 2.3"/><path d="M12 19v2"/><path d="M8 23h8"/><path d="M3 3l18 18"/></svg>
+          <div class="col">
+            <div class="label">Mic · USB PNP</div>
+          </div>
+          <div class="tag">MUTED</div>
+        </div>
+      </div>
+
+      <div class="osdcol">
+        <div class="micro cap">MEDIA KEY</div>
+        <div class="osd frost">
+          <div class="art"></div>
+          <div class="col">
+            <div class="mtitle">Glassy Sky</div>
+            <div class="micro">Sapphire · 01:12 / 04:20</div>
+            <div class="prog"><i></i></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- state: power -->
+  <div id="s-power" hidden>
+    <div class="dim"></div>
+    <div class="powerwrap">
+      <div class="ptime">20:41</div>
+      <div class="psub">
+        <div class="micro">Clockmost · up 3d 04h</div>
+        <div class="barcode"></div>
+      </div>
+      <div class="pplate panel">
+        <div class="bk tl"></div>
+        <div class="bk br"></div>
+        <div class="optrow">
+
+          <div class="opt">
+            <svg viewBox="0 0 48 48"><rect x="10" y="21" width="28" height="19"/><path d="M16 21v-6a8 8 0 0 1 16 0v6"/><path d="M24 28v5"/></svg>
+            <div class="label">Lock</div>
+            <div class="kbd">L</div>
+          </div>
+
+          <div class="opt">
+            <svg viewBox="0 0 48 48"><path d="M42 25.58A18 18 0 1 1 22.42 6 14 14 0 0 0 42 25.58z"/></svg>
+            <div class="label">Sleep</div>
+            <div class="kbd">S</div>
+          </div>
+
+          <div class="opt">
+            <svg viewBox="0 0 48 48"><path d="M18 42H10a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4h8"/><path d="M32 34l10-10-10-10"/><path d="M42 24H18"/></svg>
+            <div class="label">Log Out</div>
+            <div class="kbd">O</div>
+          </div>
+
+          <div class="opt">
+            <svg viewBox="0 0 48 48"><path d="M46 8v12H34"/><path d="M40.98 30a18 18 0 1 1-4.24-18.72L46 20"/></svg>
+            <div class="label">Restart</div>
+            <div class="kbd">R</div>
+          </div>
+
+          <div class="opt hot">
+            <svg viewBox="0 0 48 48"><path d="M36.72 13.28a18 18 0 1 1-25.46 0"/><path d="M24 4v20"/></svg>
+            <div class="label">Shut Down</div>
+            <div class="kbd">P</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="micro pesc">ESC Cancel</div>
+    </div>
+  </div>
+
+</div>
+<div class="mock-note">12 · OSD + power menu · ?state=osd | power</div>
+<script>
+  const st = new URLSearchParams(location.search).get("state") || "osd";
+  document.getElementById("s-osd").hidden = st !== "osd";
+  document.getElementById("s-power").hidden = st !== "power";
+</script>
+</body>
+</html>

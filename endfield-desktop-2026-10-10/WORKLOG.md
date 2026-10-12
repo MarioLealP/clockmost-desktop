@@ -508,3 +508,15 @@
 ## 2026-10-12 - Claude (one drawer)
 - Mario: components/ds-app-drawer.html is THE drawer. Retired src/surfaces/drawer.* + src/atoms/app-card.* (Pi's
   darker rebuild) to _hold-2026-10-12/src/. README updated. Mocks are layout-only from now on (no animation work).
+
+## 2026-10-12 - Claude (layout pass: 11 mocks via claude-worker, 3 waves)
+- Mario (before dinner): "write a comprehensive design for each, and spawn multiple mimos to build each part".
+  Claude wrote components/ds-shell.css (house style distilled from phonograph + drawer + chat: frame, fields,
+  pills, panels, glass, frost, small print; calm Endfield .stage = ground + glows + faint topo floor) and
+  orders/STYLE.md (look rules, desktop geometry, worker rules), then one order per part (03-13).
+- Waves of parallel claude-worker runs (MiMo): 1 = window, top bar, dock, Firefox; 2 = Kitty, Dolphin, Alt+Tab,
+  notifications, Discord redo; 3 = OSD/power, lock. All stayed in scope; each wrote orders/NN-report.md.
+- Reviewed every state by screenshot. Only fix needed: power-menu backdrop too light (text showed through) ->
+  .88 + blur, done by Claude. Found: src/assets/topo-floor-strip.svg lacks xmlns (never rendered as an image);
+  added src/assets/topo-floor.svg with it for the stage (phonograph left untouched).
+- components/index.html = overview gallery. Total credit used for the 11 pages: ~$1.

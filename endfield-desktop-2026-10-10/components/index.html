@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Endfield desktop · layout overview</title>
+<style>
+  :root { --ground: #0F0F10; --ink: #f1f1f4; --dim: #7d8089; --yellow: #FFFA00; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 14px "Segoe UI", system-ui, sans-serif; }
+  header { padding: 28px 32px 8px; }
+  h1 { margin: 0; font: 600 18px Consolas, monospace; letter-spacing: .2em; }
+  h1 span { color: var(--dim); font-weight: 400; }
+  p { margin: 8px 0 0; color: var(--dim); font: 11px Consolas, monospace; letter-spacing: .14em; }
+  main { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 28px; padding: 24px 32px 48px; }
+  figure { margin: 0; }
+  .shot { display: block; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 2px; }
+  .shot:hover { border-color: var(--yellow); }
+  /* live page scaled down: 1920x1080 into the card width */
+  .shot iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; pointer-events: none;
+    transform-origin: 0 0; transform: scale(var(--k, .25)); }
+  figcaption { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  figcaption b { font: 600 13px Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; }
+  .t { font: 700 9px Consolas, monospace; letter-spacing: .14em; padding: 2px 6px; background: #26282d; color: var(--dim); }
+  .t.approved { background: var(--yellow); color: #111; }
+  .st { margin-left: auto; display: flex; gap: 8px; }
+  .st a { color: var(--dim); font: 11px Consolas, monospace; letter-spacing: .1em; text-decoration: none; }
+  .st a:hover { color: var(--yellow); }
+</style>
+</head>
+<body>
+<header>
+  <h1>CLOCKMOST <span>· ENDFIELD DESKTOP · LAYOUT OVERVIEW</span></h1>
+  <p>CLICK A CARD TO OPEN THE FULL 1920x1080 PAGE · STATE LINKS ON THE RIGHT · LAYOUT ONLY, NO MOTION · 2026-10-12</p>
+</header>
+<main>
+  <figure>
+    <a class="shot" href="ds-spotify-v2.html"><iframe src="ds-spotify-v2.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Phonograph (Spotify)</b> <span class="t approved">APPROVED</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-app-drawer.html"><iframe src="ds-app-drawer.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>App drawer</b> <span class="t approved">APPROVED</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-discord.html"><iframe src="ds-discord.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Discord (redo)</b> <span class="t new">NEW</span><span class="st"><a href="ds-discord.html?state=empty">empty</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-topbar.html"><iframe src="ds-topbar.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Top bar</b> <span class="t new">NEW</span><span class="st"><a href="ds-topbar.html?state=bar">bar</a> <a href="ds-topbar.html?state=quick">quick</a> <a href="ds-topbar.html?state=clip">clip</a> <a href="ds-topbar.html?state=cal">cal</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-dock.html"><iframe src="ds-dock.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Dock</b> <span class="t new">NEW</span><span class="st"><a href="ds-dock.html?state=hidden">hidden</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-window.html"><iframe src="ds-window.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Window + tiling</b> <span class="t new">NEW</span><span class="st"><a href="ds-window.html?state=float">float</a> <a href="ds-window.html?state=halves">halves</a> <a href="ds-window.html?state=stack">stack</a> <a href="ds-window.html?state=quad">quad</a> <a href="ds-window.html?state=full">full</a> <a href="ds-window.html?state=snap">snap</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-firefox.html"><iframe src="ds-firefox.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Firefox</b> <span class="t new">NEW</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-kitty.html"><iframe src="ds-kitty.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Kitty</b> <span class="t new">NEW</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-dolphin.html"><iframe src="ds-dolphin.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Dolphin</b> <span class="t new">NEW</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-alttab.html"><iframe src="ds-alttab.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Alt+Tab</b> <span class="t new">NEW</span><span class="st"></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-notify.html"><iframe src="ds-notify.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Notifications</b> <span class="t new">NEW</span><span class="st"><a href="ds-notify.html?state=popups">popups</a> <a href="ds-notify.html?state=center">center</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-osd.html"><iframe src="ds-osd.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>OSDs + power menu</b> <span class="t new">NEW</span><span class="st"><a href="ds-osd.html?state=osd">osd</a> <a href="ds-osd.html?state=power">power</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="ds-lock.html"><iframe src="ds-lock.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Lock / login</b> <span class="t new">NEW</span><span class="st"><a href="ds-lock.html?state=lock">lock</a> <a href="ds-lock.html?state=login">login</a></span></figcaption>
+  </figure>
+  <figure>
+    <a class="shot" href="toast.html"><iframe src="toast.html" loading="lazy" tabindex="-1" scrolling="no"></iframe></a>
+    <figcaption><b>Location toast (standalone)</b> <span class="t kept">KEPT</span><span class="st"></span></figcaption>
+  </figure>
+</main>
+<script>
+  // scale each live preview to its card width
+  const fit = () => document.querySelectorAll(".shot").forEach((s) => s.style.setProperty("--k", s.clientWidth / 1920));
+  addEventListener("resize", fit); fit();
+</script>
+</body>
+</html>

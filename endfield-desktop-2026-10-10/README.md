@@ -92,13 +92,15 @@ Direction: every part moves into `src/` (one shared engine), then `desktop.html`
 What failed before: "generic". Flat dark boxes with a yellow accent are NOT Endfield. Depth, layers, small detail
 and real motion are what make it.
 
-## Next job
+## Where things are (2026-10-12 evening)
 
-1. Port `components/ds-spotify-v2.html` into `src/` (app window surface) on the shared engine, with the same look.
-2. Same for chat (done 10-12). The toast is NOT ported (Mario: "not worth it") - it stays a standalone mock.
-3. Compose `desktop.html`: wallpaper + drawer + the phonograph and chat as windows entering, so Mario sees the motion together.
-
-Show it to Mario and get his reaction before polishing. He decides one thing at a time.
+**Open `components/index.html`** - the overview of every layout mock (live previews, state links).
+- Approved: `ds-spotify-v2.html` (phonograph), `ds-app-drawer.html` (drawer).
+- New layout mocks, for Mario's review: `ds-discord` (redo of ds-chat-v2), `ds-topbar` (bar / quick settings /
+  clipboard / calendar), `ds-dock`, `ds-window` (frame + tiling states), `ds-firefox`, `ds-kitty`, `ds-dolphin`,
+  `ds-alttab`, `ds-notify`, `ds-osd` (OSDs + power menu), `ds-lock` (lock + login).
+- They all link `components/ds-shell.css` (the shared house style). Specs: `orders/STYLE.md` + `orders/2026-10-12-*.md`.
+- Mocks are layout only; motion gets built on Linux.
 
 ## Technical traps
 
