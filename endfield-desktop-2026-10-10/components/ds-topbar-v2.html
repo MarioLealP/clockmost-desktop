@@ -273,6 +273,45 @@
     background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
   .cb .ft .k { display: flex; align-items: center; gap: 6px; }
   .cb .ft .kbd { border-radius: 0; }
+
+  /* ================= CALENDAR (?state=cal) - drops from the clock plate ================= */
+  .clock { cursor: pointer; }
+  .cal { position: absolute; left: 50%; top: 112px; width: 400px; margin-left: -200px; display: none; pointer-events: auto;
+    background: linear-gradient(180deg, rgba(26,27,32,.97), rgba(12,13,16,.98));
+    border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  body.st-cal .cal { display: block; }
+  .cal .bk { position: absolute; width: 14px; height: 14px; }
+  .cal .bk.tl { left: -1px; top: -1px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .cal .bk.br { right: -1px; bottom: -1px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  /* a short vertical tether from the tri-band down to the panel */
+  .cal::before { content: ""; position: absolute; left: 50%; top: -12px; width: 1px; height: 11px; background: rgba(241,241,244,.35); }
+  .cal .mh { display: flex; align-items: center; gap: 10px; padding: 16px 18px 10px; }
+  .cal .mh b { font: 700 16px var(--mono); letter-spacing: .28em; }
+  .cal .mh b span { color: var(--dim); font-weight: 400; }
+  .cal .mh .nav { margin-left: auto; display: flex; gap: 6px; }
+  .cal .mh .nav i { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.16); color: var(--ink2); font-style: normal; font: 12px var(--mono); }
+  .grid7 { display: grid; grid-template-columns: 34px repeat(7, 1fr); padding: 0 18px; row-gap: 2px; }
+  .grid7 .h { font: 700 9px var(--mono); letter-spacing: .18em; color: var(--dim); text-align: center; padding: 6px 0 8px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 4px; }
+  .grid7 .h.wk { text-align: left; color: var(--ghost); }
+  .grid7 .wk { font: 9px var(--mono); letter-spacing: .1em; color: var(--ghost); display: flex; align-items: center; }
+  .grid7 .d { position: relative; height: 36px; display: flex; align-items: center; justify-content: center; font: 13px var(--mono); color: var(--ink); }
+  .grid7 .d.we { color: var(--dim); }
+  .grid7 .d.out { color: var(--ghost); }
+  .grid7 .d.ev::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 8px; height: 2px; margin-left: -4px; background: var(--ink2); }
+  .grid7 .d.ev.hot::after { background: var(--crimson); }
+  .grid7 .d.today { outline: 1px solid var(--yellow); outline-offset: -3px; color: var(--yellow); font-weight: 700; }
+  .grid7 .d.today::before { content: ""; position: absolute; left: 3px; top: 3px; width: 6px; height: 6px; background: var(--yellow); }
+  .grid7 .wk.now { color: var(--yellow); }
+  .cal .ag { padding: 12px 18px 4px; }
+  .cal .ai { display: grid; grid-template-columns: 54px 46px 1fr auto; align-items: center; column-gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+  .cal .ai .dd { font: 700 10px var(--mono); letter-spacing: .14em; color: var(--ink2); }
+  .cal .ai .tm { font: 11px var(--mono); letter-spacing: .06em; color: var(--dim); }
+  .cal .ai .nm { font: 13px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal .ai .rail { width: 3px; height: 16px; display: inline-block; margin-right: 8px; vertical-align: -3px; }
+  .cal .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 18px 18px; }
+  .cal .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
+    background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
 </style>
 </head>
 <body>
@@ -335,6 +374,20 @@
     </div>
 
 
+
+    <!-- CALENDAR -->
+    <div class="cal">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="mh"><b>OCTOBER <span>2026</span></b><div class="nav"><i>‹</i><i>›</i></div></div>
+      <div class="grid7"><span class="h wk">WK</span><span class="h">MO</span><span class="h">TU</span><span class="h">WE</span><span class="h">TH</span><span class="h">FR</span><span class="h">SA</span><span class="h">SU</span><span class="wk">W40</span><span class="d out">28</span><span class="d out">29</span><span class="d out">30</span><span class="d">01</span><span class="d">02</span><span class="d we">03</span><span class="d we">04</span><span class="wk">W41</span><span class="d">05</span><span class="d">06</span><span class="d">07</span><span class="d">08</span><span class="d">09</span><span class="d we">10</span><span class="d we">11</span><span class="wk now">W42</span><span class="d today">12</span><span class="d ev hot">13</span><span class="d ev">14</span><span class="d">15</span><span class="d ev">16</span><span class="d we">17</span><span class="d we">18</span><span class="wk">W43</span><span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d we ev">24</span><span class="d we">25</span><span class="wk">W44</span><span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d ev">29</span><span class="d">30</span><span class="d we">31</span><span class="d out">01</span></div>
+      <div class="ag">
+        <div class="ai"><span class="dd">TUE 13</span><span class="tm">21:00</span><span class="nm"><i class="rail" style="background:var(--crimson)"></i>FFXIV raid · Savage night</span><span class="tag">IN 1D</span></div>
+        
+        <div class="ai"><span class="dd">WED 14</span><span class="tm">—</span><span class="nm"><i class="rail" style="background:var(--violet)"></i>Plasma 6.8 lands (update)</span><span class="micro">2D</span></div>
+        <div class="ai"><span class="dd">FRI 16</span><span class="tm">10:00</span><span class="nm"><i class="rail" style="background:var(--cyan)"></i>Backup restore check</span><span class="micro">4D</span></div>
+      </div>
+      <div class="ft"><span class="barcode"></span><span class="micro">ISO W42 · DAY 285/365 · UTC+1</span></div>
+    </div>
     <!-- CLIPBOARD -->
     <div class="cb" style="--notch: 276px">
       <i class="bk tl"></i><i class="bk br"></i>
@@ -404,9 +457,9 @@
   <div class="mock-note">ds-topbar v2 · HUD bar (appears on Win / top edge) · layout only</div>
 </div>
 <script>
-  // Layout states, switched by clicking (no motion): volume icon = quick settings, clipboard icon = clipboard.
-  // Click the open icon again, press Esc or click the desktop to close. ?state=quick|clip opens one directly.
-  const panels = { quick: ".ti.vol", clip: ".ti.clip" };
+  // Layout states, switched by clicking (no motion): volume icon = quick settings, clipboard icon = clipboard, clock = calendar.
+  // Click the open icon again, press Esc or click the desktop to close. ?state=quick|clip|cal opens one directly.
+  const panels = { quick: ".ti.vol", clip: ".ti.clip", cal: ".clock" };
   let cur = "bar";
   function setState(st) {
     cur = st;
@@ -420,7 +473,7 @@
     el.style.cursor = "pointer";
     el.addEventListener("click", (e) => { e.stopPropagation(); setState(cur === k ? "bar" : k); });
   }
-  document.querySelectorAll(".qs, .cb").forEach((p) => p.addEventListener("click", (e) => e.stopPropagation()));
+  document.querySelectorAll(".qs, .cb, .cal").forEach((p) => p.addEventListener("click", (e) => e.stopPropagation()));
   document.addEventListener("click", () => setState("bar"));
   addEventListener("keydown", (e) => { if (e.key === "Escape") setState("bar"); });
   setState(new URLSearchParams(location.search).get("state") || "bar");
