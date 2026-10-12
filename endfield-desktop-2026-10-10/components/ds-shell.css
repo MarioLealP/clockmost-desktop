@@ -1,0 +1,153 @@
+/* ds-shell.css - the shared house style for every layout mock in components/ (written by Claude, 2026-10-12).
+   Distilled from the three approved pieces: ds-spotify-v2 (phonograph), ds-chat-v2 (Discord), ds-app-drawer.
+   Workers: LINK this file, never edit it. Page-specific CSS goes in the page's own <style>.
+   Layout only: no animations, no transitions, no JS motion. */
+
+:root {
+  /* ground + surfaces (dark first) */
+  --ground: #0F0F10;   /* page / desktop ground */
+  --rail: #101114;     /* darkest strip (side rails) */
+  --side: #15161a;     /* sidebars */
+  --chat: #1a1b1f;     /* content surface */
+  --field: #26282d;    /* raised control */
+  --steel: #33363C;    /* lines, borders, unselected blocks */
+  /* ink */
+  --ink: #f1f1f4;      /* main text (never pure white on dark) */
+  --ink2: #c9ccd3;     /* secondary text, icons */
+  --dim: #7d8089;      /* labels */
+  --faint: #55575e;    /* micro print */
+  --ghost: #43454c;    /* the faintest print */
+  /* signal colours: yellow is STRUCTURAL (active / selected / focused), never decoration */
+  --yellow: #FFFA00;
+  --orange: #ff9e2c;   /* notifications (diamond) */
+  --crimson: #d91e36;  /* timers, urgent, NEW */
+  --green: #7ddb57;    /* online / ok */
+  --blue: #5aa7ff;     /* links, info */
+  --cyan: #3FD0E8;
+  --magenta: #ff1aac;
+  --violet: #cfc6f4;   /* phonograph accent (light lavender) */
+  /* type */
+  --mono: Consolas, "Cascadia Mono", ui-monospace, monospace;   /* titles, labels, micro print */
+  --body: "Segoe UI", system-ui, sans-serif;                      /* readable content */
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- stage: every mock page is a 1920x1080 screen ---------- */
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); color: var(--ink);
+  font-family: var(--body); }
+/* .stage = the desktop: Endfield ground - two soft glows + a faint topographic floor along the bottom.
+   Calm on purpose: the mocks show the shell/app, not a busy wallpaper. Glass still has the glows to blur. */
+.stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background:
+    radial-gradient(ellipse 900px 520px at 22% 30%, rgba(207,198,244,.10), transparent 70%),
+    radial-gradient(ellipse 800px 480px at 82% 72%, rgba(63,208,232,.07), transparent 70%),
+    linear-gradient(180deg, #0c0c0d 0%, #0c0c0d 54%, rgba(12,12,13,.86) 66%, rgba(12,12,13,.74) 100%),
+    url(../src/assets/topo-floor.svg) center bottom / 100% 46% no-repeat,
+    #0c0c0d; }
+/* .stage.wall = Mario's real (Windows) desktop screenshot, darkened - only where glass needs busy content behind */
+.stage.wall { background: linear-gradient(rgba(10,10,11,.72), rgba(10,10,11,.72)), #0F0F10 url(../wallpaper.png) center / cover; }
+/* .stage.plain = flat ground (full-screen apps) */
+.stage.plain { background: var(--ground); }
+/* one-line label for the page itself (top-left corner of the screen, outside the component) */
+.mock-note { position: absolute; left: 16px; bottom: 10px; z-index: 99; font: 9px var(--mono); letter-spacing: .18em;
+  color: var(--ghost); pointer-events: none; }
+
+/* ---------- window frame (every app window, incl. Firefox / Kitty / Dolphin) ---------- */
+.win { position: absolute; display: flex; flex-direction: column; overflow: hidden; border-radius: 2px;
+  background: var(--ground); border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 18px 50px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4); }
+.win.max { border: 0; border-radius: 0; box-shadow: none; }         /* maximized / fullscreen-app: no frame */
+/* title bar: 56px; title left (mono, wide tracking), optional centre slot, window buttons right; hairline under */
+.wtop { position: relative; flex: none; height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 20px; }
+.wtop::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: 0; height: 1px; background: rgba(255,255,255,.10); }
+.wtitle { font: 600 14px var(--mono); letter-spacing: .2em; color: var(--ink); white-space: nowrap; text-transform: uppercase; }
+.wtitle span { color: var(--dim); font-weight: 400; }
+.wtop .mid { flex: 1; display: flex; justify-content: center; min-width: 0; }
+.wctl { margin-left: auto; display: flex; gap: 8px; }
+.wb { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0;
+  background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; color: var(--ink2); }
+.wb.hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.38); color: #fff; }
+.wb svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: butt; }
+/* focused window: a 3px yellow block left of the title (structural yellow); unfocused: everything dimmer */
+.win.focus .wtitle::before { content: ""; display: inline-block; width: 3px; height: 14px; margin-right: 12px;
+  vertical-align: -2px; background: var(--yellow); }
+.win.blur .wtitle, .win.blur .wb { opacity: .45; }
+.wbody { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* big fullscreen apps (phonograph / chat style) use the taller bar: .wtop.tall */
+.wtop.tall { height: 86px; padding: 0 28px; }
+.wtop.tall::after { left: 28px; right: 28px; }
+.wtop.tall .wtitle { font-size: 18px; }
+.wtop.tall .wb { width: 30px; height: 30px; }
+
+/* ---------- controls ---------- */
+/* the search / input field (yellow >>> prompt) */
+.field { height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.22); border-radius: 6px; background: rgba(20,21,24,.55);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5); font: 13px var(--mono); letter-spacing: .14em; color: #8a8e96; }
+.field.sm { height: 32px; font-size: 12px; padding: 0 12px; }
+.field b { color: var(--yellow); font-weight: 700; letter-spacing: .1em; }
+/* light pill (the phonograph's "Sort by: Default") */
+.pill { display: inline-flex; align-items: center; gap: 10px; height: 30px; padding: 0 14px; border-radius: 15px;
+  background: #e9e9ee; color: #111; font: 700 11px var(--mono); letter-spacing: .16em; }
+/* dark pill / chip */
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px;
+  background: var(--field); color: var(--ink2); font: 11px var(--mono); letter-spacing: .1em; }
+.chip.on { background: var(--yellow); color: #111; }
+/* keycap */
+.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px;
+  border: 1px solid rgba(255,255,255,.25); border-bottom-width: 2px; border-radius: 4px; font: 700 10px var(--mono);
+  letter-spacing: .08em; color: var(--ink2); background: rgba(255,255,255,.04); }
+/* toggle switch (quick settings) */
+.tgl { display: inline-block; vertical-align: middle; width: 34px; height: 18px; border-radius: 9px; background: var(--steel); position: relative; flex: none; }
+.tgl::after { content: ""; position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 7px; background: var(--ink2); }
+.tgl.on { background: var(--yellow); }
+.tgl.on::after { left: 18px; background: #111; }
+/* slider (volume etc): track + fill + square knob */
+.sld { position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,.14); }
+.sld i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--ink); }
+.sld b { position: absolute; top: 50%; width: 12px; height: 12px; margin-left: -6px; transform: translateY(-50%); background: var(--ink); }
+
+/* ---------- surfaces ---------- */
+/* dark plate panel with the phonograph-list recipe: highlight top, brackets TL/BR, dotted bottom edge */
+.panel { position: relative; isolation: isolate; border-radius: 2px; }
+.panel::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 48px),
+    linear-gradient(180deg, rgba(23,24,28,.93), rgba(14,15,18,.95)); }
+.panel::after { content: ""; position: absolute; left: 24px; right: 24px; bottom: 5px; height: 14px; z-index: -1;
+  background: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1.3px) 0 0 / 9px 9px;
+  -webkit-mask-image: linear-gradient(0deg, #000, transparent); mask-image: linear-gradient(0deg, #000, transparent); }
+.bk { position: absolute; width: 18px; height: 18px; pointer-events: none; }
+.bk.tl { left: 10px; top: 10px; border-left: 2px solid rgba(241,241,244,.22); border-top: 2px solid rgba(241,241,244,.22); }
+.bk.br { right: 10px; bottom: 10px; border-right: 2px solid rgba(241,241,244,.22); border-bottom: 2px solid rgba(241,241,244,.22); }
+/* frosted glass, the drawer's material: solid light head fading into blurred dark glass */
+.glass { position: relative; overflow: hidden; border-radius: 2px; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+.glass::before { content: ""; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(180deg, #fff 0%, #fff 16%, rgba(255,255,255,.7) 24%, rgba(230,232,238,.32) 40%, rgba(40,42,48,.5) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); }
+.glass > * { position: relative; z-index: 1; }
+/* dark frosted glass (for bars over the wallpaper: top bar, dock, OSDs) */
+.frost { background: rgba(16,17,20,.62); -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,.10); }
+/* empty socket / placeholder area: dotted */
+.dots { background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.4px) 0 0 / 9px 9px, rgba(70,74,82,.3); }
+/* hairline rule */
+.hr { height: 1px; background: rgba(255,255,255,.10); }
+
+/* ---------- small print + markers ---------- */
+.micro { font: 9px var(--mono); letter-spacing: .18em; color: var(--faint); text-transform: uppercase; }
+.label { font: 700 11px var(--mono); letter-spacing: .2em; color: var(--dim); text-transform: uppercase; }
+.barcode { display: inline-block; width: 88px; height: 11px;
+  background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 5px, rgba(241,241,244,.5) 5px 6px, transparent 6px 9px); }
+/* notification diamond (static: no pulse in layout mocks) */
+.notif { display: inline-block; width: 9px; height: 9px; background: var(--orange); transform: rotate(45deg); flex: none; }
+/* crimson timer / urgent tag */
+.tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; background: var(--crimson); color: #fff;
+  font: 700 9px var(--mono); letter-spacing: .14em; }
+/* black timer tag (phonograph style) */
+.tag.black { background: #0b0b0c; color: var(--ink); border: 1px solid rgba(255,255,255,.12); }
+/* tri-band: yellow -> cyan -> magenta stripe. ONCE PER SCREEN at most. */
+.triband { display: block; height: 4px; width: 132px;
+  background: linear-gradient(90deg, var(--yellow) 0 33.3%, var(--cyan) 33.3% 66.6%, var(--magenta) 66.6%); }
+/* selected row / item (yellow block, dark text) - the chat's active channel */
+.sel { background: var(--yellow); color: #111; }
