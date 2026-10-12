@@ -94,8 +94,6 @@
   .tile { background:
       linear-gradient(180deg, rgba(58,62,70,.5) 25%, color-mix(in srgb, var(--c, #3FD0E8) 42%, rgba(30,32,37,.6)) 100%); }
   .tile .lt, .tile svg.lg { color: var(--c); }
-  .tile .lt { text-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
-  .tile svg.lg { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c) 60%, transparent)); }
   .tile .cd { color: color-mix(in srgb, var(--c) 70%, #fff); opacity: .7; }
   /* coloured corner cut, top-left */
   .tile::before { content: ""; position: absolute; left: 0; top: 0; width: 12px; height: 12px; z-index: 1;
@@ -109,8 +107,6 @@
   .slot.focus { transform: none; }
   .slot.focus .tile, .slot.focus .wb2 { transform: translateY(-10px); }
   .slot.focus::before { top: -19px; }
-  /* glowing floor under the focused tile */
-  .slot.focus .tile { box-shadow: 0 10px 26px color-mix(in srgb, var(--c) 45%, transparent), inset 0 2px 10px rgba(0,0,0,.5); }
   .drawer { background: linear-gradient(180deg, rgba(255,250,0,.30), rgba(255,250,0,.55)); }
   .cap .run { color: var(--cyan); }
   .cap .win2 { color: var(--magenta); }
