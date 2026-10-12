@@ -535,3 +535,11 @@
   default discord and retheme like this") - surfaces, mono small-caps labels, yellow = active server indicator /
   active channel tick, crimson mention badges, soft yellow mention highlight, circle avatars (Discord's own).
   No layout changes, so it survives Discord updates.
+- Dolphin = v2 (depot style: light head + capacity, filter pills, file-type colour underbars, dark sort foot).
+- Lock = v2: NO floor print (Mario disliked it). The clock plate is IDENTICAL to the top bar's (size, place,
+  content) so lock <-> desktop is seamless; minimal centred plate (circle avatar, password).
+- Window frame = v2: the KWin decoration for every app is Kitty v3's slim 34px strip (mono title, yellow tick
+  only when focused, bare button cells, crimson close on hover), frosted body, 8px gaps. Mario: "very simple".
+- First batch fully revisited 2026-10-12. Pattern that worked: tools you live in stay calm and close to the app's
+  real default layout, re-themed; each app borrows a different game screen (Firefox = Intel Archive, Dolphin =
+  depot, Kitty = glass), the shell shares one language (bar/dock/dropdowns/OSD).

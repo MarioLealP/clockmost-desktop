@@ -92,15 +92,14 @@ Direction: every part moves into `src/` (one shared engine), then `desktop.html`
 What failed before: "generic". Flat dark boxes with a yellow accent are NOT Endfield. Depth, layers, small detail
 and real motion are what make it.
 
-## Where things are (2026-10-12 evening)
+## Where things are (2026-10-12, end of day)
 
-**Open `components/index.html`** - the overview of every layout mock (live previews, state links).
-- Approved: `ds-spotify-v2.html` (phonograph), `ds-app-drawer.html` (drawer).
-- New layout mocks, for Mario's review: `ds-discord` (redo of ds-chat-v2), `ds-topbar` (bar / quick settings /
-  clipboard / calendar), `ds-dock`, `ds-window` (frame + tiling states), `ds-firefox`, `ds-kitty`, `ds-dolphin`,
-  `ds-alttab`, `ds-notify`, `ds-osd` (OSDs + power menu), `ds-lock` (lock + login).
-- They all link `components/ds-shell.css` (the shared house style). Specs: `orders/STYLE.md` + `orders/2026-10-12-*.md`.
-- Mocks are layout only; motion gets built on Linux.
+**Open `components/index.html`** - every mock with live previews and state links. Current versions:
+- Shell: `ds-topbar-v2` (bar + quick settings, clipboard, calendar, media, notifications, Felt button; click the
+  icons/clock/now-playing), `ds-dock-v2`, `ds-osd-v2` (+ `?state=power`), `ds-alttab-v2`, `ds-lock-v2`, `ds-window-v2`.
+- Apps: `ds-spotify-v2` (phonograph), `ds-app-drawer`, `ds-firefox-v3`, `ds-kitty-v3`, `ds-discord-v2`, `ds-dolphin-v2`.
+- Older versions stay next to them for comparison. Decisions for the real build: WORKLOG.md (2026-10-12 entries).
+- Shared style: `components/ds-shell.css` + `orders/STYLE.md`. Mocks are layout only; motion is built on Linux.
 
 ## Technical traps
 
