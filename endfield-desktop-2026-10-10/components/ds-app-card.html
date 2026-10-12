@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-app-card · test</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0F0F10 url(../wallpaper.png) center / cover; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  .card { position: relative; width: 136px; height: 136px; background: rgba(38,40,46,.45);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+    color: #e8e9ec; overflow: hidden; border-radius: 2px; }
+  .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+  .logo { position: absolute; left: 50%; top: 26px; width: 64px; height: 64px; margin-left: -32px; }
+  .name { position: absolute; left: 0; right: 0; top: 98px; text-align: center; font: 600 11px Consolas, monospace; letter-spacing: .12em; }
+  .code { position: absolute; left: 0; right: 0; top: 114px; text-align: center; font: 7px Consolas, monospace; letter-spacing: .22em; color: #6c6f76; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #FF7A1A; }
+</style>
+</head>
+<body>
+<div class="card">
+  <img class="topo" src="ds-topo-card.svg" alt="">
+  <img class="logo" src="firefox.svg" alt="">
+  <div class="name">Firefox</div>
+  <div class="code">v128 · BRW</div>
+  <div class="bar"></div>
+</div>
+</body>
+</html>

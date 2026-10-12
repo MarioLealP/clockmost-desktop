@@ -500,3 +500,7 @@
   same slide (timing), not a look difference. Listeners removed in destroy(), scoped to the root.
 - Lesson (Claude's): pixel thresholds only for settled shots. Mid-motion shots are timing-sensitive - check them by
   eye or with a loose bar (~0.5%), never the strict one, or the worker burns time on milliseconds.
+
+## 2026-10-12 - Claude (restore)
+- components/ds-app-drawer.html + ds-app-card.html moved back out of _hold (Mario is using ds-app-drawer as the
+  drawer - Claude had wrongly called it superseded by src/surfaces/drawer).
