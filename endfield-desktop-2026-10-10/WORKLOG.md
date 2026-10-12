@@ -531,3 +531,7 @@
   so it inherits the palette; custom Claude Code statusLine script (model block, cwd, branch + changes, ctx bar,
   mode). Mario: "looking great". Lesson: v2 (device-console furniture) was "WAY too busy" - a tool you live in
   stays calm.
+- Discord = v2 (ds-discord-v2.html). Real build: **default Discord layout (Equibop) + a CSS theme only** (Mario: "just use
+  default discord and retheme like this") - surfaces, mono small-caps labels, yellow = active server indicator /
+  active channel tick, crimson mention badges, soft yellow mention highlight, circle avatars (Discord's own).
+  No layout changes, so it survives Discord updates.
