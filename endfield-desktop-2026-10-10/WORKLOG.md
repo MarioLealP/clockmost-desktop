@@ -526,3 +526,8 @@
   300px tab sidebar with a collapsible 64px rail.
 - **Bookmarks bar: real favicons, greyscale, full colour on hover** (Mario: "greyscale sounds great") - userChrome.css
   filter, e.g. `#PersonalToolbar .bookmark-item .toolbarbutton-icon { filter: grayscale(1); }` + `:hover { filter: none; }`.
+- Kitty = v3 (ds-kitty-v3.html): calm frosted glass (kitty background_opacity + KWin blur), slim title + tab line,
+  one faint topo motif. Real build: Endfield ANSI 16 as the kitty theme; Claude Code /config theme = "dark (ANSI)"
+  so it inherits the palette; custom Claude Code statusLine script (model block, cwd, branch + changes, ctx bar,
+  mode). Mario: "looking great". Lesson: v2 (device-console furniture) was "WAY too busy" - a tool you live in
+  stays calm.
