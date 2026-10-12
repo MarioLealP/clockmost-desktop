@@ -212,6 +212,66 @@
     border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.03); }
   .qs .ft .a svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
   .qs .ft .a.pw { color: var(--crimson); border-color: rgba(217,30,54,.5); }
+
+  /* ================= CLIPBOARD (?state=clip) - its own recipe ================= */
+  .cb { position: absolute; right: 16px; top: 62px; width: 470px; display: none; pointer-events: auto;
+    background: linear-gradient(180deg, rgba(26,27,32,.97), rgba(12,13,16,.98));
+    border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  body.st-clip .cb { display: block; }
+  .cb::before { content: ""; position: absolute; top: -7px; right: var(--notch, 300px); width: 12px; height: 12px;
+    background: rgba(26,27,32,.97); border-left: 1px solid rgba(255,255,255,.12); border-top: 1px solid rgba(255,255,255,.12); transform: rotate(45deg); }
+  .cb .bk { position: absolute; width: 14px; height: 14px; }
+  .cb .bk.tl { left: -1px; top: -1px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .cb .bk.br { right: -1px; bottom: -1px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  /* head: big title + counters + vertical stack of tiny type counts */
+  .cb .hd { display: flex; align-items: flex-end; gap: 12px; padding: 18px 18px 12px; }
+  .cb .hd .ttl { font: 700 20px var(--mono); letter-spacing: .26em; line-height: 1; }
+  .cb .hd .ttl small { display: block; margin-top: 6px; font: 9px var(--mono); letter-spacing: .2em; color: var(--faint); }
+  .cb .hd .cnt { margin-left: auto; display: grid; grid-template-columns: auto auto; gap: 2px 10px; font: 8px var(--mono); letter-spacing: .16em; color: var(--faint); }
+  .cb .hd .cnt b { color: var(--ink2); font-weight: 700; text-align: right; }
+  .cb .srch { margin: 0 18px 12px; }
+  .cb .sect { display: flex; align-items: center; gap: 8px; padding: 8px 18px 6px; }
+  .cb .sect .ln { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  /* entries */
+  .ce { position: relative; display: grid; grid-template-columns: 26px 40px 1fr auto; align-items: center; column-gap: 10px;
+    min-height: 44px; padding: 8px 18px; border-bottom: 1px solid rgba(255,255,255,.05); }
+  .ce .no { font: 10px var(--mono); letter-spacing: .1em; color: var(--faint); }
+  .ce .ty { justify-self: start; font: 700 8px var(--mono); letter-spacing: .14em; padding: 3px 5px; border: 1px solid rgba(255,255,255,.18); color: var(--ink2); }
+  .ce .ty.url { color: var(--blue); border-color: rgba(90,167,255,.4); }
+  .ce .ty.cmd { color: var(--green); border-color: rgba(125,219,87,.4); }
+  .ce .ty.img { color: var(--violet); border-color: rgba(207,198,244,.45); }
+  .ce .ty.hex { color: var(--orange); border-color: rgba(255,158,44,.45); }
+  .ce .tx { min-width: 0; font: 13px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ce .tx.mono { font: 12px var(--mono); }
+  .ce .tx.two { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.35; }
+  .ce .ag { font: 9px var(--mono); letter-spacing: .14em; color: var(--ghost); display: flex; align-items: center; gap: 6px; }
+  .ce .pin { width: 10px; height: 12px; fill: none; stroke: var(--ink2); stroke-width: 2; }
+  /* selected: yellow block with the chevron cut on its right edge (same as Discord's selected card) */
+  .ce.sel { background: var(--yellow); color: #111; border-bottom-color: transparent; margin-right: 10px; padding-right: 30px;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%); }
+  .ce.sel .no, .ce.sel .tx, .ce.sel .ag { color: #111; }
+  .ce.sel .ty { color: #111; border-color: rgba(17,17,17,.5); }
+  .ce.sel::after { content: ""; position: absolute; right: 64px; top: 7px; width: 30px; height: 30px; opacity: .8;
+    background: radial-gradient(rgba(17,17,17,.35) 1px, transparent 1.3px) 0 0 / 6px 6px; }
+  /* image entry: chamfered thumbnail + size */
+  .ce.im { min-height: 86px; }
+  .thumb { position: relative; width: 120px; height: 68px; background: #1d1f24; border: 1px solid rgba(255,255,255,.14);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); }
+  .thumb i { position: absolute; background: rgba(241,241,244,.18); }
+  .thumb .a { left: 6px; top: 6px; right: 6px; height: 6px; }
+  .thumb .b { left: 6px; top: 16px; width: 30px; bottom: 6px; }
+  .thumb .c { left: 42px; top: 16px; right: 6px; height: 22px; background: rgba(207,198,244,.45); }
+  .thumb .d { left: 42px; top: 44px; width: 50px; height: 4px; }
+  .im .meta { display: flex; flex-direction: column; gap: 4px; margin-left: 10px; font: 9px var(--mono); letter-spacing: .16em; color: var(--faint); }
+  .im .row { display: flex; align-items: center; }
+  /* hex entry: swatch */
+  .sw { display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; border: 1px solid rgba(255,255,255,.3); }
+  .cb .ft { position: relative; display: flex; align-items: center; gap: 14px; padding: 12px 18px 18px; border-top: 1px solid rgba(255,255,255,.08); }
+  .cb .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
+    background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
+  .cb .ft .k { display: flex; align-items: center; gap: 6px; }
+  .cb .ft .kbd { border-radius: 0; }
 </style>
 </head>
 <body>
@@ -260,7 +320,7 @@
       <div class="tray">
         <div class="wx"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><div class="ro"><span class="t">18°C</span><span class="f">LISBON · CLEAR</span></div></div>
         <span class="sep"></span>
-        <div class="ti" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
+        <div class="ti clip" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
         <div class="ti vol" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
         <div class="ti" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
         <div class="ti" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
@@ -273,6 +333,34 @@
       </div>
     </div>
 
+
+    <!-- CLIPBOARD -->
+    <div class="cb" style="--notch: 276px">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="hd">
+        <div class="ttl">CLIPBOARD<small>WIN + V · 50 KEPT · IMAGES ON</small></div>
+        <div class="cnt"><span>TXT</span><b>31</b><span>URL</span><b>09</b><span>IMG</span><b>07</b><span>CMD</span><b>03</b></div>
+      </div>
+      <div class="srch"><div class="field sm" style="border-radius:0"><b>›››</b> SEARCH CLIPBOARD</div></div>
+      <div class="sect"><span class="label">PINNED</span><span class="ln"></span><span class="micro">02</span></div>
+      <div class="ce"><span class="no">P1</span><span class="ty">TXT</span><span class="tx mono">192.168.10.110</span><span class="ag"><svg class="pin" viewBox="0 0 10 12"><path d="M2 1h6M3 1v4L1 7h8L7 5V1M5 7v5"/></svg></span></div>
+      <div class="ce"><span class="no">P2</span><span class="ty hex">HEX</span><span class="tx mono"><span class="sw" style="background:#FFFA00"></span>#FFFA00</span><span class="ag"><svg class="pin" viewBox="0 0 10 12"><path d="M2 1h6M3 1v4L1 7h8L7 5V1M5 7v5"/></svg></span></div>
+      <div class="sect"><span class="label">RECENT</span><span class="ln"></span><span class="micro">48</span></div>
+      <div class="ce sel"><span class="no">01</span><span class="ty cmd">CMD</span><span class="tx mono">git push origin HEAD:refs/for/main</span><span class="ag">NOW</span></div>
+      <div class="ce im"><span class="no">02</span><span class="ty img">IMG</span>
+        <span class="row"><span class="thumb"><i class="a"></i><i class="b"></i><i class="c"></i><i class="d"></i></span>
+          <span class="meta"><span>PNG · 1920×1080</span><span>SPECTACLE</span><span>412 KB</span></span></span><span class="ag">2M</span></div>
+      <div class="ce"><span class="no">03</span><span class="ty url">URL</span><span class="tx">git.clockmost.com/Benylin/clockmost-desktop/pulls/14</span><span class="ag">6M</span></div>
+      <div class="ce"><span class="no">04</span><span class="ty">TXT</span><span class="tx two">raid moved to 21:00 tonight — bring the food pots this time, we lost the last pull to enrage</span><span class="ag">14M</span></div>
+      <div class="ce"><span class="no">05</span><span class="ty cmd">CMD</span><span class="tx mono">journalctl -b -p err --no-pager | tail -50</span><span class="ag">31M</span></div>
+      <div class="ce"><span class="no">06</span><span class="ty url">URL</span><span class="tx">wiki.archlinux.org/title/PipeWire</span><span class="ag">1H</span></div>
+      <div class="ft">
+        <span class="k"><span class="kbd">↵</span><span class="micro">PASTE</span></span>
+        <span class="k"><span class="kbd">P</span><span class="micro">PIN</span></span>
+        <span class="k"><span class="kbd">DEL</span><span class="micro">REMOVE</span></span>
+        <span class="k" style="margin-left:auto"><span class="kbd">ESC</span><span class="micro">CLOSE</span></span>
+      </div>
+    </div>
     <!-- QUICK SETTINGS -->
     <div class="qs" style="--notch: 248px">
       <i class="bk tl"></i><i class="bk br"></i>
@@ -319,6 +407,7 @@
   const st = new URLSearchParams(location.search).get("state") || "bar";
   document.body.classList.add("st-" + st);
   if (st === "quick") document.querySelector(".ti.vol").classList.add("open");
+  if (st === "clip") document.querySelector(".ti.clip").classList.add("open");
 </script>
 </body>
 </html>
