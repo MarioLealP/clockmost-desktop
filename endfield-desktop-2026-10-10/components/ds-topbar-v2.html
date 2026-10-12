@@ -133,6 +133,7 @@
 
   /* ================= QUICK SETTINGS (?state=quick) - its own recipe ================= */
   .ti.open { color: var(--yellow); }
+  .ti:hover { color: var(--ink); }
   .qs { position: absolute; right: 16px; top: 62px; width: 432px; display: none; pointer-events: auto;
     background: linear-gradient(180deg, rgba(30,31,36,.96), rgba(13,14,17,.97));
     border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55);
@@ -403,11 +404,26 @@
   <div class="mock-note">ds-topbar v2 · HUD bar (appears on Win / top edge) · layout only</div>
 </div>
 <script>
-  // ?state=quick opens the quick settings panel (layout states, no motion)
-  const st = new URLSearchParams(location.search).get("state") || "bar";
-  document.body.classList.add("st-" + st);
-  if (st === "quick") document.querySelector(".ti.vol").classList.add("open");
-  if (st === "clip") document.querySelector(".ti.clip").classList.add("open");
+  // Layout states, switched by clicking (no motion): volume icon = quick settings, clipboard icon = clipboard.
+  // Click the open icon again, press Esc or click the desktop to close. ?state=quick|clip opens one directly.
+  const panels = { quick: ".ti.vol", clip: ".ti.clip" };
+  let cur = "bar";
+  function setState(st) {
+    cur = st;
+    document.body.className = document.body.className.replace(/\bst-\S+/g, "").trim();
+    document.body.classList.add("st-" + st);
+    for (const [k, sel] of Object.entries(panels)) document.querySelector(sel).classList.toggle("open", k === st);
+    history.replaceState(null, "", st === "bar" ? location.pathname : "?state=" + st);
+  }
+  for (const [k, sel] of Object.entries(panels)) {
+    const el = document.querySelector(sel);
+    el.style.cursor = "pointer";
+    el.addEventListener("click", (e) => { e.stopPropagation(); setState(cur === k ? "bar" : k); });
+  }
+  document.querySelectorAll(".qs, .cb").forEach((p) => p.addEventListener("click", (e) => e.stopPropagation()));
+  document.addEventListener("click", () => setState("bar"));
+  addEventListener("keydown", (e) => { if (e.key === "Escape") setState("bar"); });
+  setState(new URLSearchParams(location.search).get("state") || "bar");
 </script>
 </body>
 </html>
