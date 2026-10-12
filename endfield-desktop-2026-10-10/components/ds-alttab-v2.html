@@ -5,86 +5,65 @@
 <title>ds-alttab v2 · window switcher</title>
 <link rel="stylesheet" href="ds-shell.css">
 <style>
-  /* v2: dock/popup language - hatched plate, tick ruler, brackets, flat app colours (no glow),
-     selected = lifted + yellow frame + pointer (like the dock's focused app). Square corners. */
-  .dim { position: absolute; inset: 0; background: rgba(8,8,9,.62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .sw { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 22px 26px 18px;
-    border: 1px solid rgba(255,255,255,.12); box-shadow: 0 30px 80px rgba(0,0,0,.6);
-    background:
-      linear-gradient(90deg, rgba(16,17,20,0), rgba(16,17,20,.8) 25%, rgba(16,17,20,.8) 75%, rgba(16,17,20,0)),
-      repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 1px, transparent 1px 7px),
-      linear-gradient(180deg, rgba(30,31,36,.95), rgba(14,15,18,.95)); }
-  .sw::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 7px; pointer-events: none;
-    background:
-      repeating-linear-gradient(90deg, rgba(241,241,244,.35) 0 1px, transparent 1px 64px) 0 0 / 100% 7px,
-      repeating-linear-gradient(90deg, rgba(241,241,244,.18) 0 1px, transparent 1px 8px) 0 0 / 100% 3px no-repeat; }
-  .sw .bk { position: absolute; width: 14px; height: 14px; }
-  .sw .bk.tl { left: -2px; top: -2px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
-  .sw .bk.br { right: -2px; bottom: -2px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
-
-  .hd { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
-  .hd .ttl { font: 700 22px var(--mono); letter-spacing: .26em; line-height: 1; }
-  .hd .ttl small { display: block; margin-top: 7px; font: 9px var(--mono); letter-spacing: .2em; color: var(--faint); }
-  .hd .cnt { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-  .hd .cnt .bcd { width: 60px; height: 8px;
-    background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 4px, rgba(241,241,244,.5) 4px 5px, transparent 5px 8px); }
-
-  .groups { display: flex; gap: 26px; }
-  .grp { display: flex; flex-direction: column; gap: 10px; }
-  .grp .gl { display: flex; align-items: center; gap: 8px; }
-  .grp .gl b { font: 700 11px var(--mono); letter-spacing: .2em; color: var(--ink2); }
-  .grp .gl b.cur { color: #fffbb0; background: rgba(255,250,0,.34); padding: 2px 6px; }
-  .grp .gl .ln { flex: 1; height: 1px; background: rgba(255,255,255,.1); }
+  /* v2 (drawer material): frosted glass panel like ds-app-drawer - solid white head fading into blurred dark
+     glass, glass tiles (6px, inset shadow), mono names, colour underbars. Selected = yellow frame. */
+  .dim { position: absolute; inset: 0; background: rgba(8,8,9,.28); }
+  .sw { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; overflow: hidden; border-radius: 2px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .sw .glass2 { position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 64px, rgba(255,255,255,.7) 96px, rgba(230,232,238,.32) 170px, rgba(40,42,48,.55) 100%);
+    -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); }
+  .sw > *:not(.glass2) { position: relative; z-index: 1; }
+  .hd { height: 64px; display: flex; align-items: center; padding: 0 24px; color: #111; font: 600 18px "Segoe UI", system-ui, sans-serif; letter-spacing: .04em; }
+  .hd .cap { margin-left: auto; font: 12px Consolas, monospace; letter-spacing: .14em; color: #6c6f76; }
+  .hd::after { content: ""; position: absolute; left: 24px; right: 24px; bottom: 0; height: 1px; background: #33363C; }
+  .body { padding: 22px 24px 22px; }
+  .groups { display: flex; gap: 22px; }
+  .grp { display: flex; flex-direction: column; gap: 12px; }
+  .grp .gl { display: flex; align-items: center; gap: 8px; font: 12px Consolas, monospace; letter-spacing: .14em; color: #33363C; }
+  .grp .gl b { font-weight: 700; }
+  .grp .gl .ln { flex: 1; height: 1px; background: rgba(51,54,60,.35); }
+  .grp .gl .now { font-size: 10px; color: #6c6f76; }
   .grp .cards { display: flex; gap: 14px; }
-
-  .card { position: relative; width: 260px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,.12); background: rgba(12,13,15,.8); }
-  .card .ch { display: flex; align-items: stretch; height: 34px; border-bottom: 1px solid rgba(255,255,255,.08); }
-  .card .ab { width: 34px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111; font: 700 14px var(--body); }
-  .card .ab img { width: 20px; height: 20px; }
-  .card .ab svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
-  .card .tl { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 10px; }
-  .card .tl b { font: 700 10px var(--mono); letter-spacing: .18em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card .tl i { font-style: normal; font: 8px var(--mono); letter-spacing: .16em; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  /* the miniature preview */
-  .pv { position: relative; height: 162px; overflow: hidden; background: #0d0e10; }
+  .card { position: relative; width: 248px; height: 232px; border-radius: 6px; overflow: hidden; color: #e8e9ec;
+    background: rgba(70,74,82,.5); box-shadow: inset 0 2px 10px rgba(0,0,0,.6), inset 0 0 0 1px rgba(0,0,0,.35);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); }
+  .card .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+  .card .code { position: absolute; left: 0; right: 0; top: 8px; text-align: center; font: 10px Consolas, monospace; letter-spacing: .22em; color: #9a9da4; }
+  .pv { position: absolute; left: 12px; right: 12px; top: 28px; height: 138px; overflow: hidden; background: #0d0e10; border-radius: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4); }
   .pv i { position: absolute; display: block; }
-  .card .ft { display: flex; align-items: center; justify-content: space-between; height: 20px; padding: 0 8px; font: 8px var(--mono); letter-spacing: .14em; color: var(--ghost); }
-  .card .ft .w { display: flex; gap: 3px; }
-  .card .ft .w s { width: 8px; height: 3px; background: var(--c); }
-  .card .ix { position: absolute; right: 6px; top: 40px; z-index: 2; font: 700 9px var(--mono); color: rgba(241,241,244,.5); }
-  /* selected: lifted, yellow frame + pointer */
-  .card.sel { transform: translateY(-12px); border: 2px solid var(--yellow); box-shadow: 0 14px 30px rgba(0,0,0,.5); }
-  .card.sel::before { content: ""; position: absolute; top: -12px; left: 50%; margin-left: -5px; width: 0; height: 0;
-    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--yellow); }
-  .card.sel .tl b { color: var(--yellow); }
-  .card:not(.sel) .pv { opacity: .7; }
-
-  .keys { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 22px; }
-  .keys .kbd { border-radius: 0; }
-  .keys .sep { width: 18px; }
+  .card .name { position: absolute; left: 0; right: 0; top: 178px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 600 16px Consolas, monospace; letter-spacing: .12em; }
+  .card .name img { width: 18px; height: 18px; }
+  .card .sub { position: absolute; left: 0; right: 0; top: 202px; text-align: center; font: 9px Consolas, monospace; letter-spacing: .16em; color: #8a8e96;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 12px; }
+  .card .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--c); }
+  .card .wn { position: absolute; right: 10px; top: 10px; display: flex; gap: 3px; }
+  .card .wn s { width: 8px; height: 3px; background: var(--c); }
+  .card.sel { box-shadow: inset 0 0 0 2px #FFFA00, inset 0 2px 10px rgba(0,0,0,.6); }
+  .card.sel .bar { background: #FFFA00; }
+  .card:not(.sel) .pv { opacity: .75; }
+  .keys { margin-top: 22px; height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 6px; background: rgba(20,21,24,.55);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.5); font: 13px Consolas, monospace; letter-spacing: .14em; color: #8a8e96; }
+  .keys b { color: #FFFA00; font-weight: 700; letter-spacing: .1em; }
+  .keys .sp { width: 14px; }
 </style>
 </head>
 <body>
-<div class="stage">
+<div class="stage wall">
   <div class="win blur" style="left:80px;top:90px;width:900px;height:620px"><div class="wtop"><div class="wtitle">FIREFOX</div></div><div class="wbody"></div></div>
   <div class="win blur" style="left:1000px;top:150px;width:840px;height:700px"><div class="wtop"><div class="wtitle">KITTY</div></div><div class="wbody"></div></div>
   <div class="dim"></div>
 
   <div class="sw">
-    <i class="bk tl"></i><i class="bk br"></i>
-    <div class="hd">
-      <div class="ttl">WINDOWS<small>ALT + TAB · ALL WORKSPACES</small></div>
-      <div class="cnt"><span class="bcd"></span><span class="micro">5 OPEN · 3 WS · SW-02</span></div>
-    </div>
-
-    <div class="groups">
-      <div class="grp">
-        <div class="gl"><b class="cur">WS 02</b><span class="ln"></span><span class="micro">CURRENT</span></div>
-        <div class="cards">
-          <!-- Firefox -->
-          <div class="card" style="--c:#ff7a1a">
-            <div class="ch"><span class="ab"><img src="firefox.svg" alt=""></span><span class="tl"><b>FIREFOX</b><i>git.clockmost.com · clockmost-desktop</i></span></div>
-            <div class="pv">
+    <div class="glass2"></div>
+    <div class="hd">Windows<span class="cap">5 OPEN · 3 WORKSPACES</span></div>
+    <div class="body">
+      <div class="groups">
+        <div class="grp"><div class="gl"><b>WS 02</b><span class="ln"></span><span class="now">CURRENT</span></div>
+          <div class="cards"><div class="card" style="--c:#ff7a1a"><img class="topo" src="ds-topo-card.svg" alt=""><span class="code">FX-01</span><span class="wn"><s></s><s></s></span><div class="pv">
               <i style="left:0;top:0;bottom:0;width:58px;background:#15161a"></i>
               <i style="left:6px;top:10px;width:46px;height:8px;background:#FFFA00"></i>
               <i style="left:6px;top:24px;width:40px;height:5px;background:#33363C"></i><i style="left:6px;top:34px;width:44px;height:5px;background:#33363C"></i><i style="left:6px;top:44px;width:36px;height:5px;background:#33363C"></i>
@@ -93,14 +72,7 @@
               <i style="left:80px;top:46px;right:20px;height:60px;border:1px solid #2a2c32"></i>
               <i style="left:88px;top:56px;width:90px;height:4px;background:#44474d"></i><i style="left:88px;top:68px;width:120px;height:4px;background:#44474d"></i><i style="left:88px;top:80px;width:70px;height:4px;background:#44474d"></i>
               <i style="left:80px;top:116px;right:40px;height:4px;background:#44474d"></i><i style="left:80px;top:126px;right:70px;height:4px;background:#44474d"></i>
-            </div>
-            <span class="ix">01</span>
-            <div class="ft"><span>2 WINDOWS</span><span class="w"><s></s><s></s></span></div>
-          </div>
-          <!-- Discord (selected) -->
-          <div class="card sel" style="--c:#5aa7ff">
-            <div class="ch"><span class="ab">D</span><span class="tl"><b>DISCORD</b><i># felt-dev · clockmost</i></span></div>
-            <div class="pv">
+            </div><span class="name"><img src="firefox.svg" alt="">FIREFOX</span><span class="sub">git.clockmost.com · clockmost-desktop</span><span class="bar"></span></div><div class="card sel" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="code">DC-02 · 3 UNREAD</span><span class="wn"><s></s></span><div class="pv">
               <i style="left:0;top:0;bottom:0;width:80px;background:#101114"></i>
               <i style="left:6px;top:8px;width:68px;height:20px;background:#FFFA00"></i>
               <i style="left:6px;top:32px;width:68px;height:20px;background:#26282d;border-left:2px solid #7ddb57"></i>
@@ -112,14 +84,7 @@
               <i style="left:98px;top:74px;width:110px;height:12px;background:#33363C"></i>
               <i style="right:14px;top:94px;width:60px;height:12px;background:#d8d9de"></i>
               <i style="left:110px;bottom:10px;right:30px;height:12px;background:#e9e9ee"></i>
-            </div>
-            <span class="ix">02</span>
-            <div class="ft"><span>1 WINDOW · 3 UNREAD</span><span class="w"><s></s></span></div>
-          </div>
-          <!-- Phonograph -->
-          <div class="card" style="--c:#cfc6f4">
-            <div class="ch"><span class="ab"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><span class="tl"><b>PHONOGRAPH</b><i>Glassy Sky · Sapphire</i></span></div>
-            <div class="pv">
+            </div><span class="name">DISCORD</span><span class="sub"># felt-dev · clockmost</span><span class="bar"></span></div><div class="card" style="--c:#cfc6f4"><img class="topo" src="ds-topo-card.svg" alt=""><span class="code">PH-03 · PLAYING</span><span class="wn"><s></s></span><div class="pv">
               <i style="left:8px;top:30px;width:150px;height:90px;background:linear-gradient(90deg,rgba(207,198,244,.5),transparent)"></i>
               <i style="left:14px;top:36px;width:76px;height:76px;background:#cfc6f4"></i>
               <i style="left:98px;top:44px;width:56px;height:8px;background:#e9e9ee"></i>
@@ -127,58 +92,24 @@
               <i style="left:170px;top:10px;right:8px;bottom:24px;background:#16171b"></i>
               <i style="left:176px;top:18px;right:14px;height:8px;background:rgba(207,198,244,.25)"></i><i style="left:176px;top:32px;right:20px;height:4px;background:#44474d"></i><i style="left:176px;top:44px;right:26px;height:4px;background:#44474d"></i><i style="left:176px;top:56px;right:18px;height:4px;background:#44474d"></i><i style="left:176px;top:68px;right:30px;height:4px;background:#44474d"></i>
               <i style="left:0;right:0;bottom:8px;height:10px;background:repeating-linear-gradient(90deg,rgba(207,198,244,.5) 0 3px,transparent 3px 6px)"></i>
-            </div>
-            <span class="ix">03</span>
-            <div class="ft"><span>1 WINDOW · PLAYING</span><span class="w"><s></s></span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grp">
-        <div class="gl"><b>WS 01</b><span class="ln"></span></div>
-        <div class="cards">
-          <!-- Kitty -->
-          <div class="card" style="--c:#7ddb57">
-            <div class="ch"><span class="ab"><svg viewBox="0 0 24 24"><path d="M4 6l6 6-6 6M12 18h8"/></svg></span><span class="tl"><b>KITTY</b><i>~/src/clockmost-desktop</i></span></div>
-            <div class="pv" style="padding:10px 12px;font:9px var(--mono);line-height:1.6;color:#c9ccd3">
+            </div><span class="name">PHONOGRAPH</span><span class="sub">Glassy Sky · Sapphire</span><span class="bar"></span></div></div></div>
+        <div class="grp"><div class="gl"><b>WS 01</b><span class="ln"></span></div><div class="cards"><div class="card" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><span class="code">KT-04 · 3 TABS</span><span class="wn"><s></s><s></s><s></s></span><div class="pv" style="padding:10px 12px;font:9px var(--mono);line-height:1.6;color:#c9ccd3">
               <span style="color:#3FD0E8">benylin@clockmost</span> ~/src <span style="color:#FFFA00">main</span>&gt; git status<br>
               On branch main<br><span style="color:#d91e36">&nbsp;&nbsp;modified: components/ds-alttab-v2.html</span><br><br>
               <span style="color:#3FD0E8">benylin@clockmost</span> ~/src <span style="color:#FFFA00">main</span>&gt; paru -Syu<br>
               <span style="color:#5aa7ff">:: Synchronizing package databases...</span><br>
               <span style="color:#3FD0E8">benylin@clockmost</span> ~/src <span style="color:#FFFA00">main</span>&gt; <span style="display:inline-block;width:6px;height:10px;background:#FFFA00;vertical-align:-1px"></span>
-            </div>
-            <span class="ix">04</span>
-            <div class="ft"><span>3 TABS</span><span class="w"><s></s><s></s><s></s></span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grp">
-        <div class="gl"><b>WS 03</b><span class="ln"></span></div>
-        <div class="cards">
-          <!-- Dolphin -->
-          <div class="card" style="--c:#3FD0E8">
-            <div class="ch"><span class="ab"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span><span class="tl"><b>DOLPHIN</b><i>~/src/clockmost-desktop</i></span></div>
-            <div class="pv">
+            </div><span class="name">KITTY</span><span class="sub">~/src/clockmost-desktop</span><span class="bar"></span></div></div></div>
+        <div class="grp"><div class="gl"><b>WS 03</b><span class="ln"></span></div><div class="cards"><div class="card" style="--c:#3FD0E8"><img class="topo" src="ds-topo-card.svg" alt=""><span class="code">DL-05</span><span class="wn"><s></s></span><div class="pv">
               <i style="left:0;top:0;bottom:0;width:62px;background:#15161a"></i>
               <i style="left:6px;top:10px;width:40px;height:4px;background:#44474d"></i><i style="left:6px;top:20px;width:46px;height:4px;background:#44474d"></i><i style="left:6px;top:30px;width:36px;height:4px;background:#44474d"></i>
               <i style="left:4px;top:52px;width:54px;height:9px;background:#FFFA00"></i>
               <i style="left:6px;top:68px;width:30px;height:4px;background:#44474d"></i>
               <i style="left:72px;top:10px;right:8px;height:6px;background:#26282d"></i>
               <i style="left:72px;top:24px;right:8px;height:8px;background:#1b1c20"></i><i style="left:72px;top:36px;right:8px;height:8px;background:#16171a"></i><i style="left:72px;top:48px;right:8px;height:8px;background:#1b1c20;border-left:2px solid #FFFA00"></i><i style="left:72px;top:60px;right:8px;height:8px;background:#1b1c20;border-left:2px solid #FFFA00"></i><i style="left:72px;top:72px;right:8px;height:8px;background:#16171a"></i><i style="left:72px;top:84px;right:8px;height:8px;background:#1b1c20"></i>
-            </div>
-            <span class="ix">05</span>
-            <div class="ft"><span>1 WINDOW</span><span class="w"><s></s></span></div>
-          </div>
-        </div>
+            </div><span class="name">DOLPHIN</span><span class="sub">~/src/clockmost-desktop</span><span class="bar"></span></div></div></div>
       </div>
-    </div>
-
-    <div class="keys">
-      <span class="kbd">ALT</span><span class="kbd">TAB</span><span class="micro">NEXT</span><span class="sep"></span>
-      <span class="kbd">SHIFT</span><span class="micro">BACK</span><span class="sep"></span>
-      <span class="kbd">ALT</span><span class="kbd">`</span><span class="micro">SAME APP</span><span class="sep"></span>
-      <span class="micro">RELEASE TO SWITCH</span>
+      <div class="keys"><b>›››</b> <span class="kbd">ALT</span><span class="kbd">TAB</span> NEXT<span class="sp"></span><span class="kbd">SHIFT</span> BACK<span class="sp"></span><span class="kbd">ALT</span><span class="kbd">`</span> SAME APP<span class="sp"></span>RELEASE TO SWITCH</div>
     </div>
   </div>
   <div class="mock-note">ds-alttab v2 · held open · layout only</div>
