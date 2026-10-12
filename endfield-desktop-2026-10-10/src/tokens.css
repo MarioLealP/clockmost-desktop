@@ -1,0 +1,46 @@
+/* EF tokens — Endfield design language. Dark ground, yellow structural, chamfers, small print. */
+:root {
+  --g: #0f0f10;
+  --s1: #17181a;
+  --s2: #1e2024;
+  --well: #0a0a0b;
+  --ln: #33363c;
+  --ln2: #4a4e56;
+  --i1: #f0f0f2;
+  --i2: #a8abb2;
+  --i3: #6c6f76;
+  --i4: #44474d;
+  --y: #fffa00;
+  --cy: #00ffa2;
+  --mg: #ff1aac;
+  --or: #ff7a1a;
+  --red: #d91e36;
+  --glow: 0 0 0.55rem rgba(255, 250, 0, 0.4);
+  --disp: Bahnschrift, "DIN Alternate", "Segoe UI", sans-serif;
+  --body: "Segoe UI", system-ui, sans-serif;
+  --mono: Consolas, "Cascadia Mono", ui-monospace, monospace;
+  --ch16: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  --ch15: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+  --ch10: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  --hatch: repeating-linear-gradient(135deg, rgba(74, 78, 86, 0.55) 0 1px, transparent 1px 6px);
+  --barcode: repeating-linear-gradient(90deg, var(--ln2) 0 3px, transparent 3px 5px, var(--ln) 5px 6px, transparent 6px 11px, var(--i4) 11px 13px, transparent 13px 18px);
+}
+
+/* thin rule between words in microtext:  LABEL <s></s> LABEL */
+ef-s, .ef-s {
+  display: inline-block;
+  width: 14px;
+  height: 1px;
+  margin: 0 4px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+body {
+  margin: 0;
+  background: #060607;
+  color: var(--i1);
+  font-family: var(--body);
+}

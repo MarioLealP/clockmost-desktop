@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Endfield desktop — workplace</title>
+  <link rel="stylesheet" href="src/tokens.css">
+  <style>
+    html, body { width: 1920px; height: 1080px; overflow: hidden; }
+    #screen {
+      position: relative; width: 1920px; height: 1080px;
+      background: #060607; overflow: hidden;
+    }
+    #boot {
+      position: absolute; left: 70px; top: 70px; font: 300 14px var(--disp);
+      letter-spacing: 0.62em; color: #8a8d94;
+    }
+    #boot .row { margin-top: 18px; font: 9px var(--mono); letter-spacing: 0.14em; color: var(--i4); letter-spacing: 0.14em; }
+    #boot .bar { margin-top: 28px; width: 420px; height: 8px; background: var(--barcode); opacity: 0.8; }
+    #boot .ok { color: var(--y); }
+    #boot .fail { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div id="screen">
+    <div id="wall"></div>
+    <div id="boot">
+      CLOCKMOST
+      <div class="row" id="row">LOADING CORE…</div>
+      <div class="bar"></div>
+    </div>
+  </div>
+  <script src="src/core.js"></script>
+  <script>
+    // smoke: core + tokens present
+    (function () {
+      var row = document.getElementById("row");
+      var ok = window.EF && typeof EF.tween === "function" && typeof EF.SNAP === "function" && typeof EF.contours === "function";
+      var tok = getComputedStyle(document.documentElement).getPropertyValue("--y").trim();
+      row.innerHTML = ok && tok
+        ? '<span class="ok">CORE OK</span> <ef-s></ef-s> SNAP/SETTLE/SOFT <ef-s></ef-s> noise+contours <ef-s></ef-s> tokens <span class="ok">Y=' + tok + '</span>'
+        : '<span class="fail">CORE FAIL</span> <ef-s></ef-s> EF=' + (typeof window.EF) + ' <ef-s></ef-s> --y=' + tok;
+      if (ok) {
+        // one live tween so the engine is actually exercised
+        var t0 = performance.now();
+        EF.tween(400, function (e) {
+          var p = EF.P(e, 0, 400, EF.SETTLE);
+          row.style.opacity = String(0.35 + 0.65 * p);
+        }).then(function () {
+          row.innerHTML += ' <ef-s></ef-s> tween OK';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

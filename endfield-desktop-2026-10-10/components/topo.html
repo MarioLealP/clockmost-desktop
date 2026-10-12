@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topo generator · shared motif (single-component mock)</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #060607; color: #ddd;
+    font: 14px "Segoe UI", system-ui, sans-serif; }
+  #wrap { max-width: 1400px; margin: 0 auto; padding: 28px 28px 120px; }
+  h1 { font: 600 22px "Segoe UI", sans-serif; color: #f0f0f2; letter-spacing: 0.04em; margin: 0; }
+  .sub { font: 11px Consolas, monospace; letter-spacing: 0.16em; color: #6c6f76; margin-top: 6px; }
+  .sub b { color: #fffa00; }
+  .sample { margin-top: 26px; border: 1px solid #33363c; background: #0a0a0b; }
+  .sample .cap { display: flex; gap: 12px; padding: 8px 14px; font: 10px Consolas, monospace;
+    letter-spacing: 0.16em; color: #6c6f76; border-bottom: 1px solid #22232b; }
+  .sample .cap span:last-child { margin-left: auto; }
+  .s1 { height: 170px; } .s2 { height: 180px; } .s3 { height: 200px; }
+  .sample svg { display: block; }
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; min-height: 64px; display: flex;
+    gap: 8px; align-items: center; padding: 10px 14px; background: #121217;
+    border-top: 1px solid #22232b; flex-wrap: wrap; }
+  #bar button { background: #22242c; color: #ddd; border: 1px solid #31333d; border-radius: 6px;
+    padding: 8px 14px; font: inherit; cursor: pointer; }
+  #bar button:hover { background: #2c2e38; }
+  #bar .about { margin-left: auto; font-size: 12px; color: #889; }
+  #readout { font: 12px Consolas, monospace; color: #a8abb2; letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Topo generator</h1>
+  <div class="sub">SHARED MOTIF · <b>SVG CONTOURS</b> (MARCHING SQUARES OVER SEEDED VALUE NOISE) · COPY <b>topoSVG()</b> INTO EACH SINGLE-HTML COMPONENT</div>
+  <div class="sample"><div class="cap"><span>TOAST BAND · 880×170</span><span>SEED+0</span></div><div class="s1" id="s1"></div></div>
+  <div class="sample"><div class="cap"><span>CARD BLOCK · 640×180</span><span>SEED+11</span></div><div class="s2" id="s2"></div></div>
+  <div class="sample"><div class="cap"><span>FLOOR STRIP · 1340×200</span><span>SEED+23</span></div><div class="s3" id="s3"></div></div>
+</div>
+<div id="bar">
+  <button id="bSeed">New seed</button>
+  <button id="bLess">− lines</button>
+  <button id="bMore">+ lines</button>
+  <button id="bCopy">Copy topoSVG()</button>
+  <span id="readout"></span>
+  <span class="about">components/topo.html · open directly, no build</span>
+</div>
+<script>
+"use strict";
+/* ============ CANONICAL SNIPPET: copy everything between the lines into each component ============ */
+function topoSVG(w, h, o) {
+  o = o || {};
+  const seed = o.seed != null ? o.seed : 7;
+  const levels = o.levels || 12, cell = o.cell || 6;
+  const bumps = o.bumps || [{ x: 0.62, y: 0.42, r: 0.28, a: 0.35 }, { x: 0.3, y: 0.65, r: 0.2, a: 0.25}];
+  const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7 + seed * 74.7) * 43758.5453; return s - Math.floor(s); };
+  const sm = (t) => t * t * (3 - 2 * t);
+  const vnoise = (x, y) => {
+    const ix = Math.floor(x), iy = Math.floor(y), fx = sm(x - ix), fy = sm(y - iy);
+    const a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
+    const ab = a + (b - a) * fx, cd = c + (d - c) * fx;
+    return ab + (cd - ab) * fy;
+  };
+  const fbm = (x, y) => {
+    let v = 0, amp = 0.5, f = 1;
+    for (let i = 0; i < 4; i++) { v += amp * vnoise(x * f + i * 17.3, y * f - i * 9.1); f *= 2.03; amp *= 0.5; }
+    return v;
+  };
+  const field = (x, y) => {
+    const nx = x / w, ny = y / h;
+    let f = fbm(nx * 3.1, ny * 2.4);
+    for (const b of bumps) {
+      const dx = nx - b.x, dy = ny - b.y;
+      f += b.a * Math.exp(-(dx * dx + dy * dy) / (b.r * b.r));
+    }
+    return f;
+  };
+  const gw = Math.ceil(w / cell) + 1, gh = Math.ceil(h / cell) + 1;
+  const v = new Float32Array(gw * gh);
+  let mn = 1e9, mx = -1e9;
+  for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
+    const f = field(i * cell, j * cell);
+    v[j * gw + i] = f;
+    if (f < mn) mn = f; if (f > mx) mx = f;
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const out = [];
+  for (let L = 0; L < levels; L++) {
+    const lv = mn + (mx - mn) * (L + 0.5) / levels;
+    let d = "";
+    const E = (x0, y0, v0, x1, y1, v1) => { const t = (lv - v0) / ((v1 - v0) || 1e-9); return [lerp(x0, x1, t), lerp(y0, y1, t)]; };
+    for (let j = 0; j < gh - 1; j++) for (let i = 0; i < gw - 1; i++) {
+      const x0 = i * cell, y0 = j * cell;
+      const a = v[j * gw + i], b = v[j * gw + i + 1], c = v[(j + 1) * gw + i + 1], dd = v[(j + 1) * gw + i];
+      const idx = (a > lv ? 8 : 0) | (b > lv ? 4 : 0) | (c > lv ? 2 : 0) | (dd > lv ? 1 : 0);
+      if (idx === 0 || idx === 15) continue;
+      const T = E(x0, y0, a, x0 + cell, y0, b), R = E(x0 + cell, y0, b, x0 + cell, y0 + cell, c);
+      const B = E(x0, y0 + cell, dd, x0 + cell, y0 + cell, c), Lp = E(x0, y0, a, x0, y0 + cell, dd);
+      const seg = (p, q) => { d += "M" + p[0].toFixed(1) + " " + p[1].toFixed(1) + "L" + q[0].toFixed(1) + " " + q[1].toFixed(1); };
+      switch (idx) {
+        case 1: case 14: seg(Lp, B); break;
+        case 2: case 13: seg(B, R); break;
+        case 3: case 12: seg(Lp, R); break;
+        case 4: case 11: seg(T, R); break;
+        case 5: seg(T, Lp); seg(B, R); break;
+        case 6: case 9: seg(T, B); break;
+        case 7: case 8: seg(T, Lp); break;
+        case 10: seg(T, R); seg(Lp, B); break;
+      }
+    }
+    if (d) out.push('<path d="' + d + '" fill="none" stroke="rgba(205,209,220,' + (0.18 + 0.5 * L / levels).toFixed(2) + ')" stroke-width="1"/>');
+  }
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">' + out.join("") + '</svg>';
+}
+/* ============ END CANONICAL SNIPPET ============ */
+
+let seed = 7, levels = 12;
+function render(){
+  document.getElementById("s1").innerHTML = topoSVG(880, 170, { seed, levels, cell: 5 });
+  document.getElementById("s2").innerHTML = topoSVG(640, 180, { seed: seed + 11, levels, cell: 5 });
+  document.getElementById("s3").innerHTML = topoSVG(1340, 200, { seed: seed + 23, levels: levels + 2, cell: 7 });
+  document.getElementById("readout").textContent = "seed " + seed + " · levels " + levels;
+}
+document.getElementById("bSeed").onclick = () => { seed = 1 + Math.floor(Math.random() * 999); render(); };
+document.getElementById("bLess").onclick = () => { levels = Math.max(6, levels - 2); render(); };
+document.getElementById("bMore").onclick = () => { levels = Math.min(20, levels + 2); render(); };
+document.getElementById("bCopy").onclick = (e) => {
+  const src = topoSVG.toString();
+  if (navigator.clipboard) navigator.clipboard.writeText(src).catch(() => {});
+  e.target.textContent = "Copied";
+  setTimeout(() => (e.target.textContent = "Copy topoSVG()"), 1200);
+};
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-spotify v2 · left album deck</title>
+<style>
+  :root { --ground: #0F0F10; --steel: #33363C; --yellow: #FFFA00; --ink: #f1f1f4; --dim: #7d8089; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink); overflow: hidden; }
+  body { display: flex; flex-direction: column; }
+
+  /* top search bar, same look as the drawer's (mock, not wired) */
+  .top { position: relative; flex: none; display: flex; align-items: center; justify-content: center; padding: 22px 28px 20px; }
+  .top::after { content: ""; position: absolute; left: 28px; right: 28px; bottom: 0; height: 1px; background: rgba(255,255,255,.10); }
+  /* placeholder window controls (min / max / close), rule-18 glyphs */
+  .wctl { position: absolute; right: 28px; top: 29px; display: flex; gap: 10px; }
+  .wb { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0;
+    background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px;
+    color: #c9ccd3; cursor: pointer; }
+  .wb:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.38); color: #fff; }
+  .wb svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: butt; }
+  .title { position: absolute; left: 28px; top: 30px; font: 600 18px Consolas, monospace; letter-spacing: .2em; color: var(--ink); }
+  .title span { color: var(--dim); font-weight: 400; }
+  .search { width: 420px; height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 6px; background: rgba(20,21,24,.55);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.5); font: 13px Consolas, monospace; letter-spacing: .14em; color: #8a8e96; }
+  .search b { color: #FFFA00; font-weight: 700; letter-spacing: .1em; }
+
+  /* left album deck lives in the deck <style> block near the end of the head */
+  .main { flex: 1; min-height: 0; display: flex; align-items: center; padding-left: 28px; }
+  /* right side: track list on its own panel (page dots excluded), thin rows with hairline rules */
+  .list { position: relative; isolation: isolate; margin-left: auto; margin-right: 28px; width: 660px;
+    display: flex; flex-direction: column; padding: 26px 28px 24px; }
+  .list::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 48px),
+      linear-gradient(180deg, rgba(23,24,28,.93), rgba(14,15,18,.95)); }
+  .list::after { content: ""; position: absolute; left: 28px; right: 28px; bottom: 5px; height: 14px; z-index: -1;
+    background: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1.3px) 0 0 / 9px 9px;
+    -webkit-mask-image: linear-gradient(0deg, #000, transparent); mask-image: linear-gradient(0deg, #000, transparent); }
+  /* panel furniture: brackets, tick ruler, barcode + readout - the list's own recipe (rule 22) */
+  .pmark { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .pmark .bk { position: absolute; width: 18px; height: 18px; }
+  .pmark .bk.tl { left: 12px; top: 12px; border-left: 2px solid rgba(241,241,244,.22); border-top: 2px solid rgba(241,241,244,.22); }
+  .pmark .bk.br { right: 12px; bottom: 12px; border-right: 2px solid rgba(241,241,244,.22); border-bottom: 2px solid rgba(241,241,244,.22); }
+  .pmark .ruler { position: absolute; right: 10px; top: 64px; bottom: 64px; width: 12px;
+    background:
+      repeating-linear-gradient(180deg, rgba(241,241,244,.30) 0 1px, transparent 1px 9px) 100% 0 / 6px 100%,
+      repeating-linear-gradient(180deg, rgba(241,241,244,.42) 0 1px, transparent 1px 45px) 100% 0 / 12px 100%;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 82%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 12%, #000 82%, transparent); }
+  .pmark .mb { position: absolute; left: 28px; bottom: 30px; width: 88px; height: 11px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 5px, rgba(241,241,244,.5) 5px 6px, transparent 6px 9px); }
+  .pmark .mc { position: absolute; left: 126px; bottom: 30px; line-height: 11px; font: 9px Consolas, monospace; letter-spacing: .16em; color: #55575e; }
+  .row { position: relative; display: grid; grid-template-columns: 1fr auto; column-gap: 24px; align-items: center;
+    padding: 16px 8px 16px 44px; border-bottom: 1px solid rgba(255,255,255,.08); grid-template-columns: 1fr auto auto; }
+  .row .rn { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-style: normal;
+    font: 11px Consolas, monospace; letter-spacing: .12em; color: #55575e; }
+  .row.on .rn { color: var(--yellow); }
+  .row.on { background: rgba(207,198,244,.12); }
+  /* sort dropdown: light pill, like the Current Room Vinyl pill */
+  .sort { align-self: flex-end; display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+    font: 12px Consolas, monospace; letter-spacing: .16em; color: var(--dim); }
+  .pill-sel { position: relative; display: inline-flex; align-items: center; background: #e8e9ee; border-radius: 20px; padding: 0 14px; }
+  .pill-sel select { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: #111;
+    font: 600 12px Consolas, monospace; letter-spacing: .14em; padding: 8px 18px 8px 0; outline: none; cursor: pointer; }
+  .pill-sel b { position: absolute; right: 14px; color: #111; font-weight: 400; pointer-events: none; }
+  .row .rt { grid-column: 1; grid-row: 1; font: 600 20px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .ra { grid-column: 1; grid-row: 2; font: 13px Consolas, monospace; letter-spacing: .12em; color: var(--dim); margin-top: 4px; }
+  .row .rl { grid-column: 3; grid-row: 1 / span 2; font: 16px Consolas, monospace; color: var(--ink); }
+  .row .rd { grid-column: 2; grid-row: 1 / span 2; text-align: right; font: 12px Consolas, monospace;
+    letter-spacing: .1em; color: var(--dim); }
+
+
+  /* the bar: full width, dark, its top edge is the faint visualizer (rule 24) */
+  .bar { position: relative; height: 96px; background: linear-gradient(180deg, #151619, #0c0c0e);
+    display: flex; align-items: center; gap: 22px; padding: 0 28px; }
+  .viz { position: absolute; left: 0; right: 0; top: -34px; height: 36px; width: 100%; pointer-events: none; }
+  .bar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(255,255,255,.08); }
+
+  /* album cover: small square, chamfered, topo art */
+  .cover { position: relative; width: 56px; height: 56px; flex: none; overflow: hidden; background: #26282d;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+  .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .6; }
+
+  /* black timer tag: pause glyph + elapsed / total */
+  /* sits on the seam between the visualizer and the bar, left side */
+  .timer { position: absolute; left: 28px; top: -16px; z-index: 1;
+    display: flex; align-items: center; gap: 10px; background: #000; padding: 7px 12px 7px 10px;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 8px) 100%, 0 100%);
+    font: 13px Consolas, monospace; letter-spacing: .08em; }
+  .timer .pause { display: inline-flex; gap: 3px; }
+  .timer .pause i { width: 3px; height: 12px; background: var(--ink); }
+
+  .titles { min-width: 0; flex: 0 1 320px; }
+  /* volume: bottom right of the bar, thin slider with a speaker glyph */
+  .vol { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 12px; color: var(--ink); }
+  .vol svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .vol svg path:first-child { fill: currentColor; stroke: none; }
+  .vol svg.device { margin-right: 8px; }
+  .vol input { -webkit-appearance: none; appearance: none; width: 160px; height: 4px; margin: 0; background: linear-gradient(90deg, #d6ccff 70%, rgba(255,255,255,.14) 70%); outline: none; cursor: pointer; }
+  .vol input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: var(--ink); border: 0; }
+  .vol input::-moz-range-thumb { width: 12px; height: 12px; background: var(--ink); border: 0; border-radius: 0; }
+  /* transport: shuffle, previous, pause, next, repeat (stroke icons; fill for the play-side glyphs) */
+  .ctrls { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 26px; color: var(--ink); }
+  .ctrls svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ctrls svg.fill { fill: currentColor; stroke: none; }
+  .ctrls svg.big { width: 30px; height: 30px; }
+  .titles .t { font: 600 17px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .titles .s { font: 12px Consolas, monospace; letter-spacing: .12em; color: var(--dim); margin-top: 4px; }
+
+  /* light pill, right side */
+  .pill { flex: none; background: #e8e9ee; color: #111; font: 600 12px Consolas, monospace; letter-spacing: .14em;
+    padding: 8px 16px; border-radius: 20px; }
+
+  /* tiny ping + UID, bottom-left corner */
+  .micro { position: absolute; left: 28px; bottom: 6px; font: 9px Consolas, monospace; letter-spacing: .16em; color: #55575e; }
+  /* horizontal playlist and folder strip under the track list (mock) */
+  .strip { display: flex; gap: 18px; margin-bottom: 26px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .strip .pl { flex: none; width: 88px; }
+  .strip .pc { position: relative; width: 88px; height: 88px; background: #26282d; overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 8%) 0, 100% 8%, 100% 100%, 8% 100%, 0 calc(100% - 8%)); }
+  .strip .pc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+  .strip .pn { margin-top: 8px; font: 12px Consolas, monospace; letter-spacing: .1em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+<style>html, body { background:
+  radial-gradient(ellipse 30% 38% at 4% 44%, rgba(190,160,255,.34), transparent 70%),
+  radial-gradient(ellipse 16% 16% at 30% 30%, rgba(170,140,255,.24), transparent 70%),
+  radial-gradient(ellipse 22% 12% at 22% 70%, rgba(210,180,255,.20), transparent 70%),
+  radial-gradient(ellipse 12% 18% at 34% 55%, rgba(150,120,240,.18), transparent 70%),
+  linear-gradient(rgba(15,15,16,.55), rgba(15,15,16,.85)),
+  url(topo-floor-strip.svg) center / cover,
+  #0F0F10 !important; }
+body::after { content: ""; position: fixed; right: 0; top: 0; width: 260px; height: 260px; pointer-events: none;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,.14) 0 2px, transparent 2px 7px);
+  -webkit-mask-image: linear-gradient(225deg, #000 20%, transparent 75%); mask-image: linear-gradient(225deg, #000 20%, transparent 75%); }</style>
+<style>body::before { content: ""; position: fixed; inset: 0; pointer-events: none;
+  background: repeating-radial-gradient(circle at 0% 50%, rgba(205,209,220,.05) 0 1px, transparent 1px 70px);
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, #000 0 705px, transparent 706px); mask-image: radial-gradient(circle at 0% 50%, #000 0 705px, transparent 706px); }</style>
+<style>html::before { content: ""; position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.3px) 0 0 / 14px 14px;
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 0 760px, #000 800px); mask-image: radial-gradient(circle at 0% 50%, transparent 0 760px, #000 800px); }</style>
+<style>
+  /* ===== LEFT DECK (v2): prev mini, featured album block, up-next minis - rules 24 + 22 ===== */
+  .col { width: 930px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .lblrow { display: flex; align-items: center; gap: 14px; width: 460px; }
+  .lbl { font: 11px Consolas, monospace; letter-spacing: .22em; color: #55575e; }
+  .lblrow .hr { flex: 1; height: 1px; background: rgba(255,255,255,.10); }
+  .micro2 { font: 9px Consolas, monospace; letter-spacing: .18em; color: #43454c; }
+
+  /* mini rows: chamfered cover + underbar, text stack, square-with-diagonal badge (rule 19 glyph) */
+  .mini { display: flex; align-items: center; gap: 18px; padding: 7px 14px 7px 7px; cursor: pointer; }
+  .mini .mc { position: relative; width: 104px; height: 104px; flex: none; overflow: hidden; background: #26282d;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+  .mini .mc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; }
+  .mini .mc::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, rgba(207,198,244,.95), rgba(207,198,244,0)); }
+  .mini .tx { min-width: 0; }
+  .mini .mt { font: 600 19px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini .ms { font: 11px Consolas, monospace; letter-spacing: .14em; color: var(--dim); margin-top: 4px; }
+  .mini .mc2 { font: 9px Consolas, monospace; letter-spacing: .16em; color: #43454c; margin-top: 6px; }
+  .mini .badge { flex: none; margin-left: 16px; width: 15px; height: 15px; border: 1.5px solid #55575e;
+    background: linear-gradient(45deg, transparent 44%, #55575e 44% 56%, transparent 56%); }
+  .mini:hover .mt { color: #fff; }
+  .mini:hover .mc img { opacity: .75; }
+  .mini.small { padding-top: 2px; }
+  .mini.small .mc { width: 84px; height: 84px; }
+  .mini.small .mt { font-size: 16px; }
+
+  /* featured album block: one purple slab behind everything - the gradient includes the artwork */
+  .feat { position: relative; display: flex; width: 930px; height: 400px; margin: 4px 0; }
+  .feat::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 18px; opacity: .8;
+    background: linear-gradient(90deg, rgba(198,186,236,.92) 0%, rgba(186,172,230,.85) 40%, rgba(179,167,230,.62) 55%, rgba(179,167,230,.30) 72%, rgba(179,167,230,.08) 88%, transparent 100%); }
+
+  /* the art slot: a bit smaller than the slab, so the art lays over it and casts a shadow on it */
+  .fslot { position: relative; flex: none; width: 372px; height: 372px; margin: 14px 0 14px 18px;
+    filter: drop-shadow(7px 11px 16px rgba(8,6,18,.55)) drop-shadow(0 2px 5px rgba(8,6,18,.45)); }
+  .fcard { position: relative; width: 100%; height: 100%; overflow: hidden; color: #14131a;
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+    background: radial-gradient(130% 130% at 16% 10%, #e8e2fa, #d3c7f3 55%, #b6a8e8 100%); }
+  .fcard .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: .42; }
+  .fcard .dots { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(rgba(20,19,26,.15) 1px, transparent 1.4px) 0 0 / 13px 13px;
+    -webkit-mask-image: linear-gradient(215deg, #000 32%, transparent 80%); mask-image: linear-gradient(215deg, #000 32%, transparent 80%); }
+  .fcard .grain { position: absolute; inset: 0; pointer-events: none; opacity: .15; mix-blend-mode: overlay;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 120px 120px; }
+  .fcard .barcode { position: absolute; left: 18px; bottom: 36px; width: 116px; height: 13px; opacity: .6;
+    background: repeating-linear-gradient(90deg, #14131a 0 2px, transparent 2px 4px, #14131a 4px 7px, transparent 7px 11px, #14131a 11px 12px, transparent 12px 15px); }
+  .fcard .mcode { position: absolute; left: 18px; bottom: 16px; font: 9px Consolas, monospace; letter-spacing: .16em; color: rgba(20,19,26,.75); }
+
+  /* extension plate: text over the right, fading end of the slab; motif centred behind */
+  .fext { position: relative; flex: 1; height: 100%; overflow: hidden; padding: 30px 24px 20px 42px; }
+  .fext .tri { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 360px; height: 280px; pointer-events: none; }
+  .fext .tri-in { width: 100%; height: 100%; }
+  .fext .tri svg { width: 100%; height: 100%; }
+  .fext .ft { position: relative; font: 600 36px "Segoe UI", system-ui, sans-serif; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fext .fa { position: relative; margin-top: 5px; font: 600 12px Consolas, monospace; letter-spacing: .24em; color: #241f38; }
+  .fext .frule { position: relative; margin-top: 16px; width: 330px; height: 1px; background: rgba(241,241,244,.42); }
+  .fext .flyr { position: relative; margin-top: 14px; font: 17px "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55; color: rgba(241,241,244,.52); white-space: nowrap; }
+  .fext .flyr .cur { margin-left: -13px; padding-left: 10px; border-left: 3px solid var(--yellow);
+    color: #fff; font-weight: 600; font-size: 21px; }
+  .fext .fbot { position: absolute; left: 42px; bottom: 20px; display: flex; align-items: center; gap: 16px; }
+  .triband { display: inline-flex; width: 132px; height: 5px; }
+  .triband i { flex: 1; }
+  .triband i:nth-child(1) { background: var(--yellow); }
+  .triband i:nth-child(2) { background: #21e6e6; }
+  .triband i:nth-child(3) { background: #e621c8; }
+  .fext .fbot .barcode2 { width: 84px; height: 11px; opacity: .55;
+    background: repeating-linear-gradient(90deg, #cfc6f4 0 2px, transparent 2px 5px, #cfc6f4 5px 6px, transparent 6px 9px); }
+</style>
+</head>
+<body>
+<div class="top"><div class="title">PHONOGRAPH <span>MKV-I</span></div><div class="search"><b>›››</b> SEARCH</div>
+  <div class="wctl">
+    <button type="button" class="wb" title="Minimize"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+    <button type="button" class="wb" title="Maximize"><svg viewBox="0 0 24 24"><path d="M7.5 7.5h9v9h-9z"/></svg></button>
+    <button type="button" class="wb" title="Close"><svg viewBox="0 0 24 24"><path d="M7 7l4 4M13 13l4 4M17 7l-4 4M11 13l-4 4"/></svg></button>
+  </div>
+</div>
+<div class="main">
+  <div class="col">
+    <div class="lblrow"><span class="lbl">PREVIOUS</span><i class="hr"></i><span class="micro2">QUEUE.02</span></div>
+    <div class="mini" id="m-prev" data-idx="1"></div>
+    <div class="feat">
+      <div class="fslot">
+        <div class="fcard" id="fcard">
+          <img class="topo" id="ftopo" src="ds-topo-card.svg" alt="">
+          <div class="dots"></div>
+          <div class="grain"></div>
+          <div class="barcode" id="fbarcode"></div>
+          <div class="mcode" id="fmcode">SR-1415 · 33 RPM · SIDE A</div>
+        </div>
+      </div>
+      <div class="fext">
+        <div class="tri" id="ftri"><div class="tri-in">
+          <svg viewBox="0 0 360 280" fill="none" stroke="rgba(241,241,244,.30)" stroke-width="1.5">
+            <path d="M14 84 L74 132 L14 180 Z"/>
+            <path d="M88 64 L162 132 L88 200 Z"/>
+            <path d="M158 44 L246 132 L158 220 Z"/>
+            <path d="M228 24 L330 132 L228 240 Z"/>
+          </svg>
+        </div></div>
+        <div class="ft" id="ftitle">Glassy Sky</div>
+        <div class="fa" id="fartist">SAPPHIRE</div>
+        <div class="frule" id="frule"></div>
+        <div class="flyr" id="flyr"><div class="cur">Oh please don't let me go</div><div>Let me open up your sky</div><div>Feel the wind take its time</div></div>
+        <div class="fbot" id="fbot">
+          <span class="triband"><i></i><i></i><i></i></span>
+          <span class="barcode2"></span>
+          <span class="micro2">LP-02 · A3 · 00.101</span>
+        </div>
+      </div>
+    </div>
+    <div class="lblrow"><span class="lbl">UP NEXT</span><i class="hr"></i><span class="micro2">2 TRACKS</span></div>
+    <div class="mini" id="m-next1" data-idx="2"></div>
+    <div class="mini small" id="m-next2" data-idx="3"></div>
+  </div>
+  <div class="list">
+    <div class="pmark">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="ruler"></div>
+      <div class="mb"></div>
+      <div class="mc">RL-08 · 08 TRACKS · 32:27</div>
+    </div>
+    <div class="strip">
+      <div class="pl"><div class="pc"><img src="ds-topo-card.svg" alt=""></div><div class="pn">Liked Songs</div></div>
+      <div class="pl"><div class="pc"><img src="ds-topo-card.svg" alt=""></div><div class="pn">Sapphire</div></div>
+      <div class="pl"><div class="pc"><img src="ds-topo-card.svg" alt=""></div><div class="pn">Chill Room</div></div>
+      <div class="pl"><div class="pc"><img src="ds-topo-card.svg" alt=""></div><div class="pn">Vinyl</div></div>
+    </div>
+    <label class="sort">SORT BY
+      <span class="pill-sel"><select><option>Default</option><option>Title</option><option>Artist</option><option>Length</option><option>Date added</option></select><b>▾</b></span>
+    </label>
+    <div data-added="2026-10-09" class="row on"><i class="rn">01</i><div class="rt">Glassy Sky</div><div class="ra">SAPPHIRE</div><div class="rl">4:20</div></div>
+    <div data-added="2026-10-08" class="row"><i class="rn">02</i><div class="rt">Re:Zero Medley: Styx Helix / Paradisus</div><div class="ra">SAPPHIRE</div><div class="rl">3:34</div></div>
+    <div data-added="2026-09-30" class="row"><i class="rn">03</i><div class="rt">Train Back Home</div><div class="ra">MAGIC: THE GATHERING</div><div class="rl">3:35</div></div>
+    <div data-added="2026-09-27" class="row"><i class="rn">04</i><div class="rt">Watashi Dake Yuu</div><div class="ra">SAPPHIRE</div><div class="rl">3:22</div></div>
+    <div data-added="2026-09-21" class="row"><i class="rn">05</i><div class="rt">Guitar, Loneliness</div><div class="ra">SAPPHIRE</div><div class="rl">3:49</div></div>
+    <div data-added="2026-09-18" class="row"><i class="rn">06</i><div class="rt">Seishun Complex</div><div class="ra">SAPPHIRE</div><div class="rl">3:21</div></div>
+    <div data-added="2026-09-12" class="row"><i class="rn">07</i><div class="rt">Last Stardust</div><div class="ra">SAPPHIRE</div><div class="rl">3:55</div></div>
+    <div data-added="2026-09-05" class="row"><i class="rn">08</i><div class="rt">Two Knocks</div><div class="ra">AESEAS</div><div class="rl">3:31</div></div>
+  </div>
+</div>
+<div class="bar">
+  <canvas class="viz" id="viz"></canvas>
+  <div class="timer"><span class="pause"><i></i><i></i></span><span id="time">00:08 / 02:02</span></div>
+  <div class="titles">
+    <div class="t">Oh please don't let me go</div>
+  </div>
+  <div class="ctrls">
+    <svg viewBox="0 0 24 24"><path d="M3 6h3l9 12h3M3 18h3l9-12h3M15 6h6M18 3l3 3-3 3M18 15l3 3-3 3"/></svg>
+    <svg class="fill" viewBox="0 0 24 24"><path d="M6 5h2v14H6zM19 5 9 12l10 7z"/></svg>
+    <svg class="fill big" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    <svg class="fill" viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM5 5l10 7-10 7z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/></svg>
+  </div>
+  <div class="vol">
+    <svg class="device" viewBox="0 0 24 24" aria-label="Devices"><rect x="3" y="4" width="13" height="10" rx="1"/><path d="M7 20h5M9.5 14v6"/><rect x="18" y="8" width="4" height="10" rx="1"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+    <input type="range" min="0" max="100" value="70" aria-label="Volume">
+  </div>
+  <div class="micro">42ms UID: 6349456094</div>
+</div>
+<script>
+"use strict";
+/* motion: the visualizer is simulated (no audio access). ?slow=N slows everything N times. */
+const SLOW = Math.max(1, +new URLSearchParams(location.search).get("slow") || 1);
+const canvas = document.getElementById("viz"), g = canvas.getContext("2d");
+const BARS = 72;
+
+function size() {
+  const dpr = devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+size();
+addEventListener("resize", size);
+
+/* soft white-purple bars, low contrast, glow via shadowBlur */
+function drawViz(t) {
+  const w = canvas.clientWidth, h = canvas.clientHeight, gap = w / BARS, bw = gap * 0.42;
+  g.clearRect(0, 0, w, h);
+  g.shadowColor = "rgba(190,170,255,.35)"; g.shadowBlur = 8;
+  g.fillStyle = "rgba(214,204,255,.22)";
+  for (let i = 0; i < BARS; i++) {
+    const a = 0.5 + 0.5 * Math.sin(t * 0.0016 + i * 0.37);
+    const b = 0.5 + 0.5 * Math.sin(t * 0.0009 * (1 + i % 5) + i * 1.9);
+    const v = 0.18 + 0.82 * (a * 0.6 + b * 0.4);
+    const bh = v * h;
+    g.fillRect(i * gap + (gap - bw) / 2, h - bh, bw, bh);
+  }
+}
+
+/* timer: runs 00:08 -> 02:02 in real time (slowed by SLOW) */
+const TOTAL = 122, START = 8, t0 = performance.now();
+const pad = (n) => String(n).padStart(2, "0");
+function frame(now) {
+  const elapsed = Math.min(TOTAL, START + (now - t0) / 1000 / SLOW);
+  const s = Math.floor(elapsed);
+  document.getElementById("time").textContent = `${pad(Math.floor(s / 60))}:${pad(s % 60)} / 02:02`;
+  drawViz((now - t0) / SLOW);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+<script>
+"use strict";
+/* LEFT DECK (v2) - featured album + prev/up-next minis. Motion = rAF tweens on the brief curves
+   (rules 3/4/15): entrances fade-slide a short way home, small print fades in after, exits never move.
+   ?slow=N slows everything N times, ?feat=N starts on another album. Click a mini or use arrow keys. */
+const S = Math.max(1, +new URLSearchParams(location.search).get("slow") || 1);
+const $ = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => [...(root || document).querySelectorAll(sel)];
+
+/* SNAP = cubic-bezier(1, 0, 0.7, 1), SETTLE = cubic-bezier(0.16, 1, 0.3, 1) */
+function bez(x1, y1, x2, y2) {
+  const cx = (t) => 3 * (1 - t) * (1 - t) * t * x1 + 3 * (1 - t) * t * t * x2 + t * t * t;
+  const cy = (t) => 3 * (1 - t) * (1 - t) * t * y1 + 3 * (1 - t) * t * t * y2 + t * t * t;
+  return (x) => {
+    let lo = 0, hi = 1, t = 0.5;
+    for (let i = 0; i < 18; i++) { t = (lo + hi) / 2; if (cx(t) < x) lo = t; else hi = t; }
+    return cy(t);
+  };
+}
+const SNAP = bez(1, 0, 0.7, 1), SETTLE = bez(0.16, 1, 0.3, 1);
+
+function tween(dur, ease, step, done) {
+  const t0 = performance.now();
+  (function run(now) {
+    const t = Math.min(1, (now - t0) / (dur * S));
+    step(ease(t), t);
+    if (t < 1) requestAnimationFrame(run);
+    else if (done) done();
+  })(performance.now());
+}
+const wait = (ms, fn) => setTimeout(fn, ms * S);
+
+/* rule 3: main layers appear at once near their spot, then fade-slide the short way home */
+function enter(el, dx, dy, delay) {
+  el.style.opacity = "0";
+  el.style.transform = "translate(" + dx + "px, " + dy + "px)";
+  wait(delay, () => tween(280, SETTLE, (v) => {
+    el.style.opacity = String(0.25 + 0.75 * v);
+    el.style.transform = "translate(" + dx * (1 - v) + "px, " + dy * (1 - v) + "px)";
+  }));
+}
+/* rule 4: small print fades in slowly after the main layers land */
+function detail(el, delay) {
+  el.style.opacity = "0";
+  wait(delay, () => tween(600, SETTLE, (v) => { el.style.opacity = String(v); }));
+}
+/* rule 15: exits never move - fade out in place */
+function leave(el, done) {
+  tween(120, SNAP, (v) => { el.style.opacity = String(1 - v); }, done);
+}
+
+const albums = [
+  { title: "Glassy Sky", artist: "SAPPHIRE", code: "SR-1415", hue: 0, len: "04:20",
+    lyr: ["Oh please don't let me go", "Let me open up your sky", "Feel the wind take its time"] },
+  { title: "Watashi Dake Yuu", artist: "SAPPHIRE", code: "SR-0912", hue: 48, len: "03:22",
+    lyr: ["Ride the last train home", "City lights blur into snow", "Nothing waits, nothing goes"] },
+  { title: "Train Back Home", artist: "MAGIC: THE GATHERING", code: "MT-3350", hue: 150, len: "03:35",
+    lyr: ["Count the stations one by one", "Every window holds a sun", "Home is where the rails all run"] },
+  { title: "Guitar, Loneliness", artist: "SAPPHIRE", code: "SR-0721", hue: -70, len: "03:49",
+    lyr: ["Six strings and a quiet room", "Dust in light, a slow perfume", "Plays the shape of leaving soon"] },
+  { title: "Seishun Complex", artist: "SAPPHIRE", code: "SR-1103", hue: 220, len: "03:21",
+    lyr: ["Summer on a power line", "Your voice under the bass line", "Complex, tangled, yours and mine"] },
+];
+const at = (i) => albums[((i % albums.length) + albums.length) % albums.length];
+const wrap = (i) => ((i % albums.length) + albums.length) % albums.length;
+let feat = 0;
+
+function miniHTML(a) {
+  return '<div class="mc"><img src="ds-topo-card.svg" alt="" style="filter:hue-rotate(' + a.hue + 'deg) saturate(.6)"></div>'
+    + '<div class="tx"><div class="mt">' + a.title + '</div><div class="ms">' + a.artist + '</div>'
+    + '<div class="mc2">' + a.code + ' · ' + a.len + '</div></div><div class="badge"></div>';
+}
+
+function render() {
+  const a = at(feat);
+  $("#ftopo").style.filter = "hue-rotate(" + a.hue + "deg) saturate(.6)";
+  $("#ftitle").textContent = a.title;
+  $("#fartist").textContent = a.artist;
+  $("#fmcode").textContent = a.code + " · 33 RPM · SIDE A";
+  $("#flyr").innerHTML = a.lyr.map((l, i) => '<div' + (i === 0 ? ' class="cur"' : '') + '>' + l + '</div>').join("");
+  for (const [sel, i] of [["#m-prev", feat - 1], ["#m-next1", feat + 1], ["#m-next2", feat + 2]]) {
+    const el = $(sel);
+    el.dataset.idx = String(wrap(i));
+    el.innerHTML = miniHTML(at(i));
+  }
+}
+
+const FINE = ["#fbarcode", "#fmcode", "#ftri", "#fbot"];
+
+function playIn() {
+  enter($("#fcard"), 0, 22, 0);
+  ["#ftitle", "#fartist", "#frule", "#flyr"].forEach((s, i) => enter($(s), 0, 14, 40 + i * 35));
+  ["#m-prev", "#m-next1", "#m-next2"].forEach((s, i) => enter($(s), -14, 0, 80 + i * 45));
+  $$(".lblrow").forEach((el, i) => detail(el, 300 + i * 80));
+  FINE.forEach((s, i) => detail($(s), 280 + i * 70));
+}
+
+function swapTo(idx) {
+  idx = wrap(idx);
+  if (idx === feat) return;
+  const out = ["#ftopo", "#ftitle", "#fartist", "#frule", "#flyr", ...FINE].map((s) => $(s));
+  out.forEach((el) => leave(el));
+  wait(130, () => {
+    feat = idx;
+    render();
+    tween(90, SNAP, (v) => { $("#ftopo").style.opacity = String(v); }); // the art cuts in place
+    ["#ftitle", "#fartist", "#frule", "#flyr"].forEach((s, i) => enter($(s), 0, 12, 30 + i * 35));
+    FINE.forEach((s, i) => detail($(s), 200 + i * 60));
+    ["#m-prev", "#m-next1", "#m-next2"].forEach((s, i) => enter($(s), -10, 0, 50 + i * 40));
+  });
+}
+
+render();
+playIn();
+const triIn = $("#ftri .tri-in");
+(function amb(t) {
+  triIn.style.opacity = String(0.82 + 0.18 * Math.sin(t * 0.0007));
+  requestAnimationFrame(amb);
+})(0);
+
+$$('.mini').forEach((el) => el.addEventListener('click', () => swapTo(+el.dataset.idx)));
+/* rows show their date added (already on data-added) - fills the row's right half */
+$$(".row").forEach((row) => {
+  const d = document.createElement("div");
+  d.className = "rd";
+  d.textContent = row.dataset.added;
+  row.insertBefore(d, row.querySelector(".rl"));
+});
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') swapTo(feat - 1);
+  if (e.key === 'ArrowRight') swapTo(feat + 1);
+});
+const start = +new URLSearchParams(location.search).get('feat');
+if (start >= 0 && start < albums.length && start !== feat) { feat = start; render(); }
+</script>
+</body>
+</html>
