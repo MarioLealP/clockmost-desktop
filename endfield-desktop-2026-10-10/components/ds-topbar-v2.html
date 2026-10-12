@@ -398,7 +398,9 @@
   .nc .it .tx em { font-style: normal; color: var(--dim); }
   .nc .it .ag { font: 9px var(--mono); letter-spacing: .14em; color: var(--ghost); }
   .nc .it.unread { position: relative; }
-  .nc .it.unread .notif { position: absolute; left: 33px; top: 50%; margin: -4px 0 0; }
+  /* unread vs read: no markers - unread rows are bright, read rows fade back */
+  .nc .it:not(.unread) .tx { color: var(--dim); }
+  .nc .it:not(.unread) .tx em { color: var(--faint); }
   .nc .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 14px 18px 18px; }
   .nc .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
     background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
@@ -498,16 +500,16 @@
       <div class="hd"><div class="ttl">NOTIFICATIONS<small>4 SOURCES · LAST 24H</small></div><div class="un">7<span>UNREAD</span></div></div>
       <div class="dnd"><div class="tgt" style="--c:#ff9e2c;height:50px"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M4 4l16 16"/></svg><b>DO NOT DISTURB</b><i>OFF · AUTO DURING GAMES</i><span class="ix">DND</span></div></div>
       <div class="grp" style="--c:#5aa7ff"><span class="gb">D</span><span class="label">DISCORD</span><span class="n">03</span><span class="ln"></span><span class="cl">CLEAR</span></div>
-      <div class="it unread"><span class="notif"></span><span class="tx">muse <em>in #felt-dev</em> · can you look at the mockups</span><span class="ag">NOW</span></div>
-      <div class="it unread"><span class="notif"></span><span class="tx">kuri <em>in #felt-dev</em> · rig photos are up</span><span class="ag">2M</span></div>
+      <div class="it unread"><span class="tx">muse <em>in #felt-dev</em> · can you look at the mockups</span><span class="ag">NOW</span></div>
+      <div class="it unread"><span class="tx">kuri <em>in #felt-dev</em> · rig photos are up</span><span class="ag">2M</span></div>
       <div class="it"><span class="tx">voice ended <em>· Orange Juice</em></span><span class="ag">18M</span></div>
       <div class="grp" style="--c:#d91e36"><span class="gb" style="color:#fff">Z</span><span class="label">CLOCKMOST · ZABBIX</span><span class="n">02</span><span class="ln"></span><span class="cl">CLEAR</span></div>
-      <div class="it unread"><span class="notif"></span><span class="tx"><span class="tag" style="margin-right:8px">HIGH</span>Disk usage 82% on /mnt/data</span><span class="ag">6M</span></div>
+      <div class="it unread"><span class="tx"><span class="tag" style="margin-right:8px">HIGH</span>Disk usage 82% on /mnt/data</span><span class="ag">6M</span></div>
       <div class="it"><span class="tx">CPU load back under 2.0 <em>· resolved</em></span><span class="ag">1H</span></div>
       <div class="grp" style="--c:#7ddb57"><span class="gb"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#111;stroke-width:3"><path d="M12 4v11M7 10l5 5 5-5"/></svg></span><span class="label">DOWNLOADS</span><span class="n">01</span><span class="ln"></span><span class="cl">CLEAR</span></div>
-      <div class="it unread"><span class="notif"></span><span class="tx">cachyos-260809.iso <em>· 2.9 GB</em></span><span class="ag">12M</span></div>
+      <div class="it unread"><span class="tx">cachyos-260809.iso <em>· 2.9 GB</em></span><span class="ag">12M</span></div>
       <div class="grp" style="--c:#ff1aac"><span class="gb">S</span><span class="label">SPECTACLE</span><span class="n">01</span><span class="ln"></span><span class="cl">CLEAR</span></div>
-      <div class="it unread"><span class="notif"></span><span class="tx">Screenshot saved <em>· 2026-10-12_20-41.png</em></span><span class="ag">24M</span></div>
+      <div class="it unread"><span class="tx">Screenshot saved <em>· 2026-10-12_20-41.png</em></span><span class="ag">24M</span></div>
       <div class="ft"><span class="barcode"></span><span class="micro">NC-07 · 4 GROUPS</span><span class="clr">CLEAR ALL</span></div>
     </div>
     <!-- CALENDAR -->
