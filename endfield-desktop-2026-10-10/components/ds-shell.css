@@ -140,14 +140,14 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 .barcode { display: inline-block; width: 88px; height: 11px;
   background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 5px, rgba(241,241,244,.5) 5px 6px, transparent 6px 9px); }
 /* notification diamond - THE one notification marker everywhere (refs/notify-diamond-a/b).
-   One size: 9px orange square turned 45deg, plus a thin orange outline floating 2px off it (the gap shows
-   whatever is behind - no background colour needed). Static in mocks (the real build pulses the outline).
+   One size: 7px orange square turned 45deg, plus a thin orange outline floating 1.5px off it (the gap shows
+   whatever is behind - no background colour needed). Static in mocks (the real build blinks/pulses the outline, so it can stay small).
    Inline:  <span class="notif"></span>  (sits in text/rows; give it ~6px margin either side)
    Pinned:  <span class="notif pin"></span> inside a position:relative host - always on its top-right corner. */
-.notif { display: inline-block; flex: none; width: 9px; height: 9px; margin: 0 6px; vertical-align: 1px;
+.notif { display: inline-block; flex: none; width: 7px; height: 7px; margin: 0 6px; vertical-align: 1px;
   background: #ff8a1f; transform: rotate(45deg);
-  outline: 1.5px solid rgba(255,138,31,.7); outline-offset: 2px; }
-.notif.pin { position: absolute; top: -4px; right: -4px; margin: 0; z-index: 2; }
+  outline: 1px solid rgba(255,138,31,.75); outline-offset: 1.5px; }
+.notif.pin { position: absolute; top: -3px; right: -3px; margin: 0; z-index: 2; }
 /* crimson timer / urgent tag */
 .tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; background: var(--crimson); color: #fff;
   font: 700 9px var(--mono); letter-spacing: .14em; }
