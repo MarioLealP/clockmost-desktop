@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-firefox v2</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: Firefox chrome in the settled language (top bar / dock / dropdowns): colour tiles, olive = active space,
+     yellow chevron block = selected tab, site colour blocks, tick rulers, brackets, small print. No glows.
+     The website inside stays itself (neutral Gitea page) so the chrome is what reads as Endfield. */
+  :root { --olive: rgba(255,250,0,.34); }
+  .ff { position: absolute; inset: 0; display: flex; background: var(--ground); }
+
+  /* ---------- sidebar ---------- */
+  .side { position: relative; width: 300px; flex: none; display: flex; flex-direction: column; padding: 16px 14px 14px;
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 1px, transparent 1px 7px), #121316;
+    border-right: 1px solid rgba(255,255,255,.08); }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 12px; }
+  .brand img { width: 26px; height: 26px; }
+  .brand b { font: 700 14px var(--mono); letter-spacing: .3em; }
+  .brand .bm { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .bbc { width: 44px; height: 6px; background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 4px, rgba(241,241,244,.5) 4px 5px, transparent 5px 8px); }
+  .rule { height: 7px; margin: 0 4px 14px; border-top: 1px solid rgba(255,255,255,.14);
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.3) 0 1px, transparent 1px 8px) 0 0 / 100% 3px no-repeat,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.4) 0 1px, transparent 1px 48px) 0 0 / 100% 6px no-repeat; }
+  /* pinned = dock tiles */
+  .pins { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .pin { position: relative; height: 62px; overflow: hidden; border: 1px solid rgba(255,255,255,.10);
+    background: linear-gradient(180deg, rgba(58,62,70,.5) 25%, color-mix(in srgb, var(--c) 42%, rgba(30,32,37,.6)) 100%); }
+  .pin::before { content: ""; position: absolute; left: 0; top: 0; width: 10px; height: 10px; z-index: 1; background: linear-gradient(135deg, var(--c) 50%, transparent 50%); }
+  .pin::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--c); }
+  .pin .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .3; }
+  .pin .pg { position: absolute; left: 0; right: 0; top: 12px; text-align: center; font: 700 20px var(--body); color: var(--c); }
+  .pin .pn { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font: 7px var(--mono); letter-spacing: .14em; color: var(--dim); }
+  /* spaces = workspace plates */
+  .sp { display: flex; gap: 6px; margin-bottom: 14px; }
+  .spc { flex: 1; height: 30px; display: flex; align-items: center; justify-content: center; font: 700 9px var(--mono); letter-spacing: .18em; color: var(--dim);
+    background: rgba(51,54,60,.55); border: 1px solid rgba(255,255,255,.08); }
+  .spc.on { position: relative; background: var(--olive); border-color: rgba(255,250,0,.45); color: #fffbb0; }
+  .spc.on::after { content: ""; position: absolute; inset: 0; background: radial-gradient(rgba(255,250,0,.35) 1px, transparent 1.3px) 0 0 / 6px 6px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 40%, #000); mask-image: linear-gradient(90deg, transparent 40%, #000); }
+  .sect { display: flex; align-items: center; gap: 8px; padding: 0 4px 8px; }
+  .sect .ln { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  /* tabs */
+  .tab { position: relative; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 10px 0 0; margin-bottom: 2px; }
+  .tab .fv { width: 32px; height: 32px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111; font: 700 13px var(--body); }
+  .tab .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .tab .tt b { font: 500 13px var(--body); color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab .tt i { font-style: normal; font: 8px var(--mono); letter-spacing: .14em; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab .tag { flex: none; }
+  .tab.sel { background: var(--yellow); margin-right: 8px; padding-right: 22px;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%); }
+  .tab.sel .tt b { color: #111; font-weight: 600; }
+  .tab.sel .tt i { color: rgba(17,17,17,.6); }
+  .tab.sel .fv { background: #111; color: var(--c); }
+  .tab.sel::after { content: ""; position: absolute; right: 24px; top: 8px; width: 24px; height: 28px; background: radial-gradient(rgba(17,17,17,.35) 1px, transparent 1.3px) 0 0 / 5px 5px; }
+  /* tab group: colour rail */
+  .grp { margin: 8px 0 6px; padding-left: 10px; border-left: 3px solid var(--c); }
+  .grp .gh { display: flex; align-items: center; gap: 8px; height: 22px; margin-bottom: 4px; }
+  .grp .gb { font: 700 9px var(--mono); letter-spacing: .2em; padding: 3px 7px; background: var(--c); color: #111; }
+  .grp .ln { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  .newtab { display: flex; align-items: center; gap: 10px; height: 36px; margin-top: 6px; padding: 0 8px; border: 1px dashed rgba(255,255,255,.18);
+    font: 700 10px var(--mono); letter-spacing: .2em; color: var(--dim); }
+  .newtab svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 3; transform: rotate(45deg); }
+  .sfoot { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 12px 4px 0; border-top: 1px solid rgba(255,255,255,.08); }
+
+  /* ---------- main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .tb { position: relative; height: 64px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 20px;
+    background: linear-gradient(180deg, rgba(30,31,36,.95), rgba(18,19,22,.95)); }
+  .tb::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 7px; border-bottom: 1px solid rgba(255,255,255,.14);
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.35) 0 1px, transparent 1px 64px) 0 0 / 100% 7px,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.18) 0 1px, transparent 1px 8px) 0 4px / 100% 3px no-repeat; }
+  .nav { display: flex; gap: 4px; color: var(--ink2); }
+  .nav span { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
+  .nav span.off { color: var(--ghost); }
+  .nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: square; }
+  .url { flex: 1; max-width: 900px; margin: 0 auto; height: 42px; display: flex; align-items: center; gap: 0;
+    background: rgba(10,11,13,.8); border: 1px solid rgba(255,255,255,.18); box-shadow: inset 0 2px 8px rgba(0,0,0,.5); }
+  .url .id { height: 100%; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--c); color: #111; font: 700 9px var(--mono); letter-spacing: .16em; }
+  .url .id svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.6; }
+  .url .pr { padding-left: 14px; color: var(--yellow); font: 700 13px var(--mono); letter-spacing: .1em; }
+  .url .u { padding-left: 10px; font: 13px var(--mono); letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .url .u b { color: var(--ink); font-weight: 400; }
+  .url .u span { color: var(--dim); }
+  .url .st { margin-left: auto; display: flex; align-items: center; gap: 6px; padding: 0 12px; color: var(--ink2); }
+  .url .st svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+  .ext { display: flex; align-items: center; height: 38px; padding: 0 4px; border: 1px solid rgba(255,255,255,.10); background: rgba(12,13,15,.7); }
+  .ext .e { position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--ink2); }
+  .ext .e svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .ext .e::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 3px; height: 2px; background: var(--c); }
+  .ext .e .bd { position: absolute; right: 2px; top: 3px; font: 700 7px var(--mono); padding: 1px 3px; background: var(--c); color: #111; }
+  .ext .e.dwn { color: var(--yellow); }
+  .wbx { display: flex; gap: 8px; }
+  .wbx .wb { border-radius: 0; }
+  .content { position: relative; flex: 1; min-height: 0; }
+  .mock-note { left: 320px; }
+
+  /* ---------- downloads dropdown (bar dropdown family) ---------- */
+  .dl { position: absolute; right: 130px; top: 8px; width: 420px; z-index: 5;
+    background: linear-gradient(180deg, rgba(26,27,32,.97), rgba(12,13,16,.98)); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+  .dl::before { content: ""; position: absolute; top: -7px; right: 21px; width: 12px; height: 12px; background: rgba(26,27,32,.97);
+    border-left: 1px solid rgba(255,255,255,.12); border-top: 1px solid rgba(255,255,255,.12); transform: rotate(45deg); }
+  .dl .bk { position: absolute; width: 14px; height: 14px; }
+  .dl .bk.tl { left: -1px; top: -1px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .dl .bk.br { right: -1px; bottom: -1px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  .dl .hd { display: flex; align-items: flex-end; padding: 16px 16px 10px; }
+  .dl .hd b { font: 700 16px var(--mono); letter-spacing: .26em; }
+  .dl .hd .micro { margin-left: auto; }
+  .dr { display: grid; grid-template-columns: 40px 1fr auto; column-gap: 12px; align-items: center; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,.06); }
+  .dr .ty { height: 40px; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111; font: 700 9px var(--mono); letter-spacing: .1em; }
+  .dr b { display: block; font: 500 13px var(--body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dr i { font-style: normal; font: 9px var(--mono); letter-spacing: .14em; color: var(--dim); }
+  .dr .ok { color: var(--green); }
+  .dr .pb { height: 3px; margin-top: 7px; background: rgba(255,255,255,.1); }
+  .dr .pb s { display: block; width: 64%; height: 100%; background: var(--yellow); }
+  .dr .ac { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.16); color: var(--ink2); }
+  .dr .ac svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .dl .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 16px 18px; border-top: 1px solid rgba(255,255,255,.08); }
+  .dl .ft::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 5px; height: 6px; background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
+
+  /* ---------- the website (unchanged from v1) ---------- */
+  .page { position: absolute; inset: 0; overflow: hidden; background: #16181b; font-family: var(--body); }
+  .ghead2 { height: 72px; display: flex; align-items: center; gap: 14px; padding: 0 32px;
+    background: #1b1e22; border-bottom: 1px solid #2a2e33; }
+  .grepo { font-size: 17px; color: #c5cbd2; }
+  .grepo .gorg { color: #6ea8e0; }
+  .grepo .gslash { color: #5a6069; margin: 0 4px; }
+  .grepo .gname { font-weight: 600; color: #e2e6ea; }
+  .gpriv { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px;
+    border: 1px solid #3a4048; border-radius: 11px; font-size: 11px; color: #9aa3ad; letter-spacing: .04em; }
+  .gpriv svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .gstats { margin-left: auto; display: flex; gap: 10px; }
+  .gbtn { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px;
+    border: 1px solid #3a4048; border-radius: 6px; font-size: 12px; color: #9aa3ad; }
+  .gbtn svg { width: 13px; height: 13px; }
+  .gbtn svg.fill { fill: #9aa3ad; stroke: none; }
+  .gbtn svg.line { fill: none; stroke: #9aa3ad; stroke-width: 2; }
+  .gbtn b { color: #d3d8dd; font-weight: 600; }
+  .gwrap { width: 1180px; margin: 0 auto; padding: 24px 0 40px; }
+  .gtable { background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grow { display: grid; grid-template-columns: 300px 1fr 140px; align-items: center;
+    padding: 0 18px; height: 52px; border-bottom: 1px solid #26292e; }
+  .grow:last-child { border-bottom: 0; }
+  .grow.gcolhead { height: 42px; background: #191c20; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: #6d757f; }
+  .gcell { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 14px; color: #c9d0d7; }
+  .gcell svg { width: 16px; height: 16px; flex: none; }
+  .gcell.folder svg { fill: #6f97b8; }
+  .gcell.file svg { fill: none; stroke: #8b949e; stroke-width: 1.8; }
+  .gmsg { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #8b949e; }
+  .gdate { text-align: right; font-size: 12px; color: #6d757f; }
+  .greadme { margin-top: 22px; background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grbar { height: 42px; display: flex; align-items: center; padding: 0 18px; background: #191c20;
+    border-bottom: 1px solid #26292e; font-size: 13px; color: #9aa3ad; }
+  .grbody { padding: 22px 26px 26px; }
+  .grbody h1 { margin: 0 0 14px; font-size: 21px; font-weight: 600; color: #e2e6ea; }
+  .grbody p { margin: 0 0 12px; font-size: 14px; line-height: 1.65; color: #a7afb8; max-width: 860px; }
+  .grbody code { font: 12px var(--mono); color: #c9d0d7; background: #26292e; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="ff">
+    <aside class="side">
+      <div class="brand"><img src="firefox.svg" alt=""><b>FIREFOX</b><span class="bm"><span class="bbc"></span><span class="micro">157.0 · BENYLIN</span></span></div>
+      <div class="rule"></div>
+      <div class="pins"><div class="pin" style="--c:#7ddb57"><img class="topo" src="ds-topo-card.svg" alt=""><span class="pg">G</span><span class="pn">GITEA</span></div><div class="pin" style="--c:#5aa7ff"><img class="topo" src="ds-topo-card.svg" alt=""><span class="pg">P</span><span class="pn">PLANE</span></div><div class="pin" style="--c:#d91e36"><img class="topo" src="ds-topo-card.svg" alt=""><span class="pg">Z</span><span class="pn">ZABBIX</span></div><div class="pin" style="--c:#ff1aac"><img class="topo" src="ds-topo-card.svg" alt=""><span class="pg">▶</span><span class="pn">YOUTUBE</span></div></div>
+      <div class="sp"><span class="spc on">CLOCKMOST</span><span class="spc">PERSONAL</span><span class="spc">GAMES</span></div>
+      <div class="sect"><span class="label" style="font-size:10px">TABS</span><span class="ln"></span><span class="micro">09</span></div>
+      <div class="tab sel" style="--c:#7ddb57"><span class="fv">G</span><span class="tt"><b>Benylin/clockmost-desktop</b><i>git.clockmost.com</i></span></div><div class="tab " style="--c:#ff1aac"><span class="fv">▶</span><span class="tt"><b>Glassy Sky · Sapphire</b><i>youtube.com</i></span><span class="tag">REC</span></div><div class="tab " style="--c:#d91e36"><span class="fv">Z</span><span class="tt"><b>Problems · Zabbix</b><i>zabbix.clockmost.com</i></span><span class="notif"></span></div><div class="tab " style="--c:#5aa7ff"><span class="fv">P</span><span class="tt"><b>Clockmost Desktop · Plane</b><i>plane.clockmost.com</i></span></div><div class="tab " style="--c:#7ddb57"><span class="fv">G</span><span class="tt"><b>Benylin/endfield-kit</b><i>git.clockmost.com</i></span></div>
+      <div class="grp" style="--c:#cfc6f4"><div class="gh"><span class="gb">FELT</span><span class="ln"></span><span class="micro">02</span></div><div class="tab " style="--c:#cfc6f4"><span class="fv">F</span><span class="tt"><b>felt-dashboard · localhost</b><i>localhost:5173</i></span></div><div class="tab " style="--c:#5aa7ff"><span class="fv">P</span><span class="tt"><b>felt rig checklist · Plane</b><i>plane.clockmost.com</i></span></div></div>
+      <div class="tab " style="--c:#7ddb57"><span class="fv">K</span><span class="tt"><b>KeePassXC User Guide</b><i>keepassxc.org</i></span></div><div class="tab " style="--c:#3FD0E8"><span class="fv">C</span><span class="tt"><b>CachyOS · Downloads</b><i>cachyos.org</i></span></div>
+      <div class="newtab"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg>NEW TAB<span class="kbd" style="margin-left:auto;border-radius:0">CTRL T</span></div>
+      <div class="sfoot"><span class="bbc"></span><span class="micro">9 TABS · 2 GROUPS · 3 SPACES</span></div>
+    </aside>
+
+    <section class="main">
+      <div class="tb">
+        <div class="nav">
+          <span><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><span class="off"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></span>
+        </div>
+        <div class="url" style="--c:#7ddb57">
+          <span class="id"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>GITEA</span>
+          <span class="pr">›››</span>
+          <span class="u"><b>git.clockmost.com</b><span>/Benylin/clockmost-desktop</span></span>
+          <span class="st"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1-5.4-3-5.4 3 1.2-6.1L3.3 9.4l6.1-.8z"/></svg></span>
+        </div>
+        <div class="ext">
+          <span class="e" style="--c:#d91e36"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><span class="bd">12</span></span>
+          <span class="e" style="--c:#7ddb57"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v3"/></svg></span>
+          <span class="e dwn" style="--c:#FFFA00"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span>
+        </div>
+        <div class="wbx">
+          <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button><button class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button><button class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+        </div>
+      </div>
+      <div class="content">
+          <div class="page">
+            <div class="ghead2">
+              <div class="grepo"><span class="gorg">Benylin</span><span class="gslash">/</span><span class="gname">clockmost-desktop</span></div>
+              <span class="gpriv"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private</span>
+              <div class="gstats">
+                <span class="gbtn"><svg class="fill" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1-5.4-3-5.4 3 1.2-6.1L3.3 9.4l6.1-.8z"/></svg>Star <b>12</b></span>
+                <span class="gbtn"><svg class="line" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg>Watch <b>3</b></span>
+              </div>
+            </div>
+
+            <div class="gwrap">
+              <div class="gtable">
+                <div class="grow gcolhead"><span>Name</span><span>Last commit</span><span style="text-align:right">Updated</span></div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>design</span>
+                  <span class="gmsg">design: ds-shell.css house style, STYLE.md, layout orders 03-06</span>
+                  <span class="gdate">Oct 12, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>install</span>
+                  <span class="gmsg">install: fix plasma panel restore on the side monitor</span>
+                  <span class="gdate">Oct 9, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>packages</span>
+                  <span class="gmsg">pkg: bump endfield-shell to 0.9.2</span>
+                  <span class="gdate">Oct 5, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>README.md</span>
+                  <span class="gmsg">docs: folder table explains src/</span>
+                  <span class="gdate">Oct 2, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>TODO.md</span>
+                  <span class="gmsg">todo: note chat redo on hold</span>
+                  <span class="gdate">Sep 28, 2026</span>
+                </div>
+              </div>
+
+              <div class="greadme">
+                <div class="grbar">README.md</div>
+                <div class="grbody">
+                  <h1>clockmost-desktop</h1>
+                  <p>Mario's daily-driver desktop: KDE Plasma with a custom shell dressed in the visual language of
+                    Arknights: Endfield — but built as real functional apps, not game screens. Windows, a dock, a top
+                    bar, a browser, a music player. The skin is Endfield; the content is a working desktop.</p>
+                  <p>Every piece starts as a static 1920x1080 layout mock in <code>components/</code>, sharing one house
+                    style in <code>ds-shell.css</code>, so the whole desktop can be reviewed before anything is wired
+                    up. Design notes and work orders live in <code>orders/</code>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <div class="dl"><i class="bk tl"></i><i class="bk br"></i>
+          <div class="hd"><b>DOWNLOADS</b><span class="micro">2 ITEMS · ~/DOWNLOADS</span></div>
+          <div class="dr" style="--c:#7ddb57"><span class="ty">ZST</span><span><b>clockmost-desktop-recipe.tar.zst</b><i>18.2 MB · <span class="ok">DONE</span> · SHA256 OK</i></span><span class="ac"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 3h9v10H3z"/></svg></span></div>
+          <div class="dr" style="--c:#3FD0E8"><span class="ty">ISO</span><span><b>cachyos-260809.iso</b><i>1.9 / 2.9 GB · 42 MB/S · 24S LEFT</i><div class="pb"><s></s></div></span><span class="ac"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></span></div>
+          <div class="ft"><span class="barcode"></span><span class="micro">DL-2608</span><span class="micro" style="margin-left:auto">SHOW ALL ›</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="mock-note">ds-firefox v2 · fullscreen on the main monitor · layout only</div>
+</div>
+</body>
+</html>
