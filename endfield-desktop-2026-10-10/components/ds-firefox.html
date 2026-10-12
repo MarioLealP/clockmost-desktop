@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-firefox · fullscreen browser</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ===== window shell: fullscreen browser, sidebar left + toolbar/content right ===== */
+  .win.max { inset: 0; }
+  .shell { flex: 1; min-height: 0; display: flex; }
+
+  /* ===== left sidebar (Zen-style vertical tabs), 272px ===== */
+  .sidebar { width: 272px; flex: none; background: var(--side); border-right: 1px solid rgba(255,255,255,.08);
+    display: flex; flex-direction: column; padding: 18px 16px 14px; }
+  .shead { display: flex; align-items: center; gap: 12px; }
+  .shead img { width: 22px; height: 22px; flex: none; }
+  .shead .wtitle { font-size: 14px; letter-spacing: .2em; }
+  .shead + .micro { margin-top: 8px; }
+
+  /* pinned tabs: 4 square letter/glyph tiles */
+  .pins { display: grid; grid-template-columns: repeat(4, 48px); gap: 10px; margin-top: 22px; }
+  .pin { width: 48px; height: 48px; border-radius: 6px; background: var(--field); color: var(--ink2);
+    display: flex; align-items: center; justify-content: center; font: 600 16px var(--mono); }
+  .pin svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* spaces: label + chip row */
+  .spaces { margin-top: 24px; }
+  .schips { display: flex; gap: 6px; margin-top: 10px; }
+  .schips .chip { height: 22px; padding: 0 9px; border-radius: 11px; font-size: 10px; letter-spacing: .08em; gap: 4px; }
+
+  /* tab list */
+  .tabs { flex: 1; min-height: 0; margin-top: 14px; }
+  .tab { height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border-radius: 2px; }
+  .tab.sel { background: var(--yellow); color: #111; }
+  .fav { width: 16px; height: 16px; flex: none; border-radius: 2px; background: var(--field); color: var(--ink2);
+    display: flex; align-items: center; justify-content: center; font: 700 9px var(--mono); }
+  .fav svg { width: 9px; height: 9px; fill: currentColor; }
+  .tt { flex: 1; min-width: 0; font: 13px var(--body); color: var(--ink); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .tab.sel .tt { color: #111; }
+  .tab.sel .fav { background: #1a1b1c; }
+  .tab .tag { flex: none; }
+  .tab .notif { flex: none; }
+
+  /* tab group: violet chip header, indented tabs on a violet line */
+  .ghead { height: 32px; display: flex; align-items: center; padding: 0 10px; }
+  .gchip { display: inline-flex; align-items: center; height: 18px; padding: 0 8px; border-radius: 9px;
+    background: rgba(207,198,244,.13); border: 1px solid rgba(207,198,244,.34); color: var(--violet);
+    font: 700 9px var(--mono); letter-spacing: .18em; }
+  .gtabs { margin: 2px 0 2px 12px; padding-left: 12px; border-left: 2px solid rgba(207,198,244,.45); }
+
+  /* sidebar bottom */
+  .sfoot { margin-top: auto; padding-top: 12px; }
+  .newtab { height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 10px; color: var(--dim);
+    font: 600 11px var(--mono); letter-spacing: .2em; }
+  .newtab svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: butt; }
+  .sfoot .foot-row { display: flex; align-items: center; gap: 12px; padding: 10px 10px 2px; }
+
+  /* ===== toolbar (right of the sidebar), 56px ===== */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .trow .nav { display: flex; gap: 4px; }
+  .navb { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0;
+    border: 0; background: transparent; border-radius: 6px; color: var(--ink2); }
+  .navb svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: square; }
+  .extb { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0;
+    background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; color: var(--ink2); }
+  .extb svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .ext { display: flex; gap: 8px; margin-left: auto; }
+  .trow .wctl { margin-left: 16px; }
+  /* URL field centred on the toolbar itself, not between the button groups */
+  .trow .mid { position: absolute; left: 50%; top: 0; bottom: 0; transform: translateX(-50%); align-items: center; }
+
+  /* URL field: lock glyph + host (ink) + path (dim) */
+  .url { width: 760px; height: 40px; flex: none; }
+  .url .lock { width: 13px; height: 13px; flex: none; fill: none; stroke: var(--dim); stroke-width: 2.4; stroke-linecap: square; }
+  .url .u { font: 13px var(--mono); letter-spacing: .12em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .url .uhost { color: var(--ink); }
+  .url .upath { color: var(--dim); }
+
+  /* ===== content: a plain dark website (Gitea) - NOT Endfield-styled ===== */
+  .page { position: absolute; inset: 0; overflow: hidden; background: #16181b; font-family: var(--body); }
+  .ghead2 { height: 72px; display: flex; align-items: center; gap: 14px; padding: 0 32px;
+    background: #1b1e22; border-bottom: 1px solid #2a2e33; }
+  .grepo { font-size: 17px; color: #c5cbd2; }
+  .grepo .gorg { color: #6ea8e0; }
+  .grepo .gslash { color: #5a6069; margin: 0 4px; }
+  .grepo .gname { font-weight: 600; color: #e2e6ea; }
+  .gpriv { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px;
+    border: 1px solid #3a4048; border-radius: 11px; font-size: 11px; color: #9aa3ad; letter-spacing: .04em; }
+  .gpriv svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .gstats { margin-left: auto; display: flex; gap: 10px; }
+  .gbtn { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px;
+    border: 1px solid #3a4048; border-radius: 6px; font-size: 12px; color: #9aa3ad; }
+  .gbtn svg { width: 13px; height: 13px; }
+  .gbtn svg.fill { fill: #9aa3ad; stroke: none; }
+  .gbtn svg.line { fill: none; stroke: #9aa3ad; stroke-width: 2; }
+  .gbtn b { color: #d3d8dd; font-weight: 600; }
+
+  .gwrap { width: 1180px; margin: 0 auto; padding: 24px 0 40px; }
+  .gtable { background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grow { display: grid; grid-template-columns: 300px 1fr 140px; align-items: center;
+    padding: 0 18px; height: 52px; border-bottom: 1px solid #26292e; }
+  .grow:last-child { border-bottom: 0; }
+  .grow.gcolhead { height: 42px; background: #191c20; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: #6d757f; }
+  .gcell { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 14px; color: #c9d0d7; }
+  .gcell svg { width: 16px; height: 16px; flex: none; }
+  .gcell.folder svg { fill: #6f97b8; }
+  .gcell.file svg { fill: none; stroke: #8b949e; stroke-width: 1.8; }
+  .gmsg { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #8b949e; }
+  .gdate { text-align: right; font-size: 12px; color: #6d757f; }
+
+  .greadme { margin-top: 22px; background: #1d2024; border: 1px solid #2b2f34; border-radius: 6px; overflow: hidden; }
+  .grbar { height: 42px; display: flex; align-items: center; padding: 0 18px; background: #191c20;
+    border-bottom: 1px solid #26292e; font-size: 13px; color: #9aa3ad; }
+  .grbody { padding: 22px 26px 26px; }
+  .grbody h1 { margin: 0 0 14px; font-size: 21px; font-weight: 600; color: #e2e6ea; }
+  .grbody p { margin: 0 0 12px; font-size: 14px; line-height: 1.65; color: #a7afb8; max-width: 860px; }
+  .grbody code { font: 12px var(--mono); color: #c9d0d7; background: #26292e; padding: 1px 5px; border-radius: 4px; }
+
+  /* ===== downloads panel popup (Endfield chrome again) ===== */
+  .dl { position: absolute; right: 24px; bottom: 24px; width: 320px; padding: 16px 18px 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4); }
+  .dlrow { display: flex; gap: 12px; padding: 12px 0 4px; border-top: 1px solid rgba(255,255,255,.08); }
+  .dlrow:first-of-type { margin-top: 10px; }
+  .dlrow .check { width: 15px; height: 15px; flex: none; margin-top: 2px;
+    fill: none; stroke: var(--green); stroke-width: 2.8; stroke-linecap: square; }
+  .dlrow .dcol { flex: 1; min-width: 0; }
+  .df { font: 13px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dm { margin-top: 5px; font: 9px var(--mono); letter-spacing: .16em; color: var(--faint); text-transform: uppercase; }
+  .dm .ok { color: var(--green); }
+  .pbar { height: 3px; margin-top: 9px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .pbar i { display: block; height: 100%; width: 64%; border-radius: 2px; background: var(--yellow); }
+  .dl .foot-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-left: 27px; }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="win max focus">
+    <div class="shell">
+
+      <!-- ================= left sidebar: pinned tabs + vertical tab list ================= -->
+      <aside class="sidebar">
+        <div class="shead">
+          <img src="firefox.svg" alt="">
+          <span class="wtitle">FIREFOX</span>
+        </div>
+        <div class="micro">157.0 · PROFILE BENYLIN</div>
+
+        <div class="pins">
+          <div class="pin">G</div>
+          <div class="pin">P</div>
+          <div class="pin">Z</div>
+          <div class="pin"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></div>
+        </div>
+
+        <div class="spaces">
+          <div class="label">SPACE · CLOCKMOST</div>
+          <div class="schips">
+            <span class="chip on">CLOCKMOST</span>
+            <span class="chip">PERSONAL</span>
+            <span class="chip">GAMES</span>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab sel">
+            <span class="fav">G</span>
+            <span class="tt">Benylin/clockmost-desktop</span>
+          </div>
+          <div class="tab">
+            <span class="fav"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></span>
+            <span class="tt">Glassy Sky · YouTube</span>
+            <span class="tag">REC</span>
+          </div>
+          <div class="tab">
+            <span class="fav">Z</span>
+            <span class="tt">Problems · Zabbix</span>
+            <span class="notif"></span>
+          </div>
+          <div class="tab">
+            <span class="fav">P</span>
+            <span class="tt">Clockmost Desktop · Plane</span>
+          </div>
+          <div class="tab">
+            <span class="fav">G</span>
+            <span class="tt">Benylin/endfield-kit</span>
+          </div>
+          <div class="ghead"><span class="gchip">FELT</span></div>
+          <div class="gtabs">
+            <div class="tab">
+              <span class="fav">F</span>
+              <span class="tt">felt-dashboard · localhost</span>
+            </div>
+            <div class="tab">
+              <span class="fav">P</span>
+              <span class="tt">felt rig checklist · Plane</span>
+            </div>
+          </div>
+          <div class="tab">
+            <span class="fav">K</span>
+            <span class="tt">KeePassXC User Guide</span>
+          </div>
+          <div class="tab">
+            <span class="fav">C</span>
+            <span class="tt">CachyOS · Downloads</span>
+          </div>
+        </div>
+
+        <div class="sfoot">
+          <div class="newtab">
+            <svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5" transform="rotate(45 12 12)"/></svg>
+            NEW TAB
+          </div>
+          <div class="foot-row">
+            <span class="barcode"></span>
+            <span class="micro">9 TABS · 2 GROUPS</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ================= right: toolbar + web content ================= -->
+      <div class="main">
+        <div class="wtop trow">
+          <div class="nav">
+            <button type="button" class="navb" title="Back"><svg viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
+            <button type="button" class="navb" title="Forward"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+            <button type="button" class="navb" title="Reload"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/></svg></button>
+          </div>
+          <div class="mid">
+            <div class="field url">
+              <svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              <span class="u"><span class="uhost">git.clockmost.com</span><span class="upath">/Benylin/clockmost-desktop</span></span>
+            </div>
+          </div>
+          <div class="ext">
+            <button type="button" class="extb" title="uBlock Origin"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 11.5l2.5 2.5 4.5-5"/></svg></button>
+            <button type="button" class="extb" title="KeePassXC"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H21M18 12v3M15 12v2.5"/></svg></button>
+            <button type="button" class="extb" title="Vencord-free"><svg viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v2.5a6 6 0 0 1-12 0zM12 16.5V21"/></svg></button>
+          </div>
+          <div class="wctl">
+            <button type="button" class="wb" title="Minimize"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+            <button type="button" class="wb" title="Maximize"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+            <button type="button" class="wb" title="Close"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+          </div>
+        </div>
+
+        <div class="wbody">
+          <!-- the website: a plain dark Gitea repo page, deliberately not Endfield -->
+          <div class="page">
+            <div class="ghead2">
+              <div class="grepo"><span class="gorg">Benylin</span><span class="gslash">/</span><span class="gname">clockmost-desktop</span></div>
+              <span class="gpriv"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private</span>
+              <div class="gstats">
+                <span class="gbtn"><svg class="fill" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1-5.4-3-5.4 3 1.2-6.1L3.3 9.4l6.1-.8z"/></svg>Star <b>12</b></span>
+                <span class="gbtn"><svg class="line" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg>Watch <b>3</b></span>
+              </div>
+            </div>
+
+            <div class="gwrap">
+              <div class="gtable">
+                <div class="grow gcolhead"><span>Name</span><span>Last commit</span><span style="text-align:right">Updated</span></div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>design</span>
+                  <span class="gmsg">design: ds-shell.css house style, STYLE.md, layout orders 03-06</span>
+                  <span class="gdate">Oct 12, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>install</span>
+                  <span class="gmsg">install: fix plasma panel restore on the side monitor</span>
+                  <span class="gdate">Oct 9, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell folder"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg>packages</span>
+                  <span class="gmsg">pkg: bump endfield-shell to 0.9.2</span>
+                  <span class="gdate">Oct 5, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>README.md</span>
+                  <span class="gmsg">docs: folder table explains src/</span>
+                  <span class="gdate">Oct 2, 2026</span>
+                </div>
+                <div class="grow">
+                  <span class="gcell file"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>TODO.md</span>
+                  <span class="gmsg">todo: note chat redo on hold</span>
+                  <span class="gdate">Sep 28, 2026</span>
+                </div>
+              </div>
+
+              <div class="greadme">
+                <div class="grbar">README.md</div>
+                <div class="grbody">
+                  <h1>clockmost-desktop</h1>
+                  <p>Mario's daily-driver desktop: KDE Plasma with a custom shell dressed in the visual language of
+                    Arknights: Endfield — but built as real functional apps, not game screens. Windows, a dock, a top
+                    bar, a browser, a music player. The skin is Endfield; the content is a working desktop.</p>
+                  <p>Every piece starts as a static 1920x1080 layout mock in <code>components/</code>, sharing one house
+                    style in <code>ds-shell.css</code>, so the whole desktop can be reviewed before anything is wired
+                    up. Design notes and work orders live in <code>orders/</code>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- downloads popup, Endfield chrome -->
+          <div class="panel dl">
+            <i class="bk tl"></i><i class="bk br"></i>
+            <div class="label">DOWNLOADS</div>
+            <div class="dlrow">
+              <svg class="check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>
+              <div class="dcol">
+                <div class="df">clockmost-desktop-recipe.tar.zst</div>
+                <div class="dm">18.2 MB · <span class="ok">DONE</span></div>
+              </div>
+            </div>
+            <div class="dlrow">
+              <div class="dcol">
+                <div class="df">cachyos-260809.iso</div>
+                <div class="dm">2.9 GB · 64%</div>
+                <div class="pbar"><i></i></div>
+              </div>
+            </div>
+            <div class="foot-row">
+              <span class="micro">DL-2608 · 2 ITEMS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

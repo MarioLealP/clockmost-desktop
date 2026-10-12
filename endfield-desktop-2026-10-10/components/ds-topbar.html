@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ds-topbar · 04 · top bar + quick settings + clipboard + calendar</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* ---- top bar: 40px full width, frost, no side borders, hairline bottom ---- */
+  .topbar { position: absolute; left: 0; top: 0; right: 0; height: 40px; z-index: 20;
+    display: flex; align-items: center; padding: 0 16px;
+    border: 0; border-bottom: 1px solid rgba(255,255,255,.10); border-radius: 0; }
+
+  /* left: workspace chips, divider, focused window title */
+  .wschips { display: flex; gap: 6px; }
+  .ws { position: relative; width: 26px; height: 26px; border-radius: 2px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font: 11px var(--mono); letter-spacing: .06em; color: var(--dim); background: rgba(255,255,255,.05); }
+  .ws.sel { background: var(--yellow); color: #111; font-weight: 700; }
+  .ws.has-dot::after { content: ""; position: absolute; right: 3px; top: 3px; width: 3px; height: 3px;
+    border-radius: 50%; background: var(--ink2); }
+  .vdiv { width: 1px; height: 18px; background: rgba(255,255,255,.10); margin: 0 12px; flex: none; }
+
+  /* centre: the clock is the hero - exactly centred on the screen */
+  .center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: baseline; gap: 14px; white-space: nowrap; }
+  .clock { font: 15px var(--mono); letter-spacing: .18em; color: var(--ink); }
+
+  /* right: now-playing chip, tray buttons, user chip */
+  .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .np { display: flex; align-items: center; gap: 8px; margin-right: 4px; min-width: 0; }
+  .np .art { width: 22px; height: 22px; border-radius: 2px; overflow: hidden; background: var(--violet); flex: none; }
+  .np .art img { width: 100%; height: 100%; opacity: .35; display: block; }
+  .np .micro { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tbtn { position: relative; }
+  .t-bell .notif { position: absolute; right: -2px; top: -2px; }
+  .user { display: flex; align-items: center; gap: 8px; height: 26px; padding: 0 10px 0 4px;
+    border-radius: 13px; background: var(--field); flex: none; }
+  .user .av { width: 20px; height: 20px; border-radius: 2px; background: var(--steel);
+    display: flex; align-items: center; justify-content: center;
+    font: 700 9px var(--mono); letter-spacing: .08em; color: var(--ink2); }
+  .user .nm { font: 11px var(--mono); letter-spacing: .12em; color: var(--ink2); }
+
+  /* the trigger of the open panel goes yellow */
+  [data-state="quick"] .t-vol, [data-state="clip"] .t-clip { color: var(--yellow); }
+  [data-state="cal"] .clock { color: var(--yellow); }
+
+  /* ---- panels that drop from the bar: 8px below, 16px from the screen edge ---- */
+  .panel { position: absolute; top: 48px; z-index: 15; padding: 18px 20px 16px; overflow: hidden; }
+  .p-quick { display: none; width: 400px; right: 16px; }
+  .p-clip  { display: none; width: 440px; right: 16px; height: 600px; flex-direction: column; }
+  .p-cal   { display: none; width: 320px; left: 50%; transform: translateX(-50%); }
+  [data-state="quick"] .p-quick { display: block; }
+  [data-state="clip"]  .p-clip  { display: flex; }
+  [data-state="cal"]   .p-cal   { display: block; }
+
+  /* small shared bits */
+  .ic { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor;
+    stroke-width: 2.6; stroke-linecap: square; stroke-linejoin: round; }
+  .rowlbl { font: 10px var(--mono); letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+
+  /* ---- quick settings panel ---- */
+  .q-head { display: flex; align-items: center; gap: 12px; }
+  .q-head .av { width: 36px; height: 36px; border-radius: 2px; background: var(--steel); flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font: 700 12px var(--mono); letter-spacing: .08em; color: var(--ink2); }
+  .q-head .nm { font: 14px var(--body); color: var(--ink); }
+  .q-head .micro { margin-top: 3px; }
+  .q-head .barcode { margin-left: auto; align-self: flex-start; }
+  .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 0; }
+  .tgl-tile { height: 56px; border: 1px solid rgba(255,255,255,.12); border-radius: 2px;
+    background: rgba(20,21,24,.5); display: flex; align-items: center; gap: 12px; padding: 0 12px;
+    color: var(--ink2); }
+  .tgl-tile.on { border-left: 3px solid var(--yellow); padding-left: 10px; }
+  .tgl-tile.on .ic { color: var(--yellow); }
+  .tgl-tile .lb { font: 10px var(--mono); letter-spacing: .14em; color: var(--ink2); text-transform: uppercase; }
+  .tgl-tile .st { margin-top: 3px; font: 9px var(--mono); letter-spacing: .18em; color: var(--faint); text-transform: uppercase; }
+  .tgl-tile.on .st { color: var(--dim); }
+  .q-sld { margin-top: 18px; }
+  .q-sld + .q-sld { margin-top: 16px; }
+  .q-sld .top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px; }
+  .q-np { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+  .q-np .art { width: 44px; height: 44px; border-radius: 2px; overflow: hidden; background: var(--violet); flex: none; }
+  .q-np .art img { width: 100%; height: 100%; opacity: .35; display: block; }
+  .q-np .t { font: 14px var(--body); color: var(--ink); }
+  .q-np .a { margin-top: 3px; }
+  .q-np .ctl { margin-left: auto; display: flex; align-items: center; gap: 14px; color: var(--ink2); }
+  .q-foot { display: flex; align-items: center; margin-top: 18px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.10); }
+  .q-foot .btns { margin-left: auto; display: flex; gap: 8px; }
+
+  /* ---- clipboard panel (its own recipe: numbered list, keycaps) ---- */
+  .c-head { display: flex; align-items: center; gap: 12px; }
+  .c-head .barcode { margin-left: auto; }
+  .c-list { flex: 1; min-height: 0; margin: 14px -20px 0; overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,.10); }
+  .c-row { display: flex; gap: 12px; padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.08); color: var(--ink); }
+  .c-row .num { width: 22px; flex: none; padding-top: 3px;
+    font: 10px var(--mono); letter-spacing: .12em; color: var(--dim); }
+  .c-row .txt { flex: 1; min-width: 0; font: 13px var(--body); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .c-row .txt.two { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; }
+  .c-row .pin { width: 14px; height: 14px; align-self: center; color: var(--dim); }
+  .c-row.sel { background: var(--yellow); color: #111; border-bottom-color: transparent; }
+  .c-row.sel .num { color: #111; }
+  .c-img { display: flex; align-items: center; gap: 12px; }
+  .c-img .thumb { width: 120px; height: 68px; flex: none; border-radius: 2px; display: block; }
+  .c-foot { display: flex; align-items: center; gap: 8px; padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,.10); }
+  .c-foot .kc { display: inline-flex; align-items: center; gap: 6px; }
+  .c-foot .sep { color: var(--ghost); font: 9px var(--mono); }
+
+  /* ---- calendar panel (its own recipe: 7-column grid) ---- */
+  .cal-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 12px; }
+  .dow { text-align: center; padding-bottom: 8px;
+    font: 9px var(--mono); letter-spacing: .12em; color: var(--faint); }
+  .dow.we { color: var(--ghost); }
+  .day { height: 28px; display: flex; align-items: center; justify-content: center;
+    font: 11px var(--mono); letter-spacing: .04em; color: var(--ink2); }
+  .day.we { color: var(--dim); }
+  .day .sel { display: flex; width: 28px; height: 22px; border-radius: 2px;
+    align-items: center; justify-content: center; background: var(--yellow); color: #111; font-weight: 700; }
+  .cal-up { margin-top: 10px; }
+  .cal-up + .cal-up { margin-top: 7px; }
+  .cal-foot { display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.10); }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- dimmed floating window behind, so the bar and panels read as an overlay -->
+  <div class="win blur" style="left:360px; top:190px; width:1200px; height:700px;">
+    <div class="wtop">
+      <div class="wtitle">PHONOGRAPH</div>
+      <div class="wctl">
+        <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="wbody"></div>
+  </div>
+
+  <!-- ================= top bar ================= -->
+  <div class="topbar frost">
+
+    <div class="wschips">
+      <span class="ws sel">01</span>
+      <span class="ws has-dot">02</span>
+      <span class="ws">03</span>
+    </div>
+    <div class="vdiv"></div>
+    <div class="label">PHONOGRAPH · GLASSY SKY</div>
+
+    <div class="center">
+      <span class="clock">20:41</span>
+      <span class="micro">MON 12 OCT</span>
+    </div>
+
+    <div class="right">
+      <div class="np">
+        <span class="art"><img src="ds-topo-card.svg" alt=""></span>
+        <span class="micro">GLASSY SKY</span>
+      </div>
+      <button class="wb tbtn t-clip">
+        <svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 5V3h6v2"/></svg>
+      </button>
+      <button class="wb tbtn t-net">
+        <svg viewBox="0 0 24 24"><rect x="5" y="9" width="14" height="8"/><path d="M9 9V5h6v4M8 17v3M12 17v3M16 17v3"/></svg>
+      </button>
+      <button class="wb tbtn t-vol">
+        <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+      </button>
+      <button class="wb tbtn t-bt">
+        <svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>
+      </button>
+      <button class="wb tbtn t-vpn">
+        <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg>
+      </button>
+      <button class="wb tbtn t-bell">
+        <svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20a2 2 0 0 0 4 0"/></svg>
+        <span class="notif"></span>
+      </button>
+      <div class="user"><span class="av">BE</span><span class="nm">BENYLIN</span></div>
+    </div>
+
+  </div>
+
+  <!-- ================= quick settings (?state=quick) ================= -->
+  <div class="panel p-quick">
+    <div class="bk tl"></div><div class="bk br"></div>
+
+    <div class="q-head">
+      <div class="av">BE</div>
+      <div>
+        <div class="nm">benylin@clockmost</div>
+        <div class="micro">UP 3D 04H · KERNEL 7.2.9-CACHYOS</div>
+      </div>
+      <div class="barcode"></div>
+    </div>
+
+    <div class="q-grid">
+      <div class="tgl-tile on">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="5" y="9" width="14" height="8"/><path d="M9 9V5h6v4M8 17v3M12 17v3M16 17v3"/></svg>
+        <div><div class="lb">Ethernet</div><div class="st">Connected</div></div>
+      </div>
+      <div class="tgl-tile on">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>
+        <div><div class="lb">Bluetooth</div><div class="st">Robin</div></div>
+      </div>
+      <div class="tgl-tile">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg>
+        <div><div class="lb">VPN</div><div class="st">Off</div></div>
+      </div>
+      <div class="tgl-tile">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 8-5.6M18 12v4l2 2H7M10 20a2 2 0 0 0 4 0M4 4l16 16"/></svg>
+        <div><div class="lb">Do not disturb</div><div class="st">Off</div></div>
+      </div>
+      <div class="tgl-tile">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>
+        <div><div class="lb">Night light</div><div class="st">Off</div></div>
+      </div>
+      <div class="tgl-tile">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12"/><path d="M8 12v4M6 14h4M15 13.5h.01M17.5 13.5h.01"/></svg>
+        <div><div class="lb">Game mode</div><div class="st">Off</div></div>
+      </div>
+    </div>
+
+    <div class="q-sld">
+      <div class="top"><span class="rowlbl">Output · DT 880</span><span class="micro">70%</span></div>
+      <div class="sld"><i style="width:70%"></i><b style="left:70%"></b></div>
+    </div>
+    <div class="q-sld">
+      <div class="top"><span class="rowlbl">Mic · USB PNP</span><span class="micro">55%</span></div>
+      <div class="sld"><i style="width:55%"></i><b style="left:55%"></b></div>
+    </div>
+
+    <div class="q-np">
+      <div class="art"><img src="ds-topo-card.svg" alt=""></div>
+      <div>
+        <div class="t">Glassy Sky</div>
+        <div class="label a">SAPPHIRE</div>
+      </div>
+      <div class="ctl">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M18 6l-10 6 10 6V6zM7 6v12"/></svg>
+        <svg class="ic" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7V5z"/></svg>
+        <svg class="ic" viewBox="0 0 24 24"><path d="M6 6l10 6-10 6V6zM17 6v12"/></svg>
+      </div>
+    </div>
+
+    <div class="q-foot">
+      <div class="micro">CLOCKMOST · TANG OK · VAULT OK</div>
+      <div class="btns">
+        <button class="wb"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.5 1.5M16.2 16.2l1.5 1.5M17.7 6.3l-1.5 1.5M7.7 16.2l-1.5 1.5"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+        <button class="wb"><svg viewBox="0 0 24 24"><path d="M12 4v8"/><path d="M7.5 6.5a7 7 0 1 0 9 0"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= clipboard picker (?state=clip) ================= -->
+  <div class="panel p-clip">
+    <div class="bk tl"></div><div class="bk br"></div>
+
+    <div class="c-head">
+      <span class="label">CLIPBOARD</span>
+      <span class="micro">50 KEPT · IMAGES ON</span>
+      <span class="barcode"></span>
+    </div>
+    <div class="field sm" style="margin-top:12px;"><b>›››</b> SEARCH CLIPBOARD</div>
+
+    <div class="c-list">
+      <div class="c-row sel">
+        <span class="num">01</span>
+        <span class="txt">git rebase -i HEAD~3 &amp;&amp; git push --force-with-lease</span>
+      </div>
+      <div class="c-row">
+        <span class="num">02</span>
+        <div class="c-img">
+          <svg class="thumb" viewBox="0 0 120 68">
+            <rect x=".5" y=".5" width="119" height="67" fill="#101116" stroke="rgba(255,255,255,.18)"/>
+            <rect x="1" y="1" width="118" height="11" fill="#26282d"/>
+            <circle cx="8" cy="6.5" r="2" fill="#55575e"/><circle cx="15" cy="6.5" r="2" fill="#55575e"/>
+            <rect x="8" y="19" width="40" height="30" fill="#1d1f25"/>
+            <rect x="54" y="19" width="56" height="4" fill="#33363c"/>
+            <rect x="54" y="28" width="48" height="4" fill="#2a2d33"/>
+            <rect x="54" y="37" width="52" height="4" fill="#2a2d33"/>
+            <rect x="8" y="56" width="102" height="3" fill="#26282d"/>
+          </svg>
+          <span class="micro">PNG · 1920×1080</span>
+        </div>
+      </div>
+      <div class="c-row">
+        <span class="num">03</span>
+        <span class="txt">https://git.clockmost.com/endfield/ds-shell/commit/8f2a1c</span>
+      </div>
+      <div class="c-row">
+        <span class="num">04</span>
+        <span class="txt">192.168.10.110</span>
+      </div>
+      <div class="c-row">
+        <span class="num">05</span>
+        <span class="txt two">raid moved to 21:00 tonight — bring the food pots this time, we lost the last pull to enrage</span>
+        <svg class="pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 5 3 3v2H7v-2l3-3-1-5zM12 14v6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg>
+      </div>
+      <div class="c-row">
+        <span class="num">06</span>
+        <span class="txt">#FFFA00</span>
+      </div>
+      <div class="c-row">
+        <span class="num">07</span>
+        <span class="txt">journalctl -b -p err --no-pager | tail -50</span>
+      </div>
+      <div class="c-row">
+        <span class="num">08</span>
+        <span class="txt">benylin@clockmost:~/src/clockmost-desktop$ make deploy</span>
+      </div>
+    </div>
+
+    <div class="c-foot">
+      <span class="kc"><span class="kbd">↵</span><span class="micro">PASTE</span></span>
+      <span class="sep">·</span>
+      <span class="kc"><span class="kbd">DEL</span><span class="micro">REMOVE</span></span>
+      <span class="sep">·</span>
+      <span class="kc"><span class="kbd">P</span><span class="micro">PIN</span></span>
+      <span class="sep">·</span>
+      <span class="kc"><span class="kbd">ESC</span><span class="micro">CLOSE</span></span>
+    </div>
+  </div>
+
+  <!-- ================= calendar (?state=cal) ================= -->
+  <div class="panel p-cal">
+    <div class="bk tl"></div><div class="bk br"></div>
+
+    <div class="cal-head">
+      <span class="label">OCTOBER 2026</span>
+      <span class="micro">WK 42</span>
+    </div>
+    <div class="hr" style="margin-top:12px;"></div>
+
+    <div class="cal-grid">
+      <span class="dow">MO</span><span class="dow">TU</span><span class="dow">WE</span><span class="dow">TH</span><span class="dow">FR</span><span class="dow we">SA</span><span class="dow we">SU</span>
+      <span class="day"></span><span class="day"></span><span class="day"></span>
+      <span class="day">1</span><span class="day">2</span><span class="day we">3</span><span class="day we">4</span>
+      <span class="day">5</span><span class="day">6</span><span class="day">7</span><span class="day">8</span><span class="day">9</span><span class="day we">10</span><span class="day we">11</span>
+      <span class="day"><b class="sel">12</b></span><span class="day">13</span><span class="day">14</span><span class="day">15</span><span class="day">16</span><span class="day we">17</span><span class="day we">18</span>
+      <span class="day">19</span><span class="day">20</span><span class="day">21</span><span class="day">22</span><span class="day">23</span><span class="day we">24</span><span class="day we">25</span>
+      <span class="day">26</span><span class="day">27</span><span class="day">28</span><span class="day">29</span><span class="day">30</span><span class="day we">31</span><span class="day"></span>
+    </div>
+
+    <div class="hr" style="margin-top:12px;"></div>
+    <div class="cal-up micro">TUE 13 · 21:00 FFXIV RAID</div>
+    <div class="cal-up micro">FRI 16 · BACKUP CHECK</div>
+
+    <div class="cal-foot">
+      <span class="barcode"></span>
+      <span class="micro">CAL-1026 · 31 DAYS</span>
+    </div>
+  </div>
+
+</div>
+<script>
+"use strict";
+/* states: bar | quick | clip | cal - static layout only, no motion */
+const STATES = ["bar", "quick", "clip", "cal"];
+const q = new URLSearchParams(location.search).get("state");
+document.documentElement.dataset.state = STATES.includes(q) ? q : "quick";
+</script>
+</body>
+</html>
