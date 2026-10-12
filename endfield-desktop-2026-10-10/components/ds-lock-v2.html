@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-lock v2 · world print</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: rule 9 - information printed in the world (time/date on the topo floor, in perspective),
+     clickable things a flat HUD on top (centred user plate). Calm, one tri-band, people = circle avatar. */
+  .lk { position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(ellipse 1200px 600px at 50% 18%, #1d1f25, #0b0b0c 70%); }
+  .world { position: absolute; inset: 0; z-index: 0; overflow: hidden; perspective: 900px; }
+  /* the floor: a tilted plane with topo lines + the printed time */
+  .floor { position: absolute; left: -20%; right: -20%; top: 46%; height: 120%; transform-origin: 50% 0; transform: rotateX(68deg);
+    background: url(../src/assets/topo-floor.svg) center top / 70% auto repeat, #0d0e10;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 8%, #000 60%, transparent 92%); mask-image: linear-gradient(180deg, transparent 0%, #000 8%, #000 60%, transparent 92%); }
+  .floor::before { content: ""; position: absolute; inset: 0; background: rgba(13,14,16,.78); }
+  .print { position: absolute; left: 0; right: 0; top: 2%; text-align: center; font: 300 380px/1 var(--mono); letter-spacing: .02em;
+    color: transparent; -webkit-text-stroke: 3px rgba(241,241,244,.22); }
+  .print2 { position: absolute; left: 0; right: 0; top: 40%; text-align: center; font: 700 64px var(--mono); letter-spacing: .5em; color: rgba(255,250,0,.20); }
+  .print3 { position: absolute; left: 34%; top: 2%; font: 700 30px var(--mono); letter-spacing: .3em; color: rgba(241,241,244,.12); }
+  /* horizon line */
+  .hz { position: absolute; left: 0; right: 0; top: 46%; height: 1px; background: linear-gradient(90deg, transparent, rgba(241,241,244,.25), transparent); }
+
+  /* flat HUD: centred user plate */
+  .hud { z-index: 2; position: absolute; left: 50%; top: 16%; transform: translateX(-50%); width: 440px; display: flex; flex-direction: column; align-items: center; }
+  .clk { font: 300 96px/1 var(--mono); letter-spacing: .06em; color: var(--ink); }
+  .clk s { text-decoration: none; opacity: .4; }
+  .dt { margin-top: 0; font: 700 12px var(--mono); letter-spacing: .32em; color: var(--ink2); }
+  .tb { margin: 18px 0 34px; width: 132px; height: 4px; background: linear-gradient(90deg, var(--yellow) 0 33.3%, var(--cyan) 33.3% 66.6%, var(--magenta) 66.6%); }
+  .av { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--yellow); color: #111;
+    font: 700 22px var(--mono); box-shadow: 0 0 0 4px #0b0b0c, 0 0 0 5px rgba(241,241,244,.3); }
+  .nm { margin-top: 14px; font: 500 22px var(--body); color: var(--ink); }
+  .st { margin-top: 4px; font: 9px var(--mono); letter-spacing: .2em; color: var(--dim); }
+  .pw { margin-top: 22px; width: 100%; height: 48px; display: flex; align-items: center; gap: 14px; padding: 0 16px;
+    background: rgba(10,11,13,.7); border: 1px solid rgba(255,255,255,.22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+  .pw b { color: var(--yellow); font: 700 14px var(--mono); }
+  .pw .pd { flex: 1; font: 22px var(--mono); letter-spacing: .3em; color: var(--ink); }
+  .pw .go { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: var(--ink); color: #111; }
+  .pw .go svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3; }
+  .hint { margin-top: 10px; display: flex; gap: 10px; align-items: center; }
+  .hint .kbd { border-radius: 0; }
+
+  /* corners */
+  .tl { position: absolute; left: 36px; top: 30px; display: flex; flex-direction: column; gap: 6px; }
+  .tl b { font: 700 12px var(--mono); letter-spacing: .32em; color: var(--ink); }
+  .tl .r { display: flex; align-items: center; gap: 8px; }
+  .tr { position: absolute; right: 36px; top: 30px; text-align: right; font: 9px/1.8 var(--mono); letter-spacing: .18em; color: var(--dim); }
+  .tr .ok { color: var(--green); }
+  .br { position: absolute; right: 30px; bottom: 26px; display: flex; gap: 8px; }
+  .br span { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.18); color: var(--ink2); font: 700 10px var(--mono); }
+  .br svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .bl { position: absolute; left: 36px; bottom: 30px; font: 9px var(--mono); letter-spacing: .18em; color: var(--ghost); }
+  .np, .bl, .br, .tl, .tr { z-index: 2; }
+  .np { position: absolute; left: 36px; bottom: 56px; display: flex; align-items: center; gap: 10px; }
+  .np i { width: 30px; height: 30px; background: linear-gradient(135deg, #e7e1fc, #b3a7e3); }
+  .np b { display: block; font: 600 12px var(--body); color: var(--ink2); }
+  .np small { font: 8px var(--mono); letter-spacing: .18em; color: var(--dim); }
+</style>
+</head>
+<body>
+<div class="stage plain">
+  <div class="lk">
+    <div class="world"><div class="floor">
+      <div class="print3">CLOCKMOST · DT-01</div>
+      <div class="print">20:41</div>
+      <div class="print2">MON 12 OCT</div>
+    </div></div>
+    <div class="hz"></div>
+
+    <div class="tl"><b>CLOCKMOST</b><span class="r"><span class="barcode"></span><span class="micro">DT-01 · CACHYOS · PLASMA 6.8</span></span></div>
+    <div class="tr">TANG <span class="ok">OK</span> · VAULT <span class="ok">OK</span><br>ETH 1G · 42MS<br>LISBON · 18°C CLEAR</div>
+
+    <div class="hud">
+      <div class="tb"></div>
+      <div class="av">BE</div>
+      <div class="nm">benylin</div>
+      <div class="st">LOCKED 20:39 · 2 MIN AGO</div>
+      <div class="pw"><b>›››</b><span class="pd">••••••</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      <div class="hint"><span class="kbd">↵</span><span class="micro">UNLOCK</span></div>
+    </div>
+
+    <div class="np"><i></i><span><b>Glassy Sky</b><small>SAPPHIRE · PAUSED</small></span></div>
+    <div class="bl">SDDM · TTY1 · LK-2039</div>
+    <div class="br"><span>US</span><span><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="10"/><path d="M8 9V5h8v4"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.3 7.5a8 8 0 1 0 11.4 0"/></svg></span></div>
+  </div>
+</div>
+</body>
+</html>
