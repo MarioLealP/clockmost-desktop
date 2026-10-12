@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-osd v2 · key popups</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: same material as ds-topbar-v2 / ds-dock-v2 - hatched plate, tick ruler, brackets, square corners,
+     flat colour (no glow). One colour per kind: volume cyan, mic crimson, media lavender. */
+  .row { position: absolute; left: 0; right: 0; bottom: 140px; display: flex; justify-content: center; gap: 40px; }
+  .cell { display: flex; flex-direction: column; gap: 8px; }
+  .cell > .micro { color: var(--ghost); }
+
+  .osd { position: relative; width: 380px; height: 76px; display: flex; align-items: stretch;
+    border: 1px solid rgba(255,255,255,.12);
+    background:
+      linear-gradient(90deg, rgba(16,17,20,.2), rgba(16,17,20,.9) 40%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 1px, transparent 1px 7px),
+      linear-gradient(180deg, rgba(30,31,36,.94), rgba(16,17,20,.92));
+    -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); }
+  /* tick ruler along the top edge */
+  .osd::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; pointer-events: none;
+    background:
+      repeating-linear-gradient(90deg, rgba(241,241,244,.35) 0 1px, transparent 1px 48px) 0 0 / 100% 6px,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.18) 0 1px, transparent 1px 8px) 0 0 / 100% 3px no-repeat; }
+  .osd .bk { position: absolute; width: 10px; height: 10px; }
+  .osd .bk.tl { left: -2px; top: -2px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .osd .bk.br { right: -2px; bottom: -2px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+
+  /* colour block on the left edge holding the icon */
+  .blk { position: relative; width: 76px; flex: none; display: flex; align-items: center; justify-content: center;
+    background: var(--c); color: #111; }
+  .blk svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .blk::before { content: ""; position: absolute; right: 6px; top: 6px; width: 18px; height: 12px;
+    background: radial-gradient(rgba(17,17,17,.4) 1px, transparent 1.3px) 0 0 / 4px 4px; }
+  .blk .kc { position: absolute; left: 6px; bottom: 5px; font: 700 7px var(--mono); letter-spacing: .14em; opacity: .65; }
+
+  .bd { flex: 1; min-width: 0; padding: 12px 16px 10px; display: flex; flex-direction: column; justify-content: space-between; }
+  .top { display: flex; align-items: baseline; gap: 10px; }
+  .top b { font: 700 12px var(--mono); letter-spacing: .22em; color: var(--ink); white-space: nowrap; }
+  .top span { font: 9px var(--mono); letter-spacing: .18em; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top .v { margin-left: auto; font: 700 24px var(--mono); letter-spacing: .02em; color: var(--ink); line-height: 1; }
+  .seg { display: flex; gap: 3px; }
+  .seg i { flex: 1; height: 9px; background: rgba(255,255,255,.08); }
+  .seg i.l { background: var(--ink); }
+  .seg i.y { background: var(--yellow); }
+  .ft { display: flex; align-items: center; gap: 8px; }
+  .ft .bcd { width: 40px; height: 6px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.45) 0 2px, transparent 2px 4px, rgba(241,241,244,.45) 4px 5px, transparent 5px 8px); }
+
+  /* mic muted: a crimson hatch over the meter + MUTED tag */
+  .muted .seg i { background: rgba(217,30,54,.18); }
+  .muted .mbar { position: relative; }
+  .muted .mbar::after { content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, rgba(217,30,54,.55) 0 2px, transparent 2px 6px); }
+
+  /* media: art inside the lavender block, progress line */
+  .media .blk { padding: 8px; }
+  .media .art { width: 100%; height: 100%; background: linear-gradient(135deg, #f0ecfe, #b3a7e3);
+    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); position: relative; }
+  .media .art::after { content: ""; position: absolute; left: 5px; bottom: 6px; width: 24px; height: 5px;
+    background: repeating-linear-gradient(90deg, rgba(17,17,17,.55) 0 2px, transparent 2px 4px); }
+  .media .top b { font: 600 15px var(--body); letter-spacing: 0; }
+  .pr { position: relative; height: 3px; background: rgba(207,198,244,.2); }
+  .pr s { position: absolute; left: 0; top: 0; bottom: 0; width: 28%; background: #cfc6f4; }
+  .pr s::after { content: ""; position: absolute; right: -2px; top: -3px; width: 3px; height: 9px; background: var(--ink); }
+  .tm { display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: .14em; color: var(--dim); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="win blur" style="left:300px;top:110px;width:1320px;height:640px">
+    <div class="wtop"><div class="wtitle">FIREFOX <span>· WIKI.ARCHLINUX.ORG</span></div></div>
+    <div class="wbody"></div>
+  </div>
+
+  <div class="row">
+    <!-- VOLUME -->
+    <div class="cell"><span class="micro">VOLUME KEY</span>
+      <div class="osd" style="--c:#3FD0E8"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span class="kc">VOL</span></div>
+        <div class="bd">
+          <div class="top"><b>OUTPUT</b><span>DT 880 · 250Ω</span><span class="v">70</span></div>
+          <div class="seg"><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="y"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="ft"><span class="bcd"></span><span class="micro">OSD-01 · EQ ORATORY1990</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIC MUTED -->
+    <div class="cell"><span class="micro">MIC KEY</span>
+      <div class="osd muted" style="--c:#d91e36"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk" style="color:#fff"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11"/><path d="M5 11a7 7 0 0 0 11 5.7M19 11v0M12 18v3M3 3l18 18"/></svg><span class="kc">MIC</span></div>
+        <div class="bd">
+          <div class="top"><b>MICROPHONE</b><span>USB PNP</span><span class="tag" style="margin-left:auto">MUTED</span></div>
+          <div class="mbar"><div class="seg"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+          <div class="ft"><span class="bcd"></span><span class="micro">OSD-02 · DISCORD · VOICE</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIA -->
+    <div class="cell"><span class="micro">MEDIA KEY</span>
+      <div class="osd media" style="--c:#cfc6f4"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk"><div class="art"></div></div>
+        <div class="bd">
+          <div class="top"><b>Glassy Sky</b><span>SAPPHIRE</span></div>
+          <div class="pr"><s></s></div>
+          <div class="tm"><span>01:12</span><span class="micro" style="color:var(--faint);white-space:nowrap">NEXT ▸ RE:ZERO MEDLEY</span><span>04:20</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mock-note">ds-osd v2 · one at a time in reality, shown side by side · layout only</div>
+</div>
+</body>
+</html>
