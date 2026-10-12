@@ -18,7 +18,8 @@
   .hd .cap { margin-left: auto; font: 12px Consolas, monospace; letter-spacing: .14em; color: #6c6f76; }
   .hd::after { content: ""; position: absolute; left: 24px; right: 24px; bottom: 0; height: 1px; background: #33363C; }
   .body { padding: 22px 24px 22px; }
-  .gridw { display: grid; grid-template-columns: repeat(5, 248px); gap: 14px; }
+  /* 5 wide max, then wraps. Tile scale: 80% for 1-2 rows; from the 3rd row on it shrinks further (~65%). */
+  .gridw { display: grid; grid-template-columns: repeat(5, 248px); gap: 14px; zoom: .8; }
   .grp { display: flex; flex-direction: column; gap: 12px; }
   .grp .gl { display: flex; align-items: center; gap: 8px; font: 12px Consolas, monospace; letter-spacing: .14em; color: #33363C; }
   .grp .gl b { font-weight: 700; }
