@@ -139,8 +139,15 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 .label { font: 700 11px var(--mono); letter-spacing: .2em; color: var(--dim); text-transform: uppercase; }
 .barcode { display: inline-block; width: 88px; height: 11px;
   background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 5px, rgba(241,241,244,.5) 5px 6px, transparent 6px 9px); }
-/* notification diamond (static: no pulse in layout mocks) */
-.notif { display: inline-block; width: 9px; height: 9px; background: var(--orange); transform: rotate(45deg); flex: none; }
+/* notification diamond - THE one notification marker everywhere (refs/notify-diamond-a/b).
+   One size: 9px orange square turned 45deg, plus a thin orange outline floating 2px off it (the gap shows
+   whatever is behind - no background colour needed). Static in mocks (the real build pulses the outline).
+   Inline:  <span class="notif"></span>  (sits in text/rows; give it ~6px margin either side)
+   Pinned:  <span class="notif pin"></span> inside a position:relative host - always on its top-right corner. */
+.notif { display: inline-block; flex: none; width: 9px; height: 9px; margin: 0 6px; vertical-align: 1px;
+  background: #ff8a1f; transform: rotate(45deg);
+  outline: 1.5px solid rgba(255,138,31,.7); outline-offset: 2px; }
+.notif.pin { position: absolute; top: -4px; right: -4px; margin: 0; z-index: 2; }
 /* crimson timer / urgent tag */
 .tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; background: var(--crimson); color: #fff;
   font: 700 9px var(--mono); letter-spacing: .14em; }

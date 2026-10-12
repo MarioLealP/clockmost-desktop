@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ds-topbar v2 · the HUD bar</title>
+<link rel="stylesheet" href="ds-shell.css">
+<style>
+  /* v2: the bar is a HUD moment (appears on Win / edge), not a polite panel.
+     Built from refs/tabs-centered.png (hatched band + hanging yellow tab + outlined diamonds + keycaps)
+     and refs/layer-stack-reconnect.png (olive slabs, rings, rulers, barcodes, triangle markers). */
+  :root { --olive: rgba(255,250,0,.34); --olive-ink: #d8d36a; --band: 52px; }
+
+  .hud { position: absolute; left: 0; right: 0; top: 0; height: 140px; pointer-events: none; }
+
+  /* L1 band: dark frost + diagonal hatch that fades toward the centre (like the tabs ref) */
+  .band { position: absolute; left: 0; right: 0; top: 0; height: var(--band);
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 1px, transparent 1px 7px),
+      linear-gradient(180deg, rgba(30,31,36,.92), rgba(16,17,20,.88));
+    -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2); }
+  /* hatch mask: strong at the sides, calm in the middle where the clock hangs */
+  .band::before { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(16,17,20,0) 0%, rgba(16,17,20,.85) 34%, rgba(16,17,20,.85) 66%, rgba(16,17,20,0) 100%); }
+  /* L2 bottom edge: hairline + tick ruler across the full width */
+  .band::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 7px;
+    border-bottom: 1px solid rgba(255,255,255,.16);
+    background:
+      repeating-linear-gradient(90deg, rgba(241,241,244,.35) 0 1px, transparent 1px 64px) 0 0 / 100% 7px,
+      repeating-linear-gradient(90deg, rgba(241,241,244,.18) 0 1px, transparent 1px 8px) 0 4px / 100% 3px no-repeat; }
+
+  /* L3 crosshair ring behind the clock, half under the band (layer-stack ref) */
+  .hud .kbd { border-radius: 0; }
+  .ring { position: absolute; left: 50%; top: -150px; width: 300px; height: 300px; margin-left: -150px;
+    border: 1px solid rgba(241,241,244,.10); border-radius: 50%; }
+  .ring::before { content: ""; position: absolute; inset: 22px; border: 1px dashed rgba(241,241,244,.07); border-radius: 50%; }
+  .ring::after { content: ""; position: absolute; left: 50%; top: -12px; bottom: -12px; width: 1px; background: rgba(241,241,244,.08); }
+
+  /* ---------- LEFT: mark + workspaces + focused window ---------- */
+  .left { position: absolute; left: 20px; top: 0; height: var(--band); display: flex; align-items: center; gap: 14px; pointer-events: auto; }
+  .mark { display: flex; flex-direction: column; gap: 3px; padding-right: 14px; border-right: 1px solid rgba(255,255,255,.10); }
+  .mark b { font: 700 12px var(--mono); letter-spacing: .32em; color: var(--ink); }
+  .mark i { font-style: normal; display: flex; align-items: center; gap: 6px; }
+  .mark .bc { width: 46px; height: 6px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.55) 0 2px, transparent 2px 4px, rgba(241,241,244,.55) 4px 5px, transparent 5px 8px); }
+  /* workspaces: steel plates; the active one is an OLIVE slab with a dot grid (not bright yellow) */
+  .ws { display: flex; align-items: center; gap: 6px; }
+  .ws .k { margin: 0 2px; }
+  .wsp { position: relative; width: 58px; height: 34px; padding: 5px 7px; border-radius: 0;
+    background: rgba(51,54,60,.55); border: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; justify-content: space-between; }
+  .wsp .n { font: 700 13px var(--mono); letter-spacing: .1em; color: var(--dim); line-height: 1; }
+  .wsp .w { display: flex; gap: 3px; }
+  .wsp .w i { width: 8px; height: 3px; background: rgba(241,241,244,.28); }
+  .wsp.on { background: var(--olive); border-color: rgba(255,250,0,.45); }
+  .wsp.on::after { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(rgba(255,250,0,.35) 1px, transparent 1.3px) 0 0 / 6px 6px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 40%, #000); mask-image: linear-gradient(90deg, transparent 40%, #000); }
+  .wsp.on .n { color: #fffbb0; }
+  .wsp.on .w i { background: #fffbb0; }
+  .focus { display: flex; flex-direction: column; gap: 4px; padding-left: 14px; border-left: 1px solid rgba(255,255,255,.10); }
+  .focus b { font: 600 12px var(--mono); letter-spacing: .22em; color: var(--ink); }
+  .focus span { display: flex; align-items: center; gap: 6px; }
+  .tri-m { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid rgba(241,241,244,.45); }
+
+  /* ---------- CENTRE: the hanging yellow clock plate (the one bright yellow) ---------- */
+  .clock { position: absolute; left: 50%; top: 0; width: 320px; margin-left: -160px; height: 96px; pointer-events: auto;
+    background: var(--yellow); color: #111; border-radius: 0; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+  /* topo lines inside the plate, darker yellow (tabs ref) */
+  .clock .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55;
+    filter: brightness(0); mix-blend-mode: multiply; opacity: .22; }
+  /* diagonal hatch patch top-left + dot grid bottom-right */
+  .clock .hatch { position: absolute; left: 0; top: 0; width: 64px; height: 22px;
+    background: repeating-linear-gradient(135deg, rgba(17,17,17,.55) 0 2px, transparent 2px 6px); }
+  .clock .dots2 { position: absolute; right: 10px; bottom: 26px; width: 54px; height: 30px;
+    background: radial-gradient(rgba(17,17,17,.45) 1px, transparent 1.4px) 0 0 / 6px 6px; }
+  .clock .t { position: absolute; left: 0; right: 0; top: 18px; text-align: center; font: 700 40px var(--mono); letter-spacing: .14em;
+    line-height: 1; padding-left: .14em; }
+  .clock .t s { text-decoration: none; opacity: .55; }
+  .clock .d { position: absolute; left: 0; right: 0; top: 64px; display: flex; justify-content: center; align-items: center; gap: 10px;
+    font: 700 10px var(--mono); letter-spacing: .26em; }
+  .clock .d .bc { width: 40px; height: 7px;
+    background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 4px, #111 4px 5px, transparent 5px 8px); }
+  .clock .sec { position: absolute; right: 12px; top: 8px; font: 700 9px var(--mono); letter-spacing: .16em; opacity: .6; }
+  .clock .id { position: absolute; left: 12px; bottom: 8px; font: 700 8px var(--mono); letter-spacing: .18em; opacity: .5; }
+  /* the ONE tri-band, hanging under the plate like the ref's -ENDFIELD- strip */
+  .tb { position: absolute; left: 50%; top: 96px; margin-left: -160px; width: 320px; height: 5px;
+    background: linear-gradient(90deg, var(--yellow) 0 33.3%, var(--cyan) 33.3% 66.6%, var(--magenta) 66.6%); }
+  /* side wings: triangle markers + micro print flanking the plate, sitting on the band */
+  .wing { position: absolute; top: 0; height: var(--band); display: flex; align-items: center; gap: 8px; }
+  .wing.l { right: calc(50% + 176px); }
+  .wing.r { left: calc(50% + 176px); }
+  .wing .ln { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, rgba(241,241,244,.3)); }
+  .wing.r .ln { background: linear-gradient(90deg, rgba(241,241,244,.3), transparent); }
+  .wing .tri-s { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .wing.l .tri-s { border-left: 6px solid rgba(241,241,244,.5); }
+  .wing.r .tri-s { border-right: 6px solid rgba(241,241,244,.5); }
+
+  /* ---------- RIGHT: one grouped tray plate ---------- */
+  .right { position: absolute; right: 20px; top: 0; height: var(--band); display: flex; align-items: center; gap: 12px; pointer-events: auto; }
+  /* now playing: lavender slab with art, title, a mini level meter */
+  .np { position: relative; display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 12px 0 0; border-radius: 0; overflow: hidden;
+    background: linear-gradient(90deg, rgba(207,198,244,.30), rgba(207,198,244,.06)); border: 1px solid rgba(207,198,244,.22); }
+  .np .art { width: 34px; height: 34px; background: linear-gradient(135deg, #e4ddfb, #b9aee6);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%); }
+  .np .tx b { display: block; font: 600 11px var(--body); color: var(--ink); }
+  .np .tx i { font-style: normal; font: 8px var(--mono); letter-spacing: .2em; color: #b9b2d6; }
+  .np .lv { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .np .lv i { width: 2px; background: rgba(207,198,244,.8); }
+  .tray { position: relative; display: flex; align-items: center; height: 38px; padding: 0 6px; border-radius: 0;
+    background: rgba(12,13,15,.7); border: 1px solid rgba(255,255,255,.10); }
+  .tray::before { content: ""; position: absolute; left: -1px; top: -1px; width: 10px; height: 10px;
+    border-left: 2px solid rgba(241,241,244,.4); border-top: 2px solid rgba(241,241,244,.4); }
+  .tray::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px;
+    border-right: 2px solid rgba(241,241,244,.4); border-bottom: 2px solid rgba(241,241,244,.4); }
+  .ic { position: relative; display: flex; }
+  .ti { position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--ink2); }
+  .ti svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .sep { width: 1px; height: 18px; background: rgba(255,255,255,.10); margin: 0 4px; }
+  /* readouts: the colour + numbers (cyan net, green ok) */
+  .ro { display: flex; flex-direction: column; gap: 3px; padding: 0 8px; font: 8px var(--mono); letter-spacing: .18em; line-height: 1; }
+  .ro .c { color: var(--cyan); }
+  .ro .g { color: var(--green); }
+  .ro .f { color: var(--faint); }
+  .ro .t { font: 700 12px var(--mono); letter-spacing: .12em; color: var(--ink); }
+  .wx { display: flex; align-items: center; gap: 2px; padding-left: 8px; color: var(--yellow); }
+  .wx svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .user { display: flex; align-items: center; gap: 8px; }
+  .user .av { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font: 700 11px var(--mono);
+    letter-spacing: .1em; color: #111; background: var(--ink);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+  .user .nm b { display: block; font: 700 11px var(--mono); letter-spacing: .2em; }
+  .user .nm i { font-style: normal; font: 8px var(--mono); letter-spacing: .18em; color: var(--green); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- a desktop behind, dimmed, so the HUD reads as an overlay -->
+  <div class="win blur" style="left:300px;top:210px;width:1320px;height:720px">
+    <div class="wtop"><div class="wtitle">PHONOGRAPH <span>· GLASSY SKY</span></div></div>
+    <div class="wbody"></div>
+  </div>
+
+  <div class="hud">
+    <div class="ring"></div>
+    <div class="band"></div>
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="mark"><b>CLOCKMOST</b><i><span class="bc"></span><span class="micro">DT-01 · CACHYOS</span></i></div>
+      <div class="ws">
+        <div class="wsp"><span class="n">01</span><span class="w"><i></i></span></div>
+        <div class="wsp on"><span class="n">02</span><span class="w"><i></i><i></i><i></i></span></div>
+        <div class="wsp"><span class="n">03</span><span class="w"><i></i></span><span class="notif pin"></span></div>
+      </div>
+      <div class="focus"><b>PHONOGRAPH</b><span><i class="tri-m"></i><span class="micro">GLASSY SKY · 3 WINDOWS</span></span></div>
+    </div>
+
+    <!-- CENTRE -->
+    <div class="wing l"><i class="tri-s"></i><span class="ln"></span></div>
+    <div class="clock">
+      <img class="topo" src="../src/assets/topo-floor.svg" alt="">
+      <div class="hatch"></div><div class="dots2"></div>
+      <div class="sec">:37</div>
+      <div class="t">20<s>:</s>41</div>
+      <div class="d">MON <span class="bc"></span> 12 OCT 2026</div>
+      <div class="id">CLK-0912 · UTC+1</div>
+    </div>
+    <div class="tb"></div>
+    <div class="wing r"><span class="ln"></span><i class="tri-s"></i></div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="np">
+        <div class="art"></div>
+        <div class="tx"><b>Glassy Sky</b><i>SAPPHIRE · 01:12</i></div>
+        <div class="lv"><i style="height:6px"></i><i style="height:11px"></i><i style="height:8px"></i><i style="height:14px"></i><i style="height:5px"></i></div>
+      </div>
+      <div class="tray">
+        <div class="wx"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><div class="ro"><span class="t">18°C</span><span class="f">LISBON · CLEAR</span></div></div>
+        <span class="sep"></span>
+        <div class="ti" title="clipboard"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16"/><path d="M9 3h6v4H9z"/></svg></div>
+        <div class="ti" title="volume"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></div>
+        <div class="ti" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
+        <div class="ti" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
+        <span class="sep"></span>
+        <div class="ti" title="notifications"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span class="notif pin"></span></span></div>
+      </div>
+      <div class="user">
+        <div class="av">BE</div>
+        <div class="nm"><b>BENYLIN</b><i>● ONLINE</i></div>
+      </div>
+    </div>
+  </div>
+  <div class="mock-note">ds-topbar v2 · HUD bar (appears on Win / top edge) · layout only</div>
+</div>
+</body>
+</html>
