@@ -331,6 +331,79 @@
   .ce .ty.hex { background: var(--orange); color: #111; }
   .ce.sel .ty { background: #111; color: var(--yellow); }
   .grid7 .d.ev::after { background: var(--ec, var(--ink2)); width: 12px; margin-left: -6px; }
+
+  /* ================= NOTIFICATIONS: popups (?state=pop) + centre (bell, ?state=notif) ================= */
+  .pops { position: absolute; right: 16px; top: 62px; width: 400px; display: none; flex-direction: column; gap: 10px; pointer-events: auto; }
+  body.st-pop .pops { display: flex; }
+  .pop { position: relative; display: flex; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.5);
+    background:
+      linear-gradient(90deg, rgba(16,17,20,.25), rgba(16,17,20,.92) 45%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 1px, transparent 1px 7px),
+      linear-gradient(180deg, rgba(30,31,36,.96), rgba(16,17,20,.95));
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  .pop .bk { position: absolute; width: 10px; height: 10px; }
+  .pop .bk.tl { left: -2px; top: -2px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .pop .bk.br { right: -2px; bottom: -2px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  .pop .ab { position: relative; width: 56px; flex: none; display: flex; flex-direction: column; align-items: center; padding-top: 14px; gap: 8px;
+    background: var(--c); color: #111; }
+  .pop .ab b { font: 700 18px var(--body); line-height: 1; }
+  .pop .ab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square; }
+  .pop .ab::after { content: ""; position: absolute; left: 8px; bottom: 8px; width: 18px; height: 12px;
+    background: radial-gradient(rgba(17,17,17,.4) 1px, transparent 1.3px) 0 0 / 4px 4px; }
+  .pop .pb { flex: 1; min-width: 0; padding: 12px 14px 12px; }
+  .pop .ph { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .pop .ph .label { font-size: 10px; color: var(--ink2); }
+  .pop .ph .tm { font: 9px var(--mono); letter-spacing: .16em; color: var(--faint); }
+  .pop .ph .x { margin-left: auto; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: var(--dim); }
+  .pop .ph .x svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 3; }
+  .pop .t1 { font: 600 14px var(--body); color: var(--ink); }
+  .pop .t2 { font: 13px var(--body); color: var(--ink2); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pop .acts { display: flex; gap: 6px; margin-top: 10px; }
+  .pop .act { height: 26px; padding: 0 10px; display: flex; align-items: center; font: 700 10px var(--mono); letter-spacing: .16em;
+    border: 1px solid rgba(255,255,255,.18); color: var(--ink2); }
+  .pop .act.pri { background: var(--ink); color: #111; border-color: var(--ink); }
+  .pop .mc { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .pop .prg { height: 3px; margin-top: 10px; background: rgba(125,219,87,.2); }
+  .pop .prg s { display: block; height: 100%; width: 100%; background: var(--green); }
+  .pop .shot { float: right; margin: 0 0 0 10px; width: 96px; height: 54px; position: relative; background: #1d1f24; border: 1px solid rgba(255,255,255,.16);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%); }
+  .pop .shot i { position: absolute; background: rgba(241,241,244,.2); }
+
+  .nc { position: absolute; right: 16px; top: 62px; width: 440px; display: none; pointer-events: auto;
+    background: linear-gradient(180deg, rgba(26,27,32,.97), rgba(12,13,16,.98));
+    border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  body.st-notif .nc { display: block; }
+  .nc::before { content: ""; position: absolute; top: -7px; right: var(--notch, 160px); width: 12px; height: 12px;
+    background: rgba(26,27,32,.97); border-left: 1px solid rgba(255,255,255,.12); border-top: 1px solid rgba(255,255,255,.12); transform: rotate(45deg); }
+  .nc .bk { position: absolute; width: 14px; height: 14px; }
+  .nc .bk.tl { left: -1px; top: -1px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .nc .bk.br { right: -1px; bottom: -1px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  .nc .hd { display: flex; align-items: flex-end; gap: 12px; padding: 18px 18px 12px; }
+  .nc .hd .ttl { font: 700 20px var(--mono); letter-spacing: .24em; line-height: 1; }
+  .nc .hd .ttl small { display: block; margin-top: 6px; font: 9px var(--mono); letter-spacing: .2em; color: var(--faint); }
+  .nc .hd .un { margin-left: auto; display: flex; align-items: center; gap: 8px; font: 700 22px var(--mono); color: var(--orange); }
+  .nc .hd .un span { font: 8px var(--mono); letter-spacing: .18em; color: var(--faint); }
+  .nc .dnd { margin: 0 18px 10px; }
+  .nc .grp { display: flex; align-items: center; gap: 10px; padding: 12px 18px 6px; }
+  .nc .grp .gb { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111;
+    font: 700 11px var(--body); }
+  .nc .grp .label { font-size: 10px; color: var(--ink2); }
+  .nc .grp .n { font: 9px var(--mono); color: var(--faint); }
+  .nc .grp .ln { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  .nc .grp .cl { font: 700 9px var(--mono); letter-spacing: .16em; color: var(--dim); }
+  .nc .it { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 10px; padding: 8px 18px 8px 50px;
+    border-bottom: 1px solid rgba(255,255,255,.05); }
+  .nc .it .tx { min-width: 0; font: 13px var(--body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nc .it .tx em { font-style: normal; color: var(--dim); }
+  .nc .it .ag { font: 9px var(--mono); letter-spacing: .14em; color: var(--ghost); }
+  .nc .it.unread { position: relative; }
+  .nc .it.unread .notif { position: absolute; left: 33px; top: 50%; margin: -4px 0 0; }
+  .nc .ft { position: relative; display: flex; align-items: center; gap: 10px; padding: 14px 18px 18px; }
+  .nc .ft::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 6px;
+    background: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0 / 8px 6px; }
+  .nc .ft .clr { margin-left: auto; height: 32px; padding: 0 16px; display: flex; align-items: center; font: 700 10px var(--mono); letter-spacing: .2em;
+    background: var(--ink); color: #111; }
 </style>
 </head>
 <body>
@@ -384,7 +457,7 @@
         <div class="ti" style="--c:#5aa7ff" title="bluetooth"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg></div>
         <div class="ti" style="--c:#7ddb57" title="vpn"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></div>
         <span class="sep"></span>
-        <div class="ti" style="--c:#ff9e2c" title="notifications"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span class="notif pin"></span></span></div>
+        <div class="ti bell" style="--c:#ff9e2c" title="notifications"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span class="notif pin"></span></span></div>
       </div>
       <div class="user">
         <div class="av">BE</div>
@@ -394,6 +467,49 @@
 
 
 
+
+    <!-- NOTIFICATION POPUPS -->
+    <div class="pops">
+      <div class="pop" style="--c:#5aa7ff"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="ab"><b>D</b></div>
+        <div class="pb"><div class="ph"><span class="label">DISCORD</span><span class="tm">NOW</span><span class="notif"></span><span class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span></div>
+          <div class="t1">muse in #felt-dev</div><div class="t2">can you look at the mockups when you get a minute?</div>
+          <div class="acts"><span class="act pri">REPLY</span><span class="act">MARK READ</span></div></div>
+      </div>
+      <div class="pop" style="--c:#7ddb57"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="ab"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></div>
+        <div class="pb"><div class="ph"><span class="label">DOWNLOADS</span><span class="tm">2 MIN</span><span class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span></div>
+          <div class="t1">Download finished</div><div class="t2">cachyos-260809.iso · 2.9 GB · SHA256 OK</div>
+          <div class="prg"><s></s></div>
+          <div class="acts"><span class="act">OPEN FOLDER</span><span class="act">VERIFY</span></div></div>
+      </div>
+      <div class="pop" style="--c:#ff1aac"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="ab"><svg viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><rect x="9" y="9" width="6" height="6"/></svg></div>
+        <div class="pb"><div class="ph"><span class="label">SPECTACLE</span><span class="tm">5 MIN</span><span class="x"><svg viewBox="0 0 24 24"><path d="M5 5l5 5M14 14l5 5M19 5l-5 5M10 14l-5 5"/></svg></span></div>
+          <span class="shot"><i style="left:5px;top:5px;right:5px;height:4px"></i><i style="left:5px;top:13px;width:22px;bottom:5px"></i><i style="left:32px;top:13px;right:5px;height:16px;background:rgba(207,198,244,.45)"></i></span>
+          <div class="t1">Screenshot saved</div><div class="t2">~/Pictures/Screenshots/2026-10-12_20-41.png</div>
+          <div class="acts"><span class="act">ANNOTATE</span><span class="act">COPY</span></div></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION CENTRE -->
+    <div class="nc" style="--notch: 128px">
+      <i class="bk tl"></i><i class="bk br"></i>
+      <div class="hd"><div class="ttl">NOTIFICATIONS<small>4 SOURCES · LAST 24H</small></div><div class="un">7<span>UNREAD</span></div></div>
+      <div class="dnd"><div class="tgt" style="--c:#ff9e2c;height:50px"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M4 4l16 16"/></svg><b>DO NOT DISTURB</b><i>OFF · AUTO DURING GAMES</i><span class="ix">DND</span></div></div>
+      <div class="grp" style="--c:#5aa7ff"><span class="gb">D</span><span class="label">DISCORD</span><span class="n">03</span><span class="ln"></span><span class="cl">CLEAR</span></div>
+      <div class="it unread"><span class="notif"></span><span class="tx">muse <em>in #felt-dev</em> · can you look at the mockups</span><span class="ag">NOW</span></div>
+      <div class="it unread"><span class="notif"></span><span class="tx">kuri <em>in #felt-dev</em> · rig photos are up</span><span class="ag">2M</span></div>
+      <div class="it"><span class="tx">voice ended <em>· Orange Juice</em></span><span class="ag">18M</span></div>
+      <div class="grp" style="--c:#d91e36"><span class="gb" style="color:#fff">Z</span><span class="label">CLOCKMOST · ZABBIX</span><span class="n">02</span><span class="ln"></span><span class="cl">CLEAR</span></div>
+      <div class="it unread"><span class="notif"></span><span class="tx"><span class="tag" style="margin-right:8px">HIGH</span>Disk usage 82% on /mnt/data</span><span class="ag">6M</span></div>
+      <div class="it"><span class="tx">CPU load back under 2.0 <em>· resolved</em></span><span class="ag">1H</span></div>
+      <div class="grp" style="--c:#7ddb57"><span class="gb"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#111;stroke-width:3"><path d="M12 4v11M7 10l5 5 5-5"/></svg></span><span class="label">DOWNLOADS</span><span class="n">01</span><span class="ln"></span><span class="cl">CLEAR</span></div>
+      <div class="it unread"><span class="notif"></span><span class="tx">cachyos-260809.iso <em>· 2.9 GB</em></span><span class="ag">12M</span></div>
+      <div class="grp" style="--c:#ff1aac"><span class="gb">S</span><span class="label">SPECTACLE</span><span class="n">01</span><span class="ln"></span><span class="cl">CLEAR</span></div>
+      <div class="it unread"><span class="notif"></span><span class="tx">Screenshot saved <em>· 2026-10-12_20-41.png</em></span><span class="ag">24M</span></div>
+      <div class="ft"><span class="barcode"></span><span class="micro">NC-07 · 4 GROUPS</span><span class="clr">CLEAR ALL</span></div>
+    </div>
     <!-- CALENDAR -->
     <div class="cal">
       <i class="bk tl"></i><i class="bk br"></i>
@@ -476,9 +592,9 @@
   <div class="mock-note">ds-topbar v2 · HUD bar (appears on Win / top edge) · layout only</div>
 </div>
 <script>
-  // Layout states, switched by clicking (no motion): volume icon = quick settings, clipboard icon = clipboard, clock = calendar.
+  // Layout states, switched by clicking (no motion): volume icon = quick settings, clipboard icon = clipboard, clock = calendar, bell = notification centre. ?state=pop shows the popups.
   // Click the open icon again, press Esc or click the desktop to close. ?state=quick|clip|cal opens one directly.
-  const panels = { quick: ".ti.vol", clip: ".ti.clip", cal: ".clock" };
+  const panels = { quick: ".ti.vol", clip: ".ti.clip", cal: ".clock", notif: ".ti.bell" };
   let cur = "bar";
   function setState(st) {
     cur = st;
@@ -492,7 +608,7 @@
     el.style.cursor = "pointer";
     el.addEventListener("click", (e) => { e.stopPropagation(); setState(cur === k ? "bar" : k); });
   }
-  document.querySelectorAll(".qs, .cb, .cal").forEach((p) => p.addEventListener("click", (e) => e.stopPropagation()));
+  document.querySelectorAll(".qs, .cb, .cal, .nc, .pops").forEach((p) => p.addEventListener("click", (e) => e.stopPropagation()));
   document.addEventListener("click", () => setState("bar"));
   addEventListener("keydown", (e) => { if (e.key === "Escape") setState("bar"); });
   setState(new URLSearchParams(location.search).get("state") || "bar");
