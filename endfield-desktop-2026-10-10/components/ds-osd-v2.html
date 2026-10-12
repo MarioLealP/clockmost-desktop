@@ -65,6 +65,42 @@
   .pr s { position: absolute; left: 0; top: 0; bottom: 0; width: 28%; background: #cfc6f4; }
   .pr s::after { content: ""; position: absolute; right: -2px; top: -3px; width: 3px; height: 9px; background: var(--ink); }
   .tm { display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: .14em; color: var(--dim); }
+
+  /* ================= POWER MENU (?state=power) ================= */
+  .pw, body.st-power .row { display: none; }
+  body.st-power .pw { display: flex; }
+  .pw { position: absolute; inset: 0; z-index: 30; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+    background: rgba(8,8,9,.86); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .pw .tt { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .pw .tt b { font: 700 64px var(--mono); letter-spacing: .14em; line-height: 1; padding-left: .14em; }
+  .pw .tt b s { text-decoration: none; opacity: .45; }
+  .pw .tt span { display: flex; align-items: center; gap: 10px; }
+  .pw .tt .bcd { width: 52px; height: 7px;
+    background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 4px, rgba(241,241,244,.5) 4px 5px, transparent 5px 8px); }
+  .opts { display: flex; gap: 14px; }
+  .opt { position: relative; width: 168px; height: 196px; display: flex; flex-direction: column;
+    border: 1px solid rgba(255,255,255,.12);
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 1px, transparent 1px 7px),
+      linear-gradient(180deg, rgba(30,31,36,.95), rgba(14,15,18,.95)); }
+  .opt .bk { position: absolute; width: 10px; height: 10px; }
+  .opt .bk.tl { left: -2px; top: -2px; border-left: 2px solid rgba(241,241,244,.5); border-top: 2px solid rgba(241,241,244,.5); }
+  .opt .bk.br { right: -2px; bottom: -2px; border-right: 2px solid rgba(241,241,244,.5); border-bottom: 2px solid rgba(241,241,244,.5); }
+  .opt .blk2 { position: relative; height: 104px; display: flex; align-items: center; justify-content: center; background: var(--c); color: #111; }
+  .opt .blk2 svg { width: 46px; height: 46px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: square; }
+  .opt .blk2::before { content: ""; position: absolute; right: 8px; top: 8px; width: 22px; height: 14px;
+    background: radial-gradient(rgba(17,17,17,.4) 1px, transparent 1.3px) 0 0 / 4px 4px; }
+  .opt .blk2 .ix { position: absolute; left: 8px; top: 7px; font: 700 9px var(--mono); letter-spacing: .14em; opacity: .6; }
+  .opt .nm { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 0; }
+  .opt .nm b { font: 700 13px var(--mono); letter-spacing: .2em; }
+  .opt .nm .kbd { border-radius: 0; }
+  .opt .sub { padding: 8px 14px 0; font: 9px var(--mono); letter-spacing: .16em; color: var(--faint); }
+  .opt.sel { transform: translateY(-12px); border: 2px solid var(--yellow); }
+  .opt.sel::before { content: ""; position: absolute; top: -12px; left: 50%; margin-left: -5px; width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--yellow); }
+  .opt.sel .nm b { color: var(--yellow); }
+  .pw .esc { display: flex; align-items: center; gap: 8px; }
+  .pw .esc .kbd { border-radius: 0; }
 </style>
 </head>
 <body>
@@ -111,7 +147,29 @@
       </div>
     </div>
   </div>
+
+  <div class="pw">
+    <div class="tt"><b>20<s>:</s>41</b><span><span class="bcd"></span><span class="micro">CLOCKMOST · UP 3D 04H · 3 APPS OPEN</span></span></div>
+    <div class="opts"><div class="opt" style="--c:#3FD0E8"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk2"><span class="ix">01</span><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="nm"><b>LOCK</b><span class="kbd">L</span></div><div class="sub">SESSION STAYS</div></div>
+      <div class="opt" style="--c:#cfc6f4"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk2"><span class="ix">02</span><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></div>
+        <div class="nm"><b>SLEEP</b><span class="kbd">S</span></div><div class="sub">SUSPEND TO RAM</div></div>
+      <div class="opt" style="--c:#7ddb57"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk2"><span class="ix">03</span><svg viewBox="0 0 24 24"><path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h10"/></svg></div>
+        <div class="nm"><b>LOG OUT</b><span class="kbd">O</span></div><div class="sub">END SESSION</div></div>
+      <div class="opt" style="--c:#ff9e2c"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk2"><span class="ix">04</span><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></div>
+        <div class="nm"><b>RESTART</b><span class="kbd">R</span></div><div class="sub">LIMINE · SNAPSHOT</div></div>
+      <div class="opt sel" style="--c:#d91e36"><i class="bk tl"></i><i class="bk br"></i>
+        <div class="blk2" style="color:#fff"><span class="ix">05</span><svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.3 7.5a8 8 0 1 0 11.4 0"/></svg></div>
+        <div class="nm"><b>SHUT DOWN</b><span class="kbd">P</span></div><div class="sub">POWER OFF</div></div>
+      </div>
+    <div class="esc"><span class="kbd">ESC</span><span class="micro">CANCEL</span><span class="kbd" style="margin-left:14px">↵</span><span class="micro">CONFIRM</span></div>
+  </div>
   <div class="mock-note">ds-osd v2 · one at a time in reality, shown side by side · layout only</div>
 </div>
+<script>document.body.classList.add("st-" + (new URLSearchParams(location.search).get("state") || "osd"));</script>
 </body>
 </html>
