@@ -34,6 +34,7 @@ Do not copy its rules into your page and do not edit it. Your own CSS goes in yo
 - Yellow `#FFFA00` only for: active / selected / focused / the search prompt `›››`. Never as decoration.
 - Notifications = THE shared diamond, never a custom one: `<span class="notif"></span>` inline in a row, or `<span class="notif pin"></span>` inside a position:relative host (sits on its top-right corner). One size everywhere. Urgent / timer = crimson `.tag`.
 - Tri-band stripe: at most ONCE per screen.
+- Colour: be generous (Mario: "be a bit more wild with the colors") - app colours as flat washes, corner cuts, strips, bars. **No glows** (no text-shadow / drop-shadow halos) - Mario took them out of the dock.
 - Small print in every component: a barcode, a micro code line (e.g. `SR-1415 · 33 RPM · SIDE A`), a label.
   Keep it faint (`--faint` / `--ghost`), it is texture, not content.
 - Corners: 2px on plates and windows, 6px on fields and buttons, pills round. No other radii.
