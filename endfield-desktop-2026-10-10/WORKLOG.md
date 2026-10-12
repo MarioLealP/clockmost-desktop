@@ -520,3 +520,9 @@
   .88 + blur, done by Claude. Found: src/assets/topo-floor-strip.svg lacks xmlns (never rendered as an image);
   added src/assets/topo-floor.svg with it for the stage (phonograph left untouched).
 - components/index.html = overview gallery. Total credit used for the 11 pages: ~$1.
+
+## 2026-10-12 - Claude + Mario (Firefox v3 decisions, for the real build)
+- Firefox = v3, Intel Archive light style (ds-firefox-v3.html): light chrome top + left, website fills the rest,
+  300px tab sidebar with a collapsible 64px rail.
+- **Bookmarks bar: real favicons, greyscale, full colour on hover** (Mario: "greyscale sounds great") - userChrome.css
+  filter, e.g. `#PersonalToolbar .bookmark-item .toolbarbutton-icon { filter: grayscale(1); }` + `:hover { filter: none; }`.
