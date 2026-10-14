@@ -1,0 +1,9 @@
+# Our own packages from the [clockmost] repo (git.clockmost.com/pkgs) - enable the repo first (skill clockmost-package,
+# Task D: key BC27FC1EB71B365E28B7FDC0F93259A911AB1037 + [clockmost] in pacman.conf), then install these, then run
+# `clockmost-desktop-setup` as the user inside the Plasma session (re-run after the first Firefox / Spotify start).
+clockmost-shell
+kwin-decoration-endfield
+kitty-clockmost
+phonograph
+endfield-skins
+clockmost-desktop-config
