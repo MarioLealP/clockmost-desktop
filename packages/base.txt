@@ -7,6 +7,7 @@ linux-firmware
 amd-ucode
 btrfs-progs
 dosfstools
+gptfdisk
 # CachyOS bits: repos/keyring, tuned sysctl/udev/zram defaults, hooks
 cachyos-keyring
 cachyos-mirrorlist
