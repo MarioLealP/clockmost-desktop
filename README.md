@@ -10,7 +10,7 @@ part of the build.
 | path | what |
 |---|---|
 | `install/` | the choices made in the CachyOS installer (the one manual step) |
-| `packages/` | package lists, one file per layer (base, plasma, apps, rice, clockmost) |
+| `packages/` | package lists, one file per layer (base, plasma-core, login, gpu-amd [metal], apps, gaming, clockmost) |
 | `scripts/` | `bootstrap.sh`: installs the package lists and links the dotfiles; safe to re-run |
 | `dotfiles/` | config files, linked into `~` and `/etc` by the bootstrap |
 

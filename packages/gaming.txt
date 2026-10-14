@@ -4,6 +4,8 @@
 steam
 proton-cachyos-slr
 lutris
+# AUR helper (CachyOS repo); the AUR games below go through it:
+paru
 # AUR via paru (CachyOS's AUR helper, installed by the bootstrap):
 #   xivlauncher        FFXIV (XIVLauncher.Core)
 #   ffxiv-teamcraft    FFXIV Teamcraft desktop app

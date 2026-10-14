@@ -1,0 +1,5 @@
+# GPU, metal only (2026-10-14): AMD RX 6700 XT (Navi 22). Mesa's RADV Vulkan, 64 + 32 bit, named here so Steam's
+# vulkan-driver dependency never picks another provider under --noconfirm.
+vulkan-radeon
+lib32-vulkan-radeon
+lib32-mesa
