@@ -34,9 +34,9 @@
 6. `umount -R /mnt`, power off, detach the ISO, boot from disk.
 7. Metal only (no `VM=1` above): `bash install/40-data-disks.sh` from the installed system - the
    SN770 (`~/Drives/Games`, `~/src`) and Seagate (`~/Drives/Storage`), btrfs, by serial.
-8. Layers + our packages: `scripts/install-list.sh plasma-core login gpu-amd apps gaming clockmost`, then enable the
+8. Layers + our packages: `scripts/install-list.sh plasma-core login gpu-amd apps gaming clockmost dev`, then enable the
    `[clockmost]` repo and install `packages/clockmost-repo.txt` (see that file), then `clockmost-desktop-setup` as the
-   user. Per-machine steps after that (agents' server/host names, Wazuh enrolment, keys, workspace scripts + user
+   user, then the AUR packages listed in `apps.txt`/`gaming.txt`/`clockmost.txt` (paru). Per-machine steps after that (agents' server/host names, Wazuh enrolment, keys, workspace scripts + user
    units): the workspace `runbooks/desktop-linux-install-log.md`.
 
 VM gotchas (VMware Workstation 26H1u1): the .vmx needs pciBridge0/4-7 with slot numbers or the
@@ -44,9 +44,9 @@ NIC gets "No PCIe slot"; the side-channel-mitigation hint blocks power-on until 
 (tick "don't show again"); disable floppy0.
  `bash install/40-data-disks.sh` from the installed system - the
    SN770 (`~/Drives/Games`, `~/src`) and Seagate (`~/Drives/Storage`), btrfs, by serial.
-8. Layers + our packages: `scripts/install-list.sh plasma-core login gpu-amd apps gaming clockmost`, then enable the
+8. Layers + our packages: `scripts/install-list.sh plasma-core login gpu-amd apps gaming clockmost dev`, then enable the
    `[clockmost]` repo and install `packages/clockmost-repo.txt` (see that file), then `clockmost-desktop-setup` as the
-   user. Per-machine steps after that (agents' server/host names, Wazuh enrolment, keys, workspace scripts + user
+   user, then the AUR packages listed in `apps.txt`/`gaming.txt`/`clockmost.txt` (paru). Per-machine steps after that (agents' server/host names, Wazuh enrolment, keys, workspace scripts + user
    units): the workspace `runbooks/desktop-linux-install-log.md`.
 
 VM gotchas (VMware Workstation 26H1u1): the .vmx needs pciBridge0/4-7 with slot numbers or the

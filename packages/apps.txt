@@ -21,3 +21,11 @@ keepassxc
 # 9: headphone EQ (carry-over from the old Linux desktop): EasyEffects + LSP plugins (its EQ backend; optional dep, required)
 easyeffects
 lsp-plugins-lv2
+# 10: music library (2026-10-14): Picard + AcoustID fingerprints for tagging, yt-dlp for YouTube-rip covers
+picard
+chromaprint
+yt-dlp
+# 11: secret scan before pushing a repo (2026-10-14; the later all-repos auto scan uses the same tool)
+gitleaks
+# AUR via paru (read the PKGBUILD first):
+#   orca-slicer-bin    OrcaSlicer (Ender-3 Max Neo profiles restored from the backup; repackages upstream's AppImage)

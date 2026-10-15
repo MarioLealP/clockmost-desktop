@@ -1,7 +1,8 @@
 # clockmost on the desktop (decided 2026-10-09: agents, backup, updates, renewers, keys - recipe only).
 # Monitoring/security agents (laptop already runs both on Linux; same server side):
 zabbix-agent2
-#   wazuh-agent      AUR or Wazuh's own repo - same version as the manager (check at build time)
+#   wazuh-agent      AUR (repackages Wazuh's RPM) - same version as the manager, never newer: no AUR helper
+#                    auto-updates it. Enrolment + FIM paths: workspace install log.
 # Backup (desktop -> server SFTP -> gdrive; same repo/policy as today's Windows job):
 restic
 # Vault renewers (tray + felt-animation; off-host roles bound to 192.168.10.74 = unchanged):

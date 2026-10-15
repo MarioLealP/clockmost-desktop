@@ -7,9 +7,11 @@ lutris
 # AUR helper (CachyOS repo); the AUR games below go through it:
 paru
 # AUR via paru (CachyOS's AUR helper, installed by the bootstrap):
-#   xivlauncher        FFXIV (XIVLauncher.Core)
-#   ffxiv-teamcraft    FFXIV Teamcraft desktop app
+#   xivlauncher        FFXIV (XIVLauncher.Core); game dir ~/Drives/Games/XIV (chattr +C), pre-seed GamePath in
+#                      ~/.xlcore/launcher.ini before the first start (default is on the system disk)
 #   sgdboop            one-click SteamGridDB art for hand-added Steam shortcuts
-# clockmost pkgs repo (git.clockmost.com/pkgs, built + scanned by our own pipeline):
-#   boilr              syncs Lutris (Battle.net) etc. into Steam with SteamGridDB art (upstream 1.11.0;
-#                      AUR is stale at 0.4.5)
+# Not packages (upstream builds that update themselves or are checked by hand; need fuse2 = clockmost-desktop-config):
+#   FFXIV Teamcraft    upstream AppImage -> ~/Applications (self-updates; NOT the AUR package - it makes /opt
+#                      group-writable for that), sha512 vs upstream latest-linux.yml
+#   BoilR              upstream linux_BoilR -> ~/Applications (AUR steam-boilr-gui is stale; AUR boilr is another
+#                      tool); syncs Lutris (Battle.net) etc. into Steam. No self-update - check upstream now and then.

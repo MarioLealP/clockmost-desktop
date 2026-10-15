@@ -1,0 +1,7 @@
+# Dev tools + the language servers Claude Code's LSP plugins use (rust-analyzer-lsp, pyright-lsp, typescript-lsp).
+# rustup -> `rustup default stable` + `rustup component add rust-src` as the user (rust-analyzer needs rust-src).
+rustup
+rust-analyzer
+pyright
+typescript
+typescript-language-server

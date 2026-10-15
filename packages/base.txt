@@ -31,3 +31,4 @@ git
 nano
 man-db
 bash-completion
+rsync
