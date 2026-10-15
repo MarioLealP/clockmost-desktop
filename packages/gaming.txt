@@ -15,3 +15,6 @@ paru
 #                      group-writable for that), sha512 vs upstream latest-linux.yml
 #   BoilR              upstream linux_BoilR -> ~/Applications (AUR steam-boilr-gui is stale; AUR boilr is another
 #                      tool); syncs Lutris (Battle.net) etc. into Steam. No self-update - check upstream now and then.
+#   dwproton           dawn.wine's Proton (release tarball, sha512) -> ~/.local/share/Steam/compatibilitytools.d/;
+#                      for Arknights: Endfield (Anti-Cheat Expert fails on proton-cachyos-slr). Picked per game in
+#                      Steam: Properties -> Compatibility. No self-update.
