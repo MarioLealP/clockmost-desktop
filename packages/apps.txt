@@ -27,5 +27,7 @@ chromaprint
 yt-dlp
 # 11: secret scan before pushing a repo (2026-10-14; the later all-repos auto scan uses the same tool)
 gitleaks
+# 12: task manager (2026-10-15) - System Monitor: process list with End/Kill like Windows' Task Manager, Ctrl+Shift+Esc
+plasma-systemmonitor
 # AUR via paru (read the PKGBUILD first):
 #   orca-slicer-bin    OrcaSlicer (Ender-3 Max Neo profiles restored from the backup; repackages upstream's AppImage)
