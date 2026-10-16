@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Easy Effects (service)
+Comment=System-wide DT 880 EQ, started hidden
+Exec=easyeffects --service-mode --hide-window
+Icon=com.github.wwmm.easyeffects
+NoDisplay=true
+X-KDE-autostart-phase=2

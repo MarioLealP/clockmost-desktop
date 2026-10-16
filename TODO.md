@@ -12,13 +12,6 @@
   must create it; the design track must keep Klipper loaded somewhere.
 - Klipper settings (`~/.config/klipperrc` [General]): MaxClipItems=50, KeepClipboardContents=true,
   IgnoreSelection=true, SyncClipboards=false, IgnoreImages=false, PreventEmptyClipboard=true.
-- **Headphone EQ (carry-over, "same system as last time")**: EasyEffects + lsp-plugins-lv2, preset
-  `DT880 oratory1990` built from `dotfiles/home/.local/share/easyeffects/output/DT880 oratory1990.apo.txt`
-  (AutoEq tag 2.0.0, oratory1990 harman_over-ear_2018, DT 880 250 Ohm, preamp -5.6 dB, 10 PEQ
-  bands - the exact profile used 2026-09). Needs the APO -> EasyEffects JSON converter again (the old
-  `~/.local/bin/apo2easyeffects` was lost with the Linux backup); silent autostart
-  (`easyeffects --hide-window --service-mode`, `showTrayIcon=false`, `noWindowAfterStarting=true`).
-  Details: runbooks/desktop-headphone-eq.md (historical).
 - **Audio devices: whitelist only** (Mario 2026-10-09: "disabled all sources input and output except
   this, cuz i know screens like to get added, dont. and just accept once i connect the robin through
   bluetooth"). On Windows today: output = **Realtek onboard analog** ("Speakers", DT 880 jack),
@@ -42,6 +35,10 @@
 
 ## Done (first metal install 2026-10-14/15 - detail in the workspace `runbooks/desktop-linux-install-log.md`)
 
+- Headphone EQ (2026-10-16): `dotfiles/home/.local/bin/apo2easyeffects` (APO -> EasyEffects 8.3 preset, bands in
+  "APO (DR)" mode) builds `DT880 oratory1990.json` from the kept `.apo.txt`; hidden autostart
+  `dotfiles/home/.config/autostart/easyeffects-service.desktop`; `easyeffectsrc` [Window] showTrayIcon=false,
+  noWindowAfterStarting=true (set only while EE is quit).
 - ShareX keys (Spectacle), keyring = KeePassXC (KDE Wallet off was enough - no D-Bus masking needed), the tang
   auto-unlock + Drive sync carry-overs, one KeePassXC at login (session restore excluded): clockmost-desktop-config
   setup step 50; the unlock/backup/sync scripts + their user units live in the workspace.

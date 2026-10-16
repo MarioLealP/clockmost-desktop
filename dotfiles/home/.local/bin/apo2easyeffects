@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Convert an Equalizer APO / AutoEq ParametricEQ.txt into an EasyEffects output preset.
+
+Usage: apo2easyeffects IN.txt OUT.json
+"""
+
+import json
+import re
+import sys
+
+TYPES = {"PK": "Bell", "PEQ": "Bell", "LS": "Lo-shelf", "LSC": "Lo-shelf", "HS": "Hi-shelf", "HSC": "Hi-shelf"}
+FILTER = re.compile(
+    r"Filter\s*\d*:\s*ON\s+(\w+)\s+Fc\s+([\d.]+)\s*Hz\s+Gain\s+(-?[\d.]+)\s*dB\s+Q\s+([\d.]+)", re.I
+)
+
+
+def main(src: str, dst: str) -> None:
+    preamp = 0.0
+    bands = []
+    for line in open(src, encoding="utf-8"):
+        if m := re.match(r"Preamp:\s*(-?[\d.]+)\s*dB", line, re.I):
+            preamp = float(m[1])
+        elif m := FILTER.match(line.strip()):
+            kind = m[1].upper()
+            if kind not in TYPES:
+                sys.exit(f"unsupported filter type {kind!r}: {line.strip()}")
+            bands.append(
+                {
+                    "type": TYPES[kind],
+                    "mode": "APO (DR)",
+                    "frequency": float(m[2]),
+                    "gain": float(m[3]),
+                    "q": float(m[4]),
+                    "mute": False,
+                    "solo": False,
+                }
+            )
+    if not bands:
+        sys.exit(f"no filters found in {src}")
+    channel = {f"band{i}": b for i, b in enumerate(bands)}
+    preset = {
+        "output": {
+            "blocklist": [],
+            "equalizer#0": {
+                "balance": 0.0,
+                "bypass": False,
+                "input-gain": preamp,
+                "output-gain": 0.0,
+                "mode": "IIR",
+                "num-bands": len(bands),
+                "split-channels": False,
+                "left": channel,
+                "right": channel,
+            },
+            "plugins_order": ["equalizer#0"],
+        }
+    }
+    with open(dst, "w", encoding="utf-8") as f:
+        json.dump(preset, f, indent=4)
+        f.write("\n")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        sys.exit(__doc__)
+    main(sys.argv[1], sys.argv[2])
