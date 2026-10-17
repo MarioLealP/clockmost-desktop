@@ -5,6 +5,7 @@ kitty
 fish
 # 4: file manager (2026-10-09) - Dolphin: Places (pins) + Folders tree like Explorer; server folders via KIO
 dolphin
+ark
 kio-extras
 kio-admin
 ffmpegthumbs
