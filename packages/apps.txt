@@ -31,3 +31,6 @@ gitleaks
 plasma-systemmonitor
 # AUR via paru (read the PKGBUILD first):
 #   orca-slicer-bin    OrcaSlicer (Ender-3 Max Neo profiles restored from the backup; repackages upstream's AppImage)
+# 13: spell check (2026-10-17) - KDE Sonnet on hunspell: English + European Portuguese (pt_PT, post-AO, AUR hunspell-pt_pt via paru)
+hunspell-en_us
+hunspell-en_gb
