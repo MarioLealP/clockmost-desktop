@@ -8,6 +8,10 @@ kscreen
 # applets for things the core can't work without
 plasma-pa
 plasma-nm
+bluedevil
+# bluetooth (the shell's BLUETOOTH tab talks to BlueZ)
+bluez
+bluez-utils
 # audio stack
 pipewire
 pipewire-pulse

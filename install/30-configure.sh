@@ -38,5 +38,5 @@ limine-install --fallback
 limine-mkinitcpio
 # snapshots: snapper config for / (creates /.snapshots); limine-snapper-sync adds them to the menu
 snapper --no-dbus -c root create-config /
-systemctl enable NetworkManager.service sshd.service systemd-timesyncd.service snapper-cleanup.timer limine-snapper-sync.service
+systemctl enable NetworkManager.service sshd.service systemd-timesyncd.service snapper-cleanup.timer limine-snapper-sync.service bluetooth.service
 echo "configured $HOST"
