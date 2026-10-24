@@ -1,9 +1,9 @@
 # clockmost-desktop
 
-The recipe for Mario's Linux desktop: CachyOS (Arch-based) installed with no desktop, then KDE Plasma 6 on Wayland
+The recipe for my Linux desktop: CachyOS (Arch-based) installed with no desktop, then KDE Plasma 6 on Wayland
 with our own Endfield shell on top. Built and tried in a VMware VM first, then installed on the real machine
-(2026-10-14). The reasoning and decision log live in the workspace `runbooks/desktop-linux-return.md`; every change
-made to the real machine is in `runbooks/desktop-linux-install-log.md`.
+(2026-10-14). The reasoning, decision log and the machine's full install log live in my private notes; this repo is the
+public, reproducible part.
 
 Rule: every part is picked on purpose and written down here. If it's not in this repo, it isn't part of the build.
 
