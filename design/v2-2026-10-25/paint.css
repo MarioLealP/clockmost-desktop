@@ -1,0 +1,55 @@
+/* Round 9: Good Smile Racing 2025 fan-art treatment - paint over the subject, hard complementary contrast. */
+
+.stage[data-acc="mag"] {
+  --acc: #ec1c62;
+  --acc-ink: #ffffff;
+}
+.stage {
+  --sky: #7cc6ec;
+}
+
+.sky {
+  position: absolute;
+  left: 1760px;
+  top: 470px;
+  width: 640px;
+  height: 520px;
+  background: var(--sky);
+  transform: rotate(-6deg);
+}
+
+.xband {
+  position: absolute;
+  left: 520px;
+  top: 1010px;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: #e8e6df1c;
+}
+
+.paint {
+  position: absolute;
+  inset: 0;
+  width: 3440px;
+  height: 1440px;
+  overflow: visible;
+}
+.pp path {
+  fill: none;
+  stroke: var(--acc);
+  stroke-linecap: round;
+}
+.pp circle {
+  fill: var(--acc);
+}
+.xs path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+}
+.xs.blur path {
+  opacity: 0.7;
+}

@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="idle.css" />
     <link rel="stylesheet" href="ha.css" />
     <link rel="stylesheet" href="felt.css" />
+    <link rel="stylesheet" href="poster.css" />
+    <link rel="stylesheet" href="paint.css" />
   </head>
   <body>
     <!-- Stop 1: idle desktop, nothing open. ?v=paper|graphite|cobalt picks the direction. Layout only. -->
@@ -41,10 +43,57 @@
           <div class="toggles">
             <span class="t on">FELT QUIET</span>
             <span class="t on">FELT HIDDEN</span>
-            <span class="t">DJ MODE</span>
+            <span class="tm">DJ MODE</span>
           </div>
         </section>
         <div class="slab"></div>
+        <!-- poster layer (round 8, Mario: "more flare ... like the redjuice poster"): circuit traces, huge stacked
+             type, Felt cut into diagonal shards, a stacked date. Pans with the desktop. -->
+        <svg class="traces" viewBox="0 0 3440 1440" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M1500 0v180l60 60h420l40 40v260M2200 0v90l-40 40h-260M1420 1440v-260l80-80h300l60-60v-140M2620 1440v-120l-60-60h-200l-40-40v-180M2700 300h200l40 40v300l-60 60h-120M1300 520h140l40-40h220" />
+          <rect x="1494" y="174" width="12" height="12" /><rect x="2214" y="494" width="12" height="12" />
+          <rect x="1414" y="1174" width="12" height="12" /><rect x="2894" y="294" width="12" height="12" />
+        </svg>
+        <!-- round 9 (Mario: Good Smile Racing 2025 fan art - "the overlaying and the sharp color contrast"):
+             a sky block behind Felt, paint slashes + splats OVER her, scattered X marks, a pixel-X band -->
+        <div class="sky"></div>
+        <div class="xband">&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;<br />&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;</div>
+        <div class="hero" id="hero"></div>
+        <svg class="paint" viewBox="0 0 3440 1440" aria-hidden="true">
+          <defs>
+            <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="3" seed="7" />
+              <feDisplacementMap in="SourceGraphic" scale="34" />
+            </filter>
+            <filter id="soft"><feGaussianBlur stdDeviation="10" /></filter>
+          </defs>
+          <g filter="url(#rough)" class="pp">
+            <path d="M1700 760 L2420 420" stroke-width="70" />
+            <path d="M1760 860 L2300 600" stroke-width="22" />
+            <path d="M2160 300 L2560 120" stroke-width="40" />
+            <path d="M1620 1120 L1960 950" stroke-width="14" />
+            <path d="M2380 980 L2700 820 L2620 900" stroke-width="30" />
+            <circle cx="2215" cy="215" r="34" /><circle cx="2262" cy="196" r="16" /><circle cx="2180" cy="250" r="10" />
+            <circle cx="2230" cy="640" r="26" />
+          </g>
+          <g class="xs">
+            <path d="M1560 300l60 60m0-60l-60 60" stroke-width="22" />
+            <path d="M1610 420l40 40m0-40l-40 40" stroke-width="16" />
+            <path d="M1650 520l26 26m0-26l-26 26" stroke-width="11" />
+            <path d="M2560 600l50 50m0-50l-50 50" stroke-width="18" />
+            <path d="M2610 700l22 22m0-22l-22 22" stroke-width="9" />
+            <path d="M1980 1180l34 34m0-34l-34 34" stroke-width="12" />
+          </g>
+          <g class="xs blur" filter="url(#soft)">
+            <path d="M2470 1150l150 150m0-150l-150 150" stroke-width="60" />
+            <path d="M1480 120l110 110m0-110l-110 110" stroke-width="44" />
+          </g>
+        </svg>
+        <div class="poster-type">CLOCK<br />MOST<br />DESK-<br />TOP<br />V.2</div>
+        <div class="datestack">
+          <span>20</span><span>26<i></i></span><span>10<i></i></span><span>25</span><small>[SUN]</small>
+          <span class="tm">&rarr;18<i></i></span><span class="tm">42</span>
+        </div>
 
         <div class="reg tl"></div>
         <div class="reg tr"></div>
@@ -130,6 +179,33 @@
       const stage = document.getElementById("stage");
       stage.dataset.v = q.get("v") || "graphite";
       stage.dataset.size = q.get("size") || "uw";
+      if (q.get("acc")) stage.dataset.acc = q.get("acc");
+
+      // Felt cut into 45-degree strips, each nudged a little (the fractured-poster look), with solid shards around her
+      const hero = document.getElementById("hero");
+      const W = 848, H = 1240;
+      const shard = (cls, x, w, y0, y1, front) => {
+        const e = document.createElement("i");
+        e.className = "shard " + cls + (front ? " front" : "");
+        e.style.clipPath = `polygon(${x}px ${y0}px, ${x + w}px ${y0}px, ${x + w - (y1 - y0)}px ${y1}px, ${x - (y1 - y0)}px ${y1}px)`;
+        hero.appendChild(e);
+      };
+      [["acc", 640, 70, 120, 900], ["ink", 900, 30, 0, 1240], ["bone", 760, 120, 380, 1100],
+       ["grey", 1120, 60, 200, 700], ["acc", 1300, 14, 0, 1240], ["ink", 500, 40, 700, 1240],
+       ["grey", 980, 180, 820, 1240]].forEach((a) => shard(...a, false));
+      const cuts = [0, 260, 380, 560, 640, 820, 900, 1080, 1180, 1400, 1520, 1700, 2100];
+      const nudge = [[0, 0], [14, -10], [-8, 6], [22, -18], [0, 0], [-16, 12], [10, -4], [-24, 20], [6, 0], [-10, 8], [18, -12], [0, 0]];
+      for (let k = 0; k < cuts.length - 1; k++) {
+        const f = document.createElement("div");
+        f.className = "frag";
+        const a = cuts[k], b = cuts[k + 1];
+        f.style.clipPath = `polygon(${a}px 0, ${b}px 0, ${b - H}px ${H}px, ${a - H}px ${H}px)`;
+        f.style.transform = `translate(${nudge[k][0]}px, ${nudge[k][1]}px)`;
+        f.innerHTML = '<img src="assets/felt.png" alt="" />';
+        hero.appendChild(f);
+      }
+      [["acc", 1060, 26, 520, 760], ["bone", 820, 54, 980, 1240], ["ink", 1200, 90, 0, 260],
+       ["acc", 700, 10, 1000, 1240], ["grey", 1500, 40, 300, 520]].forEach((a) => shard(...a, true));
       if (q.get("ha")) {
         stage.dataset.ha = q.get("ha");
         document.querySelector(`.ha-list a[data-sec="${q.get("ha")}"]`)?.classList.add("on");

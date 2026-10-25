@@ -1,0 +1,123 @@
+/* Round 8: the poster layer - Redjuice-style flare on the graphite ground. */
+
+.stage[data-acc="red"] {
+  --acc: #ff3355;
+  --acc-ink: #ffffff;
+}
+
+/* the bar clock moves into the poster as the stacked date */
+.bar-clock {
+  display: none;
+}
+
+.traces {
+  position: absolute;
+  inset: 0;
+  width: 3440px;
+  height: 1440px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  opacity: 0.09;
+}
+.traces rect {
+  fill: var(--ink);
+  stroke: none;
+}
+
+.hero {
+  position: absolute;
+  left: 1640px;
+  top: 150px;
+  width: 848px;
+  height: 1240px;
+}
+.frag {
+  position: absolute;
+  inset: 0;
+}
+.frag img {
+  width: 848px;
+  height: 1240px;
+  display: block;
+}
+.shard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2400px;
+  height: 1240px;
+  margin-left: -400px;
+}
+.shard.acc {
+  background: var(--acc);
+}
+.shard.ink {
+  background: #0d0d0c;
+}
+.shard.bone {
+  background: var(--ink);
+  opacity: 0.9;
+}
+.shard.grey {
+  background: #3a3a37;
+}
+.shard.front {
+  z-index: 2;
+}
+
+.poster-type {
+  position: absolute;
+  left: 560px;
+  top: 150px;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-size: 200px;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.datestack {
+  position: absolute;
+  right: 110px;
+  bottom: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 128px;
+  line-height: 0.84;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.datestack span {
+  position: relative;
+}
+.datestack span i {
+  position: absolute;
+  right: -46px;
+  bottom: 6px;
+  width: 4px;
+  height: 92px;
+  background: var(--ink);
+  transform: rotate(35deg);
+}
+.datestack small {
+  font-size: 44px;
+  line-height: 1.1;
+  margin: 6px 0 22px;
+}
+.datestack .tm {
+  color: var(--acc);
+}
+.datestack .tm i {
+  background: var(--acc);
+}
+
+/* keep every ground layer under the bar, dock and panels */
+.ground {
+  z-index: 0;
+}
