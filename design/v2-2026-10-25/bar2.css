@@ -141,3 +141,15 @@
   --acc: #ff5f1f;
   --acc-ink: #111110;
 }
+/* Mario: "move the music name somewhere else" - bottom, left of the dock, on the dock baseline */
+.nowplay {
+  left: 760px;
+  bottom: 30px;
+  background: none;
+}
+.np-meta b {
+  font-size: 72px;
+}
+.np-prog {
+  width: 520px;
+}
