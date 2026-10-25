@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>v2 idle desktop - round 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Noto+Sans+JP:wght@700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="idle2.css" />
+  </head>
+  <body>
+    <!-- Round 2 (Mario 2026-10-25): graphite, barcode = the clock, no "25", no standby/crosshair,
+         Home Assistant as clickables, wilder. Layout only; entity names are the real HA ones. -->
+    <div class="stage">
+      <div class="ground">
+        <div class="dots"></div>
+        <div class="band"></div>
+        <div class="line l1"></div>
+        <div class="line l2"></div>
+        <div class="block"></div>
+        <div class="kanji">待機中</div>
+        <div class="vword">CLOCKMOST&nbsp;&nbsp;DESKTOP&nbsp;&nbsp;ENVIRONMENT&nbsp;&nbsp;V2</div>
+        <div class="reg tl"></div>
+        <div class="reg tr"></div>
+        <div class="reg bl"></div>
+        <div class="reg br"></div>
+        <div class="ruler"></div>
+        <div class="spec">
+          <span>DT-01 &middot; DP-2 &middot; 165HZ</span>
+          <span>WINDOWS 00 &middot; UP 00:04:12</span>
+        </div>
+      </div>
+
+      <!-- Home Assistant: the bedroom as a technical drawing; every node is a click target -->
+      <section class="ha">
+        <header class="ha-head">
+          <b>BEDROOM</b><span class="jp">寝室</span>
+          <em>06 / 07 ON</em>
+        </header>
+        <div class="plan">
+          <div class="room"></div>
+          <div class="node big on" style="left: 210px; top: 130px">
+            <i></i><label>CHANDELURE<small>LIGHT &middot; ON</small></label>
+          </div>
+          <div class="node on c1" style="left: 40px; top: 40px"><i></i><label>YL-1<small>COLOR</small></label></div>
+          <div class="node on c2" style="left: 380px; top: 40px"><i></i><label class="r">YL-2<small>COLOR</small></label></div>
+          <div class="node on c3" style="left: 40px; top: 230px"><i></i><label>YL-3<small>COLOR</small></label></div>
+          <div class="node on c4" style="left: 380px; top: 230px"><i></i><label class="r">YL-4<small>COLOR</small></label></div>
+          <div class="strip on" style="left: 120px; top: 300px"><label>SHELF &middot; 10.1W</label></div>
+          <div class="air">
+            <span class="air-num">03</span>
+            <span class="air-lbl">PM2.5<br />PURIFIER &middot; EXCELLENT</span>
+          </div>
+        </div>
+        <div class="toggles">
+          <span class="t on">FELT QUIET</span>
+          <span class="t on">FELT HIDDEN</span>
+          <span class="t">DJ MODE</span>
+          <span class="t">BATH PLUG</span>
+        </div>
+      </section>
+
+      <header class="bar">
+        <div class="bar-left">
+          <div class="mark"><i></i>CLOCKMOST</div>
+          <div class="ws"><span class="on">01</span><span>02</span><span>03</span></div>
+          <div class="felt"><i></i>FELT &middot; ONLINE</div>
+        </div>
+        <div class="clock">
+          <div class="clock-row">
+            <span class="time" id="time">18:42</span>
+            <span class="date">SUN<br />25.10</span>
+          </div>
+          <div class="tbar" id="tbar"></div>
+          <span class="tcode" id="tcode"></span>
+        </div>
+        <div class="bar-right">
+          <div class="np">
+            <span class="np-art"></span>
+            <span class="np-txt"><b>Hibana</b><br />DECO*27</span>
+            <span class="np-meter"><i></i><i></i><i></i><i></i><i></i></span>
+          </div>
+          <div class="wx">16&deg; <small>LOCAL &middot; CLOUD</small></div>
+          <div class="tray"><i></i><i></i><i></i></div>
+          <div class="user">M</div>
+        </div>
+      </header>
+
+      <nav class="dock">
+        <div class="tile run"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M7 10c3-1 7-1 10 1M7.5 13c2.5-.8 6-.6 8.5.8M8 16c2-.6 4.5-.4 6.5.6" /></svg><em>SPOTIFY</em></div>
+        <div class="tile run focus"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" /><path d="M6 10l3 2-3 2M11 15h5" /></svg><em>KITTY</em></div>
+        <div class="tile run"><svg viewBox="0 0 24 24"><path d="M5 7c4-2 10-2 14 0l1 9c-2 2-4 3-5 3l-1-2c-1 .3-3 .3-4 0l-1 2c-1 0-3-1-5-3z" /><circle cx="9.5" cy="12.5" r="1.3" /><circle cx="14.5" cy="12.5" r="1.3" /></svg><em>DISCORD</em></div>
+        <div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18M5 8c3 1 4 4 3 7" /></svg><em>FIREFOX</em></div>
+        <div class="tile"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z" /><path d="M12 20v-6M9 14l3-3 3 3" /></svg><em>HOME</em></div>
+        <div class="sep"></div>
+        <div class="tile"><svg viewBox="0 0 24 24"><circle cx="16" cy="9" r="4" /><circle cx="7" cy="16" r="2.5" /><path d="M8.5 14.5l5-3" /></svg><em>STEAM</em></div>
+        <div class="tile run"><svg viewBox="0 0 24 24"><path d="M4 20l1.5-4A8 8 0 1 1 9 19z" /></svg><em>WHATSAPP</em></div>
+        <div class="tile run"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" /></svg><em>FELT</em></div>
+        <div class="sep"></div>
+        <div class="tile drawer"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" /><path d="M15 15l5 5" /></svg><em>SEARCH</em></div>
+      </nav>
+    </div>
+    <script>
+      // the barcode under the clock is generated from the time, so it changes every minute (ambient life)
+      const t = document.getElementById("time").textContent.replace(":", "");
+      const code = "25102026" + t;
+      document.getElementById("tcode").textContent = code.split("").join(" ");
+      const bar = document.getElementById("tbar");
+      for (const ch of code) {
+        const n = Number(ch);
+        for (let k = 0; k < 4; k++) {
+          const b = document.createElement("i");
+          b.style.width = 1 + ((n >> k) & 1) * 2 + "px";
+          b.style.marginRight = 1 + ((n + k) % 3) + "px";
+          bar.appendChild(b);
+        }
+      }
+    </script>
+  </body>
+</html>

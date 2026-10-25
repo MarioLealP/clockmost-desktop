@@ -1,0 +1,358 @@
+/* Round 2: graphite only. Bar + dock come from idle.css; this file is the new ground, clock and HA panel. */
+@import url("idle.css");
+
+.stage {
+  --bg: #1a1a18;
+  --bg2: #242422;
+  --ink: #e8e6df;
+  --ink2: #8a8881;
+  --line: #e8e6df26;
+  --acc: #c6f032;
+  --acc-ink: #111110;
+  --plate: #e8e6df;
+  --plate-ink: #1a1a18;
+}
+
+/* ---------- ground: collage pieces, dark on dark ---------- */
+
+.dots {
+  mask-image: linear-gradient(100deg, transparent 30%, #000 55%, #000 80%, transparent 98%);
+}
+
+.band {
+  position: absolute;
+  left: -200px;
+  top: 560px;
+  width: 2600px;
+  height: 180px;
+  background: repeating-linear-gradient(-45deg, #e8e6df10 0 2px, transparent 2px 14px);
+  transform: rotate(-9deg);
+}
+
+.line {
+  position: absolute;
+  background: var(--acc);
+  transform-origin: top left;
+}
+.line.l1 {
+  left: 860px;
+  top: -40px;
+  width: 6px;
+  height: 1300px;
+  transform: rotate(28deg);
+}
+.line.l2 {
+  left: 900px;
+  top: -40px;
+  width: 2px;
+  height: 1300px;
+  transform: rotate(28deg);
+  opacity: 0.5;
+}
+
+.block {
+  position: absolute;
+  left: 1240px;
+  top: 150px;
+  width: 560px;
+  height: 640px;
+  background: #222220;
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 88% 100%, 0 100%);
+}
+
+.kanji {
+  position: absolute;
+  right: 150px;
+  top: 170px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 900;
+  font-size: 210px;
+  line-height: 0.95;
+  writing-mode: vertical-rl;
+  color: transparent;
+  -webkit-text-stroke: 1.5px #e8e6df40;
+}
+
+.vword {
+  position: absolute;
+  right: 72px;
+  top: 150px;
+  writing-mode: vertical-rl;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.5em;
+  color: var(--ink2);
+}
+
+.reg.tl,
+.reg.tr {
+  top: 104px;
+}
+
+.ruler {
+  top: 150px;
+  height: 760px;
+}
+
+.spec {
+  left: auto;
+  right: 72px;
+  top: auto;
+  bottom: 140px;
+  align-items: flex-end;
+  font-size: 11px;
+}
+
+/* ---------- clock + barcode: the barcode encodes the date + time ---------- */
+
+.clock {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.clock-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.clock .time {
+  font-size: 118px;
+}
+.tbar {
+  display: flex;
+  align-items: stretch;
+  height: 26px;
+}
+.tbar i {
+  display: block;
+  background: var(--ink);
+}
+.tcode {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  color: var(--ink2);
+}
+
+/* ---------- Home Assistant panel ---------- */
+
+.ha {
+  position: absolute;
+  left: 96px;
+  top: 150px;
+  width: 500px;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ink);
+}
+
+.ha-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+}
+.ha-head b {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 44px;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+}
+.ha-head .jp {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--ink2);
+}
+.ha-head em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  padding: 4px 8px;
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+
+.plan {
+  position: relative;
+  height: 420px;
+  margin-top: 22px;
+}
+.room {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 420px;
+  height: 300px;
+  border: 1px solid #e8e6df59;
+  background: repeating-linear-gradient(90deg, #e8e6df08 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(0deg, #e8e6df08 0 1px, transparent 1px 30px);
+}
+.room::before,
+.room::after {
+  content: "";
+  position: absolute;
+  background: var(--ink2);
+}
+.room::before {
+  /* door gap */
+  left: 300px;
+  bottom: -2px;
+  width: 70px;
+  height: 3px;
+  background: var(--bg);
+}
+.room::after {
+  /* window on the top wall */
+  left: 140px;
+  top: -3px;
+  width: 140px;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 6px);
+}
+
+.node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.node i {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 6px var(--bg);
+}
+.node.on i {
+  background: var(--acc);
+  border-color: var(--acc);
+}
+.node.c1.on i {
+  background: #ff8a3d;
+  border-color: #ff8a3d;
+}
+.node.c2.on i {
+  background: #9b7bff;
+  border-color: #9b7bff;
+}
+.node.c3.on i {
+  background: #ff8a3d;
+  border-color: #ff8a3d;
+}
+.node.c4.on i {
+  background: #9b7bff;
+  border-color: #9b7bff;
+}
+.node.big i {
+  width: 34px;
+  height: 34px;
+  box-shadow:
+    0 0 0 6px var(--bg),
+    0 0 0 7px var(--acc),
+    0 0 0 18px #c6f0321a;
+}
+.node label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  padding: 3px 6px;
+  background: var(--bg);
+}
+.node label small {
+  display: block;
+  font-size: 9px;
+  color: var(--ink2);
+}
+.node .r {
+  order: -1;
+  text-align: right;
+}
+
+.strip {
+  position: absolute;
+  width: 220px;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--acc) 0 10px, transparent 10px 14px);
+}
+.strip label {
+  position: absolute;
+  left: 0;
+  top: 14px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+
+.air {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.air-num {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 62%;
+  font-size: 96px;
+  line-height: 0.8;
+  color: var(--acc);
+}
+.air-lbl {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  color: var(--ink2);
+  padding-bottom: 4px;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.t {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  padding: 8px 12px;
+  border: 1.5px solid #e8e6df59;
+  color: var(--ink2);
+}
+.t.on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+.t::before {
+  content: "\25CB  ";
+}
+.t.on::before {
+  content: "\25CF  ";
+}
+
+/* lines lean the other way so they pass between the HA panel and the block */
+.line.l1 {
+  left: 640px;
+  transform: rotate(-28deg);
+}
+.line.l2 {
+  left: 600px;
+  transform: rotate(-28deg);
+}
+.t,
+.air-lbl,
+.strip label {
+  background: var(--bg);
+}
