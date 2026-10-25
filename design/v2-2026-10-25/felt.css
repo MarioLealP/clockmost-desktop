@@ -1,0 +1,155 @@
+/* Felt's column (right side, fixed like the bar) + the stage her 3D model stands on. */
+
+.felt-col {
+  position: absolute;
+  right: 96px;
+  top: 150px;
+  width: 520px;
+  z-index: 2;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ink);
+  background: var(--bg);
+  padding: 0 0 12px 12px;
+}
+
+.fc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+}
+.fc-head b {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 64px;
+  line-height: 0.85;
+}
+.fc-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--acc);
+}
+.fc-state i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--acc);
+  box-shadow: 0 0 0 4px #c6f03226;
+}
+
+.fc-chips {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.fc-chips span {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  color: var(--ink2);
+}
+.fc-chips span.on {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.fc-chips span:last-child {
+  margin-left: auto;
+  border: 0;
+  padding-right: 0;
+}
+
+.fc-line {
+  margin-top: 26px;
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  padding-left: 18px;
+  border-left: 4px solid var(--acc);
+}
+.fc-line cite {
+  display: block;
+  margin-top: 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+
+.fc-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 22px;
+  padding: 14px 14px;
+  border: 1.5px solid var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+.fc-input i {
+  width: 9px;
+  height: 18px;
+  background: var(--acc);
+}
+.fc-input kbd {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 3px 6px;
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* where the overlay model stands: floor marks + a frame, bottom right */
+.felt-stage {
+  position: absolute;
+  right: 150px;
+  bottom: 40px;
+  width: 420px;
+  height: 820px;
+  z-index: 1;
+  background:
+    linear-gradient(var(--ink), var(--ink)) left top / 24px 2px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) left top / 2px 24px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) right top / 24px 2px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) right top / 2px 24px no-repeat;
+  opacity: 0.8;
+}
+.felt-stage::after {
+  /* the floor: an ellipse of dashes she stands on */
+  content: "";
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: 0;
+  height: 70px;
+  border: 2px dashed var(--acc);
+  border-radius: 50%;
+}
+.fs-tag,
+.fs-dim {
+  position: absolute;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--ink2);
+}
+.fs-tag {
+  left: 0;
+  top: -22px;
+}
+.fs-dim {
+  right: -46px;
+  top: 50%;
+  writing-mode: vertical-rl;
+}

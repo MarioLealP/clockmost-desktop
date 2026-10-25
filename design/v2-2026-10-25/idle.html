@@ -10,6 +10,7 @@
     />
     <link rel="stylesheet" href="idle.css" />
     <link rel="stylesheet" href="ha.css" />
+    <link rel="stylesheet" href="felt.css" />
   </head>
   <body>
     <!-- Stop 1: idle desktop, nothing open. ?v=paper|graphite|cobalt picks the direction. Layout only. -->
@@ -19,7 +20,7 @@
         <section class="ha-sec">
           <header class="ha-head">
             <button class="ha-back">&larr; BACK</button>
-            <b>ROOM</b><span class="jp">寝室</span>
+            <b>ROOM</b>
             <em>06 / 07 ON</em>
           </header>
           <div class="plan">
@@ -44,22 +45,13 @@
           </div>
         </section>
         <div class="slab"></div>
-        <div class="ghost">
-          <span class="ghost-jp">待機</span>
-        </div>
+
         <div class="reg tl"></div>
         <div class="reg tr"></div>
         <div class="reg bl"></div>
         <div class="reg br"></div>
         <div class="ruler"></div>
         <div class="hatch"></div>
-        <div class="spec">
-          <b>CLOCKMOST / DT-01</b>
-          <span>DP-2 &middot; 1920&times;1080 &middot; 165HZ</span>
-          <span>STATE ......... IDLE</span>
-          <span>WINDOWS ....... 00</span>
-          <span>UPTIME ........ 00:04:12</span>
-        </div>
         <div class="code">
           <div class="barcode" id="barcode"></div>
           <span id="barcode-txt"></span>
@@ -68,7 +60,7 @@
 
       <!-- Home Assistant: a list of sections; clicking one shifts the desktop to show it (?ha=bedroom) -->
       <nav class="ha-list">
-        <span class="ha-title">HOME &middot; 家 <small>HA DASHBOARD</small></span>
+        <span class="ha-title">HOME <small>HA DASHBOARD</small></span>
         <a data-sec="felt"><i>01</i>FELT<em>QUIET</em></a>
         <a data-sec="room"><i>02</i>ROOM<em>06 ON</em></a>
         <a data-sec="misc"><i>03</i>MISC<em></em></a>
@@ -77,10 +69,27 @@
         <a data-sec="ender"><i>06</i>ENDER<em>IDLE</em></a>
         <a data-sec="elegoo"><i>07</i>ELEGOO<em>IDLE</em></a>
         <a data-sec="systems"><i>08</i>SYSTEMS<em>ALL OK</em></a>
-        <a data-sec="say" class="say"><i>&rarr;</i>SAY TO FELT</a>
       </nav>
 
-
+      <!-- Felt: her column on the right - status, last line, talk box; her 3D model stands on the marked stage -->
+      <aside class="felt-col">
+        <header class="fc-head">
+          <b>FELT</b>
+          <span class="fc-state"><i></i>LISTENING</span>
+        </header>
+        <div class="fc-chips">
+          <span class="on">QUIET</span><span class="on">HIDDEN</span><span>DJ</span><span>BONSAI 27B &middot; IDLE</span>
+        </div>
+        <blockquote class="fc-line">
+          Shelf light's been on since noon. Want it off before the stream?
+          <cite>18:41 &middot; AMBIENT</cite>
+        </blockquote>
+        <div class="fc-input">SAY SOMETHING<i></i><kbd>META+F</kbd></div>
+      </aside>
+      <div class="felt-stage">
+        <span class="fs-tag">FELT &middot; MODEL STAGE</span>
+        <span class="fs-dim">H 820</span>
+      </div>
 
       <header class="bar">
         <div class="bar-left">
