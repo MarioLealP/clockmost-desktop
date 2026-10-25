@@ -1,0 +1,374 @@
+/* v2 control center mock - graphite, bone, one orange; HA-list nav, poster hero, spec-sheet rows. Layout only. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1a1a18;
+  --ink: #e8e6df;
+  --ink2: #8a8881;
+  --line: #e8e6df26;
+  --acc: #ff5f1f;
+  --acc-ink: #111110;
+}
+
+body {
+  background: #000;
+}
+
+.ground {
+  width: 900px;
+  height: 900px;
+  padding: 40px;
+  background: var(--bg);
+  background-image: radial-gradient(#e8e6df26 1.2px, transparent 1.4px);
+  background-size: 24px 24px;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ink);
+}
+
+.panel {
+  position: relative;
+  width: 760px;
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+/* ---------- nav: the HA list's pattern ---------- */
+
+.nav {
+  width: 200px;
+  padding: 16px 0 16px 16px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+.nav a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 10px 7px 4px;
+  margin-right: 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 19px;
+}
+.nav a i {
+  font-style: normal;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--ink2);
+}
+.nav a.on {
+  background: var(--acc);
+  color: var(--acc-ink);
+  padding-left: 10px;
+}
+.nav a.on i {
+  color: var(--acc-ink);
+}
+.who {
+  margin-top: auto;
+  padding: 18px 16px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+.who b {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 22px;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.power {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+.power em {
+  font-style: normal;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.power em.off {
+  border-color: var(--acc);
+  color: var(--acc);
+}
+
+/* ---------- tabs ---------- */
+
+.tab {
+  display: none;
+  flex: 1;
+  padding: 18px 22px 30px;
+}
+.tab.on {
+  display: block;
+}
+
+.hero {
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 14px;
+}
+.big,
+.huge {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 68%;
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+}
+.big {
+  font-size: 96px;
+}
+.huge {
+  font-size: 150px;
+}
+.huge small {
+  font-size: 48px;
+  margin-left: 4px;
+  color: var(--ink2);
+}
+.sub {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--ink2);
+}
+
+.rows,
+.group {
+  margin-bottom: 16px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+.row span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--ink2);
+}
+.row.sw.on em {
+  color: var(--acc);
+}
+.row.dev span {
+  font-family: "Archivo", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: var(--ink2);
+}
+.row.dev.cur span {
+  color: var(--ink);
+}
+.row.dev em {
+  padding: 3px 7px;
+  background: var(--acc);
+  color: var(--acc-ink);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.group h4 {
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--ink2);
+  margin-bottom: 2px;
+}
+
+.bar {
+  height: 4px;
+  background: var(--line);
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--acc);
+}
+.bar.wide {
+  margin-top: 14px;
+}
+.row.app .bar {
+  width: 150px;
+}
+.row.app span {
+  flex: 0 0 140px;
+}
+.row.app b {
+  width: 34px;
+  text-align: right;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.lvl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  row-gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+.lvl b {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 44px;
+  line-height: 0.8;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.lvl .bar {
+  grid-column: 1 / -1;
+}
+
+.np {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+.np b {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 40px;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+/* clipboard */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+  margin-bottom: 10px;
+}
+.search i {
+  width: 8px;
+  height: 16px;
+  background: var(--acc);
+}
+.search kbd {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 9px;
+  padding: 3px 6px;
+  background: var(--ink);
+  color: var(--bg);
+}
+.clip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.clip b {
+  width: 34px;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 24px;
+  color: var(--ink2);
+}
+.clip em {
+  font-style: normal;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+  width: 30px;
+}
+.clip span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clip small {
+  font-size: 10px;
+  color: var(--ink2);
+}
+.clip .thumb {
+  flex: 0 0 120px;
+  height: 34px;
+  background: linear-gradient(90deg, #3a3a37, #6b6a66 40%, #2a2a28);
+}
+.clip .thumb.t2 {
+  background: repeating-linear-gradient(90deg, #e8e6df 0 14px, #1a1a18 14px 18px);
+}
+.clip.cur {
+  background: var(--acc);
+  color: var(--acc-ink);
+  padding-left: 8px;
+}
+.clip.cur b,
+.clip.cur em,
+.clip.cur small {
+  color: var(--acc-ink);
+}
+.keys {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+
+/* the break: a hazard strip along the bottom edge */
+.haz {
+  position: absolute;
+  left: 216px;
+  right: 22px;
+  bottom: 10px;
+  height: 8px;
+  background: repeating-linear-gradient(-45deg, var(--acc) 0 8px, transparent 8px 16px);
+  opacity: 0.85;
+}

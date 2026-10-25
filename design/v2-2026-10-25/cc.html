@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>v2 control center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="cc.css" />
+  </head>
+  <body>
+    <!-- The control center rebuilt in the v2 language (not the Endfield panel recoloured): the nav is the HA list's
+         pattern, each panel leads with one poster-sized value, the rest are spec-sheet rows. ?tab=home|audio|clipboard -->
+    <div class="ground">
+      <div class="panel" id="panel">
+        <nav class="nav">
+          <a data-t="home"><i>01</i>HOME</a>
+          <a data-t="audio"><i>02</i>AUDIO</a>
+          <a data-t="network"><i>03</i>NETWORK</a>
+          <a data-t="bluetooth"><i>04</i>BLUETOOTH</a>
+          <a data-t="media"><i>05</i>MEDIA</a>
+          <a data-t="calendar"><i>06</i>CALENDAR</a>
+          <a data-t="alerts"><i>07</i>ALERTS</a>
+          <a data-t="clipboard"><i>08</i>CLIPBOARD</a>
+          <div class="who">
+            <b>BENYLIN</b>
+            <span>CLOCKMOST-DESKTOP</span>
+            <div class="power"><em>LOCK</em><em>SLEEP</em><em class="off">OFF</em></div>
+          </div>
+        </nav>
+
+        <!-- HOME -->
+        <section class="tab" data-t="home">
+          <div class="hero">
+            <b class="big">ONLINE</b>
+            <span class="sub">ETHERNET · ENP7S0 · 192.168.10.74</span>
+          </div>
+          <div class="rows">
+            <div class="row sw on"><span>BLUETOOTH</span><em>● ON</em></div>
+            <div class="row sw"><span>VPN</span><em>○ OFF</em></div>
+            <div class="row sw"><span>DO NOT DISTURB</span><em>○ OFF</em></div>
+            <div class="row sw"><span>NIGHT LIGHT</span><em>○ OFF</em></div>
+            <div class="row sw"><span>GAME MODE</span><em>○ OFF</em></div>
+          </div>
+          <div class="levels">
+            <div class="lvl">
+              <span>OUTPUT · EASY EFFECTS</span><b>100</b>
+              <div class="bar"><i style="width: 100%"></i></div>
+            </div>
+            <div class="lvl">
+              <span>MIC · USB VIDEO</span><b>100</b>
+              <div class="bar"><i style="width: 100%"></i></div>
+            </div>
+          </div>
+          <div class="np">
+            <span class="lbl">NOW PLAYING · SPOTIFY</span>
+            <b>MY WAY</b>
+            <span>TEAM FOUR STAR · 01:35 / 02:54</span>
+          </div>
+        </section>
+
+        <!-- AUDIO -->
+        <section class="tab" data-t="audio">
+          <div class="hero">
+            <b class="huge">100<small>%</small></b>
+            <span class="sub">OUTPUT · EASY EFFECTS SINK · 6 PLAYING</span>
+            <div class="bar wide"><i style="width: 100%"></i></div>
+          </div>
+          <div class="group">
+            <h4>OUTPUTS</h4>
+            <div class="row dev cur"><span>Easy Effects Sink</span><em>DEFAULT</em></div>
+            <div class="row dev"><span>Navi 21/23 HDMI / DP Audio</span></div>
+            <div class="row dev"><span>Starship / Matisse HD Audio · Analog</span></div>
+            <div class="row dev"><span>Felt's voice</span></div>
+          </div>
+          <div class="group">
+            <h4>INPUTS</h4>
+            <div class="row dev cur"><span>USB Video Analog Stereo</span><em>DEFAULT</em></div>
+            <div class="row dev"><span>USB PnP Audio Device Mono</span></div>
+          </div>
+          <div class="group">
+            <h4>APPS</h4>
+            <div class="row app"><span>SPOTIFY</span><div class="bar"><i style="width: 59%"></i></div><b>59</b></div>
+            <div class="row app"><span>EQUIBOP</span><div class="bar"><i style="width: 100%"></i></div><b>100</b></div>
+            <div class="row app"><span>FELT · VOICE</span><div class="bar"><i style="width: 55%"></i></div><b>55</b></div>
+            <div class="row app"><span>FELT · OVERLAY</span><div class="bar"><i style="width: 15%"></i></div><b>15</b></div>
+            <div class="row app"><span>RUSTDESK</span><div class="bar"><i style="width: 100%"></i></div><b>100</b></div>
+          </div>
+        </section>
+
+        <!-- CLIPBOARD -->
+        <section class="tab" data-t="clipboard">
+          <div class="hero">
+            <b class="huge">12</b>
+            <span class="sub">KEPT · 0 PINNED · KLIPPER</span>
+          </div>
+          <div class="search">SEARCH<i></i><kbd>CTRL F</kbd></div>
+          <div class="clips">
+            <div class="clip cur"><b>01</b><em>IMG</em><span class="thumb"></span><small>3415 × 1425</small></div>
+            <div class="clip"><b>02</b><em>TXT</em><span>· done 21:45 · 1 shell still running</span></div>
+            <div class="clip"><b>03</b><em>IMG</em><span class="thumb t2"></span><small>742 × 146</small></div>
+            <div class="clip"><b>04</b><em>TXT</em><span>SYNTHETIK</span></div>
+            <div class="clip"><b>05</b><em>CMD</em><span>git push origin v2-bar</span></div>
+            <div class="clip"><b>06</b><em>TXT</em><span>io</span></div>
+          </div>
+          <div class="keys"><span>↵ COPY</span><span>⇥ MORE</span><span>CTRL P PIN</span><span>DEL REMOVE</span><span>ESC CLOSE</span></div>
+        </section>
+
+        <div class="haz"></div>
+      </div>
+    </div>
+    <script>
+      const t = new URLSearchParams(location.search).get("tab") || "home";
+      document.querySelectorAll(`[data-t="${t}"]`).forEach((e) => e.classList.add("on"));
+    </script>
+  </body>
+</html>
