@@ -16,6 +16,33 @@
     <div class="stage" id="stage">
       <div class="ground">
         <div class="dots"></div>
+        <section class="ha-sec">
+          <header class="ha-head">
+            <button class="ha-back">&larr; BACK</button>
+            <b>ROOM</b><span class="jp">寝室</span>
+            <em>06 / 07 ON</em>
+          </header>
+          <div class="plan">
+            <div class="room"></div>
+            <div class="node big on" style="left: 210px; top: 130px">
+              <i></i><label>CHANDELURE<small>LIGHT &middot; ON</small></label>
+            </div>
+            <div class="node on c1" style="left: 40px; top: 40px"><i></i><label>YL-1<small>COLOR</small></label></div>
+            <div class="node on c2" style="left: 380px; top: 40px"><i></i><label class="r">YL-2<small>COLOR</small></label></div>
+            <div class="node on c3" style="left: 40px; top: 230px"><i></i><label>YL-3<small>COLOR</small></label></div>
+            <div class="node on c4" style="left: 380px; top: 230px"><i></i><label class="r">YL-4<small>COLOR</small></label></div>
+            <div class="strip on" style="left: 120px; top: 300px"><label>SHELF &middot; 10.1W</label></div>
+            <div class="air">
+              <span class="air-num">03</span>
+              <span class="air-lbl">PM2.5<br />PURIFIER &middot; EXCELLENT</span>
+            </div>
+          </div>
+          <div class="toggles">
+            <span class="t on">FELT QUIET</span>
+            <span class="t on">FELT HIDDEN</span>
+            <span class="t">DJ MODE</span>
+          </div>
+        </section>
         <div class="slab"></div>
         <div class="ghost">
           <span class="ghost-jp">待機</span>
@@ -53,33 +80,7 @@
         <a data-sec="say" class="say"><i>&rarr;</i>SAY TO FELT</a>
       </nav>
 
-      <section class="ha-sec">
-        <header class="ha-head">
-          <button class="ha-back">&larr; BACK</button>
-          <b>ROOM</b><span class="jp">寝室</span>
-          <em>06 / 07 ON</em>
-        </header>
-        <div class="plan">
-          <div class="room"></div>
-          <div class="node big on" style="left: 210px; top: 130px">
-            <i></i><label>CHANDELURE<small>LIGHT &middot; ON</small></label>
-          </div>
-          <div class="node on c1" style="left: 40px; top: 40px"><i></i><label>YL-1<small>COLOR</small></label></div>
-          <div class="node on c2" style="left: 380px; top: 40px"><i></i><label class="r">YL-2<small>COLOR</small></label></div>
-          <div class="node on c3" style="left: 40px; top: 230px"><i></i><label>YL-3<small>COLOR</small></label></div>
-          <div class="node on c4" style="left: 380px; top: 230px"><i></i><label class="r">YL-4<small>COLOR</small></label></div>
-          <div class="strip on" style="left: 120px; top: 300px"><label>SHELF &middot; 10.1W</label></div>
-          <div class="air">
-            <span class="air-num">03</span>
-            <span class="air-lbl">PM2.5<br />PURIFIER &middot; EXCELLENT</span>
-          </div>
-        </div>
-        <div class="toggles">
-          <span class="t on">FELT QUIET</span>
-          <span class="t on">FELT HIDDEN</span>
-          <span class="t">DJ MODE</span>
-        </div>
-      </section>
+
 
       <header class="bar">
         <div class="bar-left">
@@ -123,14 +124,11 @@
       const q = new URLSearchParams(location.search);
       const stage = document.getElementById("stage");
       stage.dataset.v = q.get("v") || "graphite";
+      stage.dataset.size = q.get("size") || "uw";
       if (q.get("ha")) {
         stage.dataset.ha = q.get("ha");
         document.querySelector(`.ha-list a[data-sec="${q.get("ha")}"]`)?.classList.add("on");
-        // the desktop splits at the list's edge: the part right of the cut slides away, the section fills the gap
-        const g = document.querySelector(".ground");
-        const right = g.cloneNode(true);
-        right.classList.add("ground-r");
-        g.after(right);
+
       }
 
       // the barcode encodes date + time, so it changes with the clock (every minute)

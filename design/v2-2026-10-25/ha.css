@@ -346,18 +346,22 @@
   word-spacing: 0.25em;
 }
 
-/* Mario: the shift read as an overlay - so the desktop now splits at the list's edge (x 440) and the right part
-   slides 590px; the section fills the gap, the lime line visibly breaks at the cut */
+/* round 6 (Mario: pan) - the section is part of the ground, parked off-screen left; opening pans the whole ground
+   right so it slides in beside the list. Bar, clock, dock and the list stay put. */
+.ha-sec {
+  display: block;
+  left: -700px;
+  top: 150px;
+}
+.ha-sec::before {
+  content: none !important;
+}
 .stage[data-ha] .ground {
-  transform: none;
-  clip-path: inset(0 calc(100% - 440px) 0 0);
+  transform: translateX(1170px);
 }
-.stage[data-ha] .ground.ground-r {
-  clip-path: inset(0 0 0 440px);
-  transform: translateX(590px);
+.ground {
+  transition: transform 0s;
 }
-.stage[data-ha] .ha-sec::before {
-  background: transparent;
-  border-left: 2px solid var(--acc);
-  border-right: 2px solid var(--acc);
+.dots {
+  left: -1600px;
 }

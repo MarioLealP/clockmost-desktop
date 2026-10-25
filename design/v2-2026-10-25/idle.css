@@ -648,3 +648,12 @@ body {
   display: block;
   background: var(--ink);
 }
+
+/* ultrawide frame (Mario: measure on the 3440x1440, not 1920) */
+.stage[data-size="uw"] {
+  width: 3440px;
+  height: 1440px;
+}
+.stage[data-size="uw"] .slab {
+  height: 2200px;
+}
