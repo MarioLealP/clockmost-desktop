@@ -657,3 +657,6 @@ body {
 .stage[data-size="uw"] .slab {
   height: 2200px;
 }
+.stage[data-size="uw"] .slab {
+  left: 920px;
+}
