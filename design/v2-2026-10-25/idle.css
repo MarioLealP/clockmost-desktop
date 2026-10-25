@@ -587,3 +587,45 @@ body {
 .stage[data-v="cobalt"] .tag {
   z-index: 1;
 }
+
+/* dark-only after Mario 2026-10-25 ("no pure white background my eyes hurt"): the loud parts of paper/cobalt on graphite */
+.stage[data-v="graphite-slab"],
+.stage[data-v="graphite-cobalt"] {
+  --bg: #1a1a18;
+  --bg2: #242422;
+  --ink: #e8e6df;
+  --ink2: #8a8881;
+  --line: #e8e6df26;
+  --acc: #c6f032;
+  --acc-ink: #111110;
+  --plate: #e8e6df;
+  --plate-ink: #1a1a18;
+  --ghost: #e8e6df0a;
+}
+.stage[data-v="graphite-slab"] .slab {
+  opacity: 0.92;
+}
+.stage[data-v="graphite-cobalt"] {
+  --acc: #2f55ff;
+  --acc-ink: #ffffff;
+}
+.stage[data-v="graphite-cobalt"] .slab {
+  left: 1500px;
+  width: 420px;
+  transform: none;
+  top: 0;
+  height: 1080px;
+  background: #1638d6;
+}
+.stage[data-v="graphite-cobalt"] .ghost,
+.stage[data-v="graphite-cobalt"] .cross,
+.stage[data-v="graphite-cobalt"] .tag {
+  z-index: 1;
+}
+.stage[data-v="graphite-cobalt"] .ghost {
+  right: 40px;
+  color: #ffffff24;
+}
+.stage[data-v="graphite-cobalt"] .ghost-num {
+  font-size: 520px;
+}
