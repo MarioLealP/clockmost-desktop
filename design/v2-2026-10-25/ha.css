@@ -345,3 +345,19 @@
 .ha-list a {
   word-spacing: 0.25em;
 }
+
+/* Mario: the shift read as an overlay - so the desktop now splits at the list's edge (x 440) and the right part
+   slides 590px; the section fills the gap, the lime line visibly breaks at the cut */
+.stage[data-ha] .ground {
+  transform: none;
+  clip-path: inset(0 calc(100% - 440px) 0 0);
+}
+.stage[data-ha] .ground.ground-r {
+  clip-path: inset(0 0 0 440px);
+  transform: translateX(590px);
+}
+.stage[data-ha] .ha-sec::before {
+  background: transparent;
+  border-left: 2px solid var(--acc);
+  border-right: 2px solid var(--acc);
+}

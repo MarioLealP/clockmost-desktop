@@ -126,6 +126,11 @@
       if (q.get("ha")) {
         stage.dataset.ha = q.get("ha");
         document.querySelector(`.ha-list a[data-sec="${q.get("ha")}"]`)?.classList.add("on");
+        // the desktop splits at the list's edge: the part right of the cut slides away, the section fills the gap
+        const g = document.querySelector(".ground");
+        const right = g.cloneNode(true);
+        right.classList.add("ground-r");
+        g.after(right);
       }
 
       // the barcode encodes date + time, so it changes with the clock (every minute)
