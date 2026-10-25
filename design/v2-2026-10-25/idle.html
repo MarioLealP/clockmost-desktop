@@ -41,17 +41,22 @@
 
       <!-- Home Assistant: a list of sections; clicking one shifts the desktop to show it (?ha=bedroom) -->
       <nav class="ha-list">
-        <span class="ha-title">HOME &middot; 家</span>
-        <a data-sec="bedroom"><i>01</i>BEDROOM<em>06 ON</em></a>
-        <a data-sec="bathroom"><i>02</i>BATHROOM<em>00 ON</em></a>
-        <a data-sec="living"><i>03</i>LIVING ROOM<em>&mdash;</em></a>
-        <a data-sec="kitchen"><i>04</i>KITCHEN<em>&mdash;</em></a>
-        <a data-sec="felt"><i>05</i>FELT<em>QUIET</em></a>
+        <span class="ha-title">HOME &middot; 家 <small>HA DASHBOARD</small></span>
+        <a data-sec="felt"><i>01</i>FELT<em>QUIET</em></a>
+        <a data-sec="room"><i>02</i>ROOM<em>06 ON</em></a>
+        <a data-sec="misc"><i>03</i>MISC<em></em></a>
+        <a data-sec="today"><i>04</i>TODAY<em>3 EVENTS</em></a>
+        <a data-sec="news"><i>05</i>NEWS<em>12 NEW</em></a>
+        <a data-sec="ender"><i>06</i>ENDER<em>IDLE</em></a>
+        <a data-sec="elegoo"><i>07</i>ELEGOO<em>IDLE</em></a>
+        <a data-sec="systems"><i>08</i>SYSTEMS<em>ALL OK</em></a>
+        <a data-sec="say" class="say"><i>&rarr;</i>SAY TO FELT</a>
       </nav>
 
       <section class="ha-sec">
         <header class="ha-head">
-          <b>BEDROOM</b><span class="jp">寝室</span>
+          <button class="ha-back">&larr; BACK</button>
+          <b>ROOM</b><span class="jp">寝室</span>
           <em>06 / 07 ON</em>
         </header>
         <div class="plan">

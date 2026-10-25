@@ -286,3 +286,62 @@
   z-index: -1;
   border-right: 2px solid var(--acc);
 }
+
+/* round 4 (Mario: ultrawide - keep the mouse short): list on the left, section opens right next to it */
+.ha-list {
+  left: 96px;
+  right: auto;
+  width: 330px;
+}
+.ha-title small {
+  float: right;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+}
+.ha-list a {
+  font-size: 22px;
+  padding: 8px 4px;
+}
+.ha-list a.say {
+  margin-top: 10px;
+  border: 1.5px solid var(--ink);
+  padding-left: 12px;
+  font-size: 16px;
+}
+.ha-sec {
+  left: 470px;
+}
+.stage[data-ha] .ground {
+  transform: translateX(560px);
+}
+.stage[data-ha] .ha-sec::before {
+  left: -30px;
+  width: 590px;
+  border-left: 2px solid var(--acc);
+  border-right: none;
+}
+.ha-back {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  padding: 6px 10px;
+  background: var(--ink);
+  color: var(--bg);
+  border: 0;
+  align-self: center;
+  cursor: pointer;
+}
+/* ground: spec moves right (the list took its place) */
+.spec {
+  left: auto;
+  right: 96px;
+  align-items: flex-end;
+}
+.ha-list {
+  background: var(--bg);
+  padding: 0 12px 12px;
+  margin-left: -12px;
+}
+.ha-list a {
+  word-spacing: 0.25em;
+}
