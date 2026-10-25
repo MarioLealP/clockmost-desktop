@@ -1,4 +1,4 @@
-/* Felt's column (right side, fixed like the bar) + the stage her 3D model stands on. */
+/* Felt's column (right side, fixed like the bar). Her 3D model is not bound to a spot (Mario 2026-10-25). */
 
 .felt-col {
   position: absolute;
@@ -108,48 +108,4 @@
   padding: 3px 6px;
   background: var(--ink);
   color: var(--bg);
-}
-
-/* where the overlay model stands: floor marks + a frame, bottom right */
-.felt-stage {
-  position: absolute;
-  right: 150px;
-  bottom: 40px;
-  width: 420px;
-  height: 820px;
-  z-index: 1;
-  background:
-    linear-gradient(var(--ink), var(--ink)) left top / 24px 2px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) left top / 2px 24px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) right top / 24px 2px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) right top / 2px 24px no-repeat;
-  opacity: 0.8;
-}
-.felt-stage::after {
-  /* the floor: an ellipse of dashes she stands on */
-  content: "";
-  position: absolute;
-  left: 40px;
-  right: 40px;
-  bottom: 0;
-  height: 70px;
-  border: 2px dashed var(--acc);
-  border-radius: 50%;
-}
-.fs-tag,
-.fs-dim {
-  position: absolute;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  color: var(--ink2);
-}
-.fs-tag {
-  left: 0;
-  top: -22px;
-}
-.fs-dim {
-  right: -46px;
-  top: 50%;
-  writing-mode: vertical-rl;
 }
