@@ -629,3 +629,11 @@ body {
 .stage[data-v="graphite-cobalt"] .ghost-num {
   font-size: 520px;
 }
+
+/* Mario 2026-10-25 (picked graphite): the line runs behind the ground marks, never over the barcode */
+.code {
+  background: var(--bg);
+  padding: 8px 10px 8px 0;
+  margin-left: -10px;
+  padding-left: 10px;
+}
