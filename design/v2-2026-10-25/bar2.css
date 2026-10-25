@@ -131,3 +131,7 @@
   padding: 14px 20px 14px 14px;
   margin-left: -14px;
 }
+/* Mario: now playing must not cross the lime line - it sits right of it */
+.nowplay {
+  left: 540px;
+}
