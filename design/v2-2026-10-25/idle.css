@@ -1,0 +1,589 @@
+/* v2 idle desktop - three directions from the Cosmos board (os-stuff), layout only. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: #000;
+}
+
+.stage {
+  /* paper: warm off-white, ink black, acid lime (Copenhagen / HYPERION / fashion cards) */
+  --bg: #ebe9e3;
+  --bg2: #dfdcd4;
+  --ink: #111110;
+  --ink2: #6d6b66;
+  --line: #11111033;
+  --acc: #c6f032;
+  --acc-ink: #111110;
+  --plate: #111110;
+  --plate-ink: #ebe9e3;
+  --ghost: #1111100d;
+
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Archivo", sans-serif;
+}
+
+.stage[data-v="graphite"] {
+  /* graphite: warm near-black, bone ink, same lime (Lemoo / HYPERION / Death Stranding density) */
+  --bg: #1a1a18;
+  --bg2: #242422;
+  --ink: #e8e6df;
+  --ink2: #8a8881;
+  --line: #e8e6df26;
+  --acc: #c6f032;
+  --acc-ink: #111110;
+  --plate: #e8e6df;
+  --plate-ink: #1a1a18;
+  --ghost: #e8e6df0a;
+}
+
+.stage[data-v="cobalt"] {
+  /* cobalt: cool paper, black, cobalt slabs (DeepSeek poster / "ERROR" Y2K windows) */
+  --bg: #e6e7ea;
+  --bg2: #d7d9de;
+  --ink: #0b0b0d;
+  --ink2: #63656c;
+  --line: #0b0b0d2e;
+  --acc: #1638d6;
+  --acc-ink: #ffffff;
+  --plate: #0b0b0d;
+  --plate-ink: #e6e7ea;
+  --ghost: #1638d60f;
+}
+
+.mono,
+.spec,
+.code span,
+.tag,
+.ws,
+.felt,
+.wx,
+.np-txt,
+.dock em,
+.date,
+.mark {
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* ---------- ground: base colour + the "break" ---------- */
+
+.ground {
+  position: absolute;
+  inset: 0;
+}
+
+.dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--line) 1.2px, transparent 1.4px);
+  background-size: 24px 24px;
+  background-position: 12px 12px;
+  mask-image: linear-gradient(115deg, transparent 18%, #000 48%, #000 70%, transparent 92%);
+}
+
+.ghost {
+  position: absolute;
+  right: 96px;
+  bottom: 120px;
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  color: var(--ghost);
+  line-height: 0.78;
+}
+
+.ghost-num {
+  font-size: 620px;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: -0.04em;
+}
+
+.ghost-jp {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 900;
+  font-size: 150px;
+  writing-mode: vertical-rl;
+  margin-bottom: 40px;
+}
+
+.reg {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 0 solid var(--ink);
+}
+.reg.tl {
+  left: 40px;
+  top: 92px;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.reg.tr {
+  right: 40px;
+  top: 92px;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.reg.bl {
+  left: 40px;
+  bottom: 40px;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.reg.br {
+  right: 40px;
+  bottom: 40px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+.ruler {
+  position: absolute;
+  left: 40px;
+  top: 160px;
+  width: 14px;
+  height: 640px;
+  background: repeating-linear-gradient(
+      to bottom,
+      var(--ink) 0 1px,
+      transparent 1px 16px
+    )
+    left / 6px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--ink) 0 2px, transparent 2px 80px) left / 14px 100% no-repeat;
+  opacity: 0.55;
+}
+
+.hatch {
+  position: absolute;
+  left: 96px;
+  top: 640px;
+  width: 360px;
+  height: 120px;
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 2px, transparent 2px 12px);
+  opacity: 0.18;
+}
+
+.spec {
+  position: absolute;
+  left: 96px;
+  top: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink2);
+}
+.spec b {
+  color: var(--ink);
+  font-size: 15px;
+  margin-bottom: 6px;
+  letter-spacing: 0.12em;
+}
+
+.code {
+  position: absolute;
+  left: 96px;
+  bottom: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--ink2);
+}
+.barcode {
+  width: 260px;
+  height: 46px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 2px,
+    transparent 2px 4px,
+    var(--ink) 4px 5px,
+    transparent 5px 9px,
+    var(--ink) 9px 13px,
+    transparent 13px 15px,
+    var(--ink) 15px 16px,
+    transparent 16px 21px
+  );
+}
+
+.cross {
+  position: absolute;
+  left: 1128px;
+  top: 384px;
+  width: 64px;
+  height: 64px;
+  background:
+    linear-gradient(var(--ink), var(--ink)) center / 1px 100% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center / 100% 1px no-repeat;
+  opacity: 0.7;
+}
+.cross::after {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+}
+
+/* the one loud thing: a diagonal slab of the accent colour */
+.slab {
+  position: absolute;
+  left: 700px;
+  top: -140px;
+  width: 150px;
+  height: 1500px;
+  background: var(--acc);
+  transform: rotate(28deg);
+  transform-origin: top left;
+}
+.stage[data-v="graphite"] .slab {
+  width: 6px;
+}
+.stage[data-v="cobalt"] .slab {
+  left: 1500px;
+  width: 420px;
+  transform: none;
+  top: 0;
+  height: 1080px;
+}
+
+.tag {
+  position: absolute;
+  left: 1128px;
+  top: 470px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  padding: 4px 8px;
+  background: var(--plate);
+  color: var(--plate-ink);
+}
+
+/* ---------- bar ---------- */
+
+.bar {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 20px;
+  height: 52px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bar-left,
+.bar-right {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.bar-left > *,
+.bar-right > * {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: var(--plate);
+  color: var(--plate-ink);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+}
+
+.mark {
+  gap: 10px;
+  font-weight: 700;
+}
+.mark i {
+  width: 14px;
+  height: 14px;
+  background: var(--acc);
+  transform: rotate(45deg);
+}
+
+.ws {
+  gap: 4px;
+  padding: 0 6px !important;
+}
+.ws span {
+  padding: 6px 10px;
+  color: var(--plate-ink);
+  opacity: 0.55;
+}
+.ws span.on {
+  background: var(--acc);
+  color: var(--acc-ink);
+  opacity: 1;
+  font-weight: 700;
+}
+
+.felt {
+  gap: 10px;
+}
+.felt i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--acc);
+}
+
+.bar-clock {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.time {
+  font-size: 92px;
+  line-height: 0.82;
+  font-weight: 900;
+  font-stretch: 70%;
+  letter-spacing: -0.02em;
+}
+.date {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  line-height: 1.35;
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.np {
+  gap: 12px;
+}
+.np-art {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--acc), var(--bg2));
+}
+.np-txt {
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+}
+.np-txt b {
+  font-family: "Archivo", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0;
+}
+.np-meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+.np-meter i {
+  width: 3px;
+  background: var(--acc);
+}
+.np-meter i:nth-child(1) {
+  height: 40%;
+}
+.np-meter i:nth-child(2) {
+  height: 90%;
+}
+.np-meter i:nth-child(3) {
+  height: 60%;
+}
+.np-meter i:nth-child(4) {
+  height: 100%;
+}
+.np-meter i:nth-child(5) {
+  height: 30%;
+}
+
+.wx {
+  gap: 10px;
+  font-size: 15px !important;
+  font-weight: 700;
+}
+.wx small {
+  font-size: 10px;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.tray {
+  gap: 10px;
+}
+.tray i {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--plate-ink);
+}
+.tray i:nth-child(2) {
+  border-radius: 50%;
+}
+.tray i:nth-child(3) {
+  transform: rotate(45deg);
+}
+
+.user {
+  width: 52px;
+  justify-content: center;
+  padding: 0 !important;
+  background: var(--acc) !important;
+  color: var(--acc-ink) !important;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 22px !important;
+}
+
+/* ---------- dock ---------- */
+
+.dock {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px;
+  background: var(--plate);
+}
+
+.tile {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--ink);
+}
+.tile svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.tile em {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  font-style: normal;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  color: var(--ink2);
+}
+.tile.run::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 4px;
+  background: var(--plate-ink);
+  opacity: 0.4;
+}
+.tile.focus {
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+.tile.focus em {
+  color: var(--acc-ink);
+}
+.tile.focus::after {
+  background: var(--acc);
+  opacity: 1;
+}
+.tile.drawer {
+  background: transparent;
+  color: var(--plate-ink);
+  outline: 1.5px solid var(--plate-ink);
+  outline-offset: -1.5px;
+}
+.tile.drawer em {
+  color: var(--plate-ink);
+  opacity: 0.6;
+}
+
+.sep {
+  width: 2px;
+  height: 64px;
+  background: repeating-linear-gradient(to bottom, var(--plate-ink) 0 3px, transparent 3px 7px);
+  opacity: 0.35;
+}
+
+/* cobalt: Y2K window-chrome touch on the plates */
+.stage[data-v="cobalt"] .bar-left > *:first-child::after {
+  content: "_ \25A1 \2715";
+  margin-left: 14px;
+  opacity: 0.6;
+  letter-spacing: 0.3em;
+}
+
+/* cobalt: the blue column carries the ghost type + a Y2K "window" */
+.stage[data-v="cobalt"] .ghost {
+  right: 40px;
+  color: #ffffff2b;
+}
+.stage[data-v="cobalt"] .ghost-num {
+  font-size: 520px;
+}
+.stage[data-v="cobalt"] .user {
+  background: #ffffff !important;
+  color: var(--acc) !important;
+}
+.stage[data-v="cobalt"] .tag {
+  left: 1556px;
+  top: 150px;
+  width: 308px;
+  padding: 0;
+  background: #ffffff;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+}
+.stage[data-v="cobalt"] .tag::before {
+  content: "STANDBY.EXE              _ \25A1 \2715";
+  display: block;
+  white-space: pre;
+  padding: 6px 10px;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.stage[data-v="cobalt"] .tag {
+  font-size: 0;
+}
+.stage[data-v="cobalt"] .tag::after {
+  content: "待機中 / STANDBY";
+  display: block;
+  padding: 18px 12px;
+  font-size: 22px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.stage[data-v="cobalt"] .cross {
+  left: 1700px;
+  top: 320px;
+  filter: invert(1);
+}
+
+.stage[data-v="cobalt"] .ghost,
+.stage[data-v="cobalt"] .cross,
+.stage[data-v="cobalt"] .tag {
+  z-index: 1;
+}
