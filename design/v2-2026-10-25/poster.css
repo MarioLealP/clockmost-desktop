@@ -157,3 +157,58 @@
   height: 1240px;
   display: block;
 }
+
+/* round 11: four staggered windows onto one continuous image */
+.slices {
+  position: absolute;
+  left: 1640px;
+  top: 170px;
+  width: 1120px;
+  height: 1180px;
+}
+.slice {
+  position: absolute;
+  background-image: url("assets/hero.jpg");
+  background-size: 1120px auto;
+  background-repeat: no-repeat;
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.haz {
+  position: absolute;
+  height: 30px;
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 14px, transparent 14px 28px);
+}
+.haz-t {
+  left: -40px;
+  top: -70px;
+  width: 300px;
+}
+.haz-b {
+  right: -40px;
+  bottom: -40px;
+  width: 380px;
+  background: repeating-linear-gradient(-45deg, var(--acc) 0 14px, transparent 14px 28px);
+}
+.brk {
+  position: absolute;
+  border: 2px solid var(--ink);
+}
+.brk-l {
+  left: -70px;
+  top: 120px;
+  width: 40px;
+  height: 560px;
+  border-right: 0;
+}
+.brk-r {
+  right: -80px;
+  top: -70px;
+  width: 520px;
+  height: 260px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.brk-r {
+  width: 300px;
+}

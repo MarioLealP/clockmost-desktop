@@ -48,7 +48,7 @@
         </section>
         <div class="slab"></div>
         <!-- poster layer (round 8, Mario: "more flare ... like the redjuice poster"): circuit traces, huge stacked
-             type, Felt cut into diagonal shards, a stacked date. Pans with the desktop. -->
+             type, the character art, a stacked date. Pans with the desktop. -->
         <svg class="traces" viewBox="0 0 3440 1440" preserveAspectRatio="none" aria-hidden="true">
           <path d="M1500 0v180l60 60h420l40 40v260M2200 0v90l-40 40h-260M1420 1440v-260l80-80h300l60-60v-140M2620 1440v-120l-60-60h-200l-40-40v-180M2700 300h200l40 40v300l-60 60h-120M1300 520h140l40-40h220" />
           <rect x="1494" y="174" width="12" height="12" /><rect x="2214" y="494" width="12" height="12" />
@@ -56,9 +56,12 @@
         </svg>
         <!-- round 9 (Mario: Good Smile Racing 2025 fan art - "the overlaying and the sharp color contrast"):
              a lime-hatched block behind Felt, paint slashes + splats OVER her, scattered X marks, a pixel-X band -->
-        <div class="sky"></div>
         <div class="xband">&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;<br />&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;&#x2716;</div>
-        <div class="hero" id="hero"></div>
+        <!-- round 11 (Mario: "like 4 main slices", the NEONMOON poster): one continuous image seen through 4 staggered
+             vertical windows; hazard bars + brackets around them. Art = any character (example: assets/hero.jpg). -->
+        <div class="slices" id="slices">
+          <i class="haz haz-t"></i><i class="haz haz-b"></i><i class="brk brk-l"></i><i class="brk brk-r"></i>
+        </div>
         <svg class="paint" viewBox="0 0 3440 1440" aria-hidden="true">
           <defs>
             <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
@@ -67,15 +70,6 @@
             </filter>
             <filter id="soft"><feGaussianBlur stdDeviation="10" /></filter>
           </defs>
-          <g filter="url(#rough)" class="pp">
-            <path d="M1700 760 L2420 420" stroke-width="70" />
-            <path d="M1760 860 L2300 600" stroke-width="22" />
-            <path d="M2160 300 L2560 120" stroke-width="40" />
-            <path d="M1620 1120 L1960 950" stroke-width="14" />
-            <path d="M2380 980 L2700 820 L2620 900" stroke-width="30" />
-            <circle cx="2215" cy="215" r="34" /><circle cx="2262" cy="196" r="16" /><circle cx="2180" cy="250" r="10" />
-            <circle cx="2230" cy="640" r="26" />
-          </g>
           <g class="xs">
             <path d="M1560 300l60 60m0-60l-60 60" stroke-width="22" />
             <path d="M1610 420l40 40m0-40l-40 40" stroke-width="16" />
@@ -180,25 +174,20 @@
       stage.dataset.size = q.get("size") || "uw";
       if (q.get("acc")) stage.dataset.acc = q.get("acc");
 
-      // solid 45-degree shards behind and in front of Felt
-      const hero = document.getElementById("hero");
-      const W = 848, H = 1240;
-      const shard = (cls, x, w, y0, y1, front) => {
-        const e = document.createElement("i");
-        e.className = "shard " + cls + (front ? " front" : "");
-        e.style.clipPath = `polygon(${x}px ${y0}px, ${x + w}px ${y0}px, ${x + w - (y1 - y0)}px ${y1}px, ${x - (y1 - y0)}px ${y1}px)`;
-        hero.appendChild(e);
-      };
-      [["acc", 640, 70, 120, 900], ["ink", 900, 30, 0, 1240], ["bone", 760, 120, 380, 1100],
-       ["grey", 1120, 60, 200, 700], ["acc", 1300, 14, 0, 1240], ["ink", 500, 40, 700, 1240],
-       ["grey", 980, 180, 820, 1240]].forEach((a) => shard(...a, false));
-      // Felt stays whole: one image, clip-masked by diagonal cuts that never cross her face (Mario: "clip mask, not shattering")
-      const fig = document.createElement("div");
-      fig.className = "fig";
-      fig.innerHTML = '<img src="assets/felt.png" alt="" />';
-      hero.appendChild(fig);
-      [["acc", 1060, 26, 520, 760], ["bone", 820, 54, 980, 1240], ["ink", 1200, 90, 700, 960],
-       ["acc", 700, 10, 1000, 1240], ["grey", 1500, 40, 300, 520]].forEach((a) => shard(...a, true));
+      // 4 windows onto one image: same background size, each window offset so the picture stays continuous
+      const sl = document.getElementById("slices");
+      // whole picture across the windows (ZX/ZY nudge the crop)
+      const IW = 1120, gap = 26, pw = (IW - 3 * gap) / 4, ZX = 0, ZY = 40;
+      [[0, 900], [110, 1180], [0, 930], [90, 1060]].forEach(([top, bottom], k) => {
+        const p = document.createElement("div");
+        p.className = "slice";
+        const left = k * (pw + gap);
+        Object.assign(p.style, {
+          left: left + "px", top: top + "px", width: pw + "px", height: bottom - top + "px",
+          backgroundPosition: `${-left - ZX}px ${-top - ZY}px`,
+        });
+        sl.appendChild(p);
+      });
       if (q.get("ha")) {
         stage.dataset.ha = q.get("ha");
         document.querySelector(`.ha-list a[data-sec="${q.get("ha")}"]`)?.classList.add("on");
