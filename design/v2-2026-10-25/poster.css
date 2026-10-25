@@ -121,3 +121,39 @@
 .ground {
   z-index: 0;
 }
+
+/* Felt as one clip-masked figure: the cuts run "/" like the shards and skip the head (t 0.20-0.33) */
+.fig {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(
+    135deg,
+    #000 0 39%,
+    transparent 39% 41.5%,
+    #000 41.5% 55%,
+    transparent 55% 58.5%,
+    #000 58.5% 69%,
+    transparent 69% 70%,
+    #000 70% 80%,
+    transparent 80% 84%,
+    #000 84%
+  );
+  mask-image: linear-gradient(
+    135deg,
+    #000 0 39%,
+    transparent 39% 41.5%,
+    #000 41.5% 55%,
+    transparent 55% 58.5%,
+    #000 58.5% 69%,
+    transparent 69% 70%,
+    #000 70% 80%,
+    transparent 80% 84%,
+    #000 84%
+  );
+}
+.fig img {
+  width: 848px;
+  height: 1240px;
+  display: block;
+}

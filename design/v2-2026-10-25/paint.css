@@ -59,3 +59,7 @@
   background: repeating-linear-gradient(-45deg, var(--acc) 0 3px, transparent 3px 14px);
   opacity: 0.55;
 }
+
+.paint {
+  z-index: 3;
+}

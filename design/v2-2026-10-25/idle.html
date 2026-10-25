@@ -89,7 +89,6 @@
             <path d="M1480 120l110 110m0-110l-110 110" stroke-width="44" />
           </g>
         </svg>
-        <div class="poster-type">CLOCK<br />MOST<br />DESK-<br />TOP<br />V.2</div>
         <div class="datestack">
           <span>20</span><span>26<i></i></span><span>10<i></i></span><span>25</span><small>[SUN]</small>
           <span class="tm">&rarr;18<i></i></span><span class="tm">42</span>
@@ -181,7 +180,7 @@
       stage.dataset.size = q.get("size") || "uw";
       if (q.get("acc")) stage.dataset.acc = q.get("acc");
 
-      // Felt cut into 45-degree strips, each nudged a little (the fractured-poster look), with solid shards around her
+      // solid 45-degree shards behind and in front of Felt
       const hero = document.getElementById("hero");
       const W = 848, H = 1240;
       const shard = (cls, x, w, y0, y1, front) => {
@@ -193,18 +192,12 @@
       [["acc", 640, 70, 120, 900], ["ink", 900, 30, 0, 1240], ["bone", 760, 120, 380, 1100],
        ["grey", 1120, 60, 200, 700], ["acc", 1300, 14, 0, 1240], ["ink", 500, 40, 700, 1240],
        ["grey", 980, 180, 820, 1240]].forEach((a) => shard(...a, false));
-      const cuts = [0, 260, 380, 560, 640, 820, 900, 1080, 1180, 1400, 1520, 1700, 2100];
-      const nudge = [[0, 0], [14, -10], [-8, 6], [22, -18], [0, 0], [-16, 12], [10, -4], [-24, 20], [6, 0], [-10, 8], [18, -12], [0, 0]];
-      for (let k = 0; k < cuts.length - 1; k++) {
-        const f = document.createElement("div");
-        f.className = "frag";
-        const a = cuts[k], b = cuts[k + 1];
-        f.style.clipPath = `polygon(${a}px 0, ${b}px 0, ${b - H}px ${H}px, ${a - H}px ${H}px)`;
-        f.style.transform = `translate(${nudge[k][0]}px, ${nudge[k][1]}px)`;
-        f.innerHTML = '<img src="assets/felt.png" alt="" />';
-        hero.appendChild(f);
-      }
-      [["acc", 1060, 26, 520, 760], ["bone", 820, 54, 980, 1240], ["ink", 1200, 90, 0, 260],
+      // Felt stays whole: one image, clip-masked by diagonal cuts that never cross her face (Mario: "clip mask, not shattering")
+      const fig = document.createElement("div");
+      fig.className = "fig";
+      fig.innerHTML = '<img src="assets/felt.png" alt="" />';
+      hero.appendChild(fig);
+      [["acc", 1060, 26, 520, 760], ["bone", 820, 54, 980, 1240], ["ink", 1200, 90, 700, 960],
        ["acc", 700, 10, 1000, 1240], ["grey", 1500, 40, 300, 520]].forEach((a) => shard(...a, true));
       if (q.get("ha")) {
         stage.dataset.ha = q.get("ha");
