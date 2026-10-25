@@ -9,6 +9,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="idle.css" />
+    <link rel="stylesheet" href="ha.css" />
   </head>
   <body>
     <!-- Stop 1: idle desktop, nothing open. ?v=paper|graphite|cobalt picks the direction. Layout only. -->
@@ -17,7 +18,6 @@
         <div class="dots"></div>
         <div class="slab"></div>
         <div class="ghost">
-          <span class="ghost-num">25</span>
           <span class="ghost-jp">待機</span>
         </div>
         <div class="reg tl"></div>
@@ -34,12 +34,47 @@
           <span>UPTIME ........ 00:04:12</span>
         </div>
         <div class="code">
-          <div class="barcode"></div>
-          <span>0 25 10 2026 1842</span>
+          <div class="barcode" id="barcode"></div>
+          <span id="barcode-txt"></span>
         </div>
-        <div class="cross"></div>
-        <div class="tag">STANDBY / 待機中</div>
       </div>
+
+      <!-- Home Assistant: a list of sections; clicking one shifts the desktop to show it (?ha=bedroom) -->
+      <nav class="ha-list">
+        <span class="ha-title">HOME &middot; 家</span>
+        <a data-sec="bedroom"><i>01</i>BEDROOM<em>06 ON</em></a>
+        <a data-sec="bathroom"><i>02</i>BATHROOM<em>00 ON</em></a>
+        <a data-sec="living"><i>03</i>LIVING ROOM<em>&mdash;</em></a>
+        <a data-sec="kitchen"><i>04</i>KITCHEN<em>&mdash;</em></a>
+        <a data-sec="felt"><i>05</i>FELT<em>QUIET</em></a>
+      </nav>
+
+      <section class="ha-sec">
+        <header class="ha-head">
+          <b>BEDROOM</b><span class="jp">寝室</span>
+          <em>06 / 07 ON</em>
+        </header>
+        <div class="plan">
+          <div class="room"></div>
+          <div class="node big on" style="left: 210px; top: 130px">
+            <i></i><label>CHANDELURE<small>LIGHT &middot; ON</small></label>
+          </div>
+          <div class="node on c1" style="left: 40px; top: 40px"><i></i><label>YL-1<small>COLOR</small></label></div>
+          <div class="node on c2" style="left: 380px; top: 40px"><i></i><label class="r">YL-2<small>COLOR</small></label></div>
+          <div class="node on c3" style="left: 40px; top: 230px"><i></i><label>YL-3<small>COLOR</small></label></div>
+          <div class="node on c4" style="left: 380px; top: 230px"><i></i><label class="r">YL-4<small>COLOR</small></label></div>
+          <div class="strip on" style="left: 120px; top: 300px"><label>SHELF &middot; 10.1W</label></div>
+          <div class="air">
+            <span class="air-num">03</span>
+            <span class="air-lbl">PM2.5<br />PURIFIER &middot; EXCELLENT</span>
+          </div>
+        </div>
+        <div class="toggles">
+          <span class="t on">FELT QUIET</span>
+          <span class="t on">FELT HIDDEN</span>
+          <span class="t">DJ MODE</span>
+        </div>
+      </section>
 
       <header class="bar">
         <div class="bar-left">
@@ -80,8 +115,28 @@
       </nav>
     </div>
     <script>
-      const v = new URLSearchParams(location.search).get("v") || "paper";
-      document.getElementById("stage").dataset.v = v;
+      const q = new URLSearchParams(location.search);
+      const stage = document.getElementById("stage");
+      stage.dataset.v = q.get("v") || "graphite";
+      if (q.get("ha")) {
+        stage.dataset.ha = q.get("ha");
+        document.querySelector(`.ha-list a[data-sec="${q.get("ha")}"]`)?.classList.add("on");
+      }
+
+      // the barcode encodes date + time, so it changes with the clock (every minute)
+      const time = document.querySelector(".time").textContent.trim();
+      const digits = "25102026" + time.replace(":", "");
+      document.getElementById("barcode-txt").textContent = `25.10.2026 \u00b7 ${time}`;
+      const bc = document.getElementById("barcode");
+      for (const ch of digits) {
+        const n = Number(ch);
+        for (let k = 0; k < 4; k++) {
+          const b = document.createElement("i");
+          b.style.width = 1 + ((n >> k) & 1) * 3 + "px";
+          b.style.marginRight = 2 + ((n + k) % 3) + "px";
+          bc.appendChild(b);
+        }
+      }
     </script>
   </body>
 </html>

@@ -637,3 +637,14 @@ body {
   margin-left: -10px;
   padding-left: 10px;
 }
+
+/* barcode = date + time, built in JS */
+.barcode {
+  display: flex;
+  align-items: stretch;
+  background: none;
+}
+.barcode i {
+  display: block;
+  background: var(--ink);
+}

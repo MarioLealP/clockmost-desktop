@@ -1,147 +1,6 @@
-/* Round 2: graphite only. Bar + dock come from idle.css; this file is the new ground, clock and HA panel. */
-@import url("idle.css");
+/* ---------- HA section: the bedroom as a technical drawing (from round 2) ---------- */
 
-.stage {
-  --bg: #1a1a18;
-  --bg2: #242422;
-  --ink: #e8e6df;
-  --ink2: #8a8881;
-  --line: #e8e6df26;
-  --acc: #c6f032;
-  --acc-ink: #111110;
-  --plate: #e8e6df;
-  --plate-ink: #1a1a18;
-}
-
-/* ---------- ground: collage pieces, dark on dark ---------- */
-
-.dots {
-  mask-image: linear-gradient(100deg, transparent 30%, #000 55%, #000 80%, transparent 98%);
-}
-
-.band {
-  position: absolute;
-  left: -200px;
-  top: 560px;
-  width: 2600px;
-  height: 180px;
-  background: repeating-linear-gradient(-45deg, #e8e6df10 0 2px, transparent 2px 14px);
-  transform: rotate(-9deg);
-}
-
-.line {
-  position: absolute;
-  background: var(--acc);
-  transform-origin: top left;
-}
-.line.l1 {
-  left: 860px;
-  top: -40px;
-  width: 6px;
-  height: 1300px;
-  transform: rotate(28deg);
-}
-.line.l2 {
-  left: 900px;
-  top: -40px;
-  width: 2px;
-  height: 1300px;
-  transform: rotate(28deg);
-  opacity: 0.5;
-}
-
-.block {
-  position: absolute;
-  left: 1240px;
-  top: 150px;
-  width: 560px;
-  height: 640px;
-  background: #222220;
-  clip-path: polygon(0 0, 100% 0, 100% 86%, 88% 100%, 0 100%);
-}
-
-.kanji {
-  position: absolute;
-  right: 150px;
-  top: 170px;
-  font-family: "Noto Sans JP", sans-serif;
-  font-weight: 900;
-  font-size: 210px;
-  line-height: 0.95;
-  writing-mode: vertical-rl;
-  color: transparent;
-  -webkit-text-stroke: 1.5px #e8e6df40;
-}
-
-.vword {
-  position: absolute;
-  right: 72px;
-  top: 150px;
-  writing-mode: vertical-rl;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
-  letter-spacing: 0.5em;
-  color: var(--ink2);
-}
-
-.reg.tl,
-.reg.tr {
-  top: 104px;
-}
-
-.ruler {
-  top: 150px;
-  height: 760px;
-}
-
-.spec {
-  left: auto;
-  right: 72px;
-  top: auto;
-  bottom: 140px;
-  align-items: flex-end;
-  font-size: 11px;
-}
-
-/* ---------- clock + barcode: the barcode encodes the date + time ---------- */
-
-.clock {
-  position: absolute;
-  left: 50%;
-  top: -6px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.clock-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.clock .time {
-  font-size: 118px;
-}
-.tbar {
-  display: flex;
-  align-items: stretch;
-  height: 26px;
-}
-.tbar i {
-  display: block;
-  background: var(--ink);
-}
-.tcode {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.32em;
-  color: var(--ink2);
-}
-
-/* ---------- Home Assistant panel ---------- */
-
-.ha {
+.ha-sec {
   position: absolute;
   left: 96px;
   top: 150px;
@@ -342,17 +201,88 @@
   content: "\25CF  ";
 }
 
-/* lines lean the other way so they pass between the HA panel and the block */
-.line.l1 {
-  left: 640px;
-  transform: rotate(-28deg);
+
+/* ---------- the section list (always on the desktop) ---------- */
+
+.ha-list {
+  position: absolute;
+  right: 96px;
+  top: 150px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  font-family: "JetBrains Mono", monospace;
+  z-index: 2;
 }
-.line.l2 {
-  left: 600px;
-  transform: rotate(-28deg);
+.ha-title {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--ink2);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 4px;
 }
-.t,
-.air-lbl,
-.strip label {
-  background: var(--bg);
+.ha-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line);
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  cursor: pointer;
+}
+.ha-list a i {
+  font-style: normal;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--ink2);
+}
+.ha-list a em {
+  margin-left: auto;
+  font-style: normal;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--ink2);
+}
+.ha-list a.on {
+  background: var(--acc);
+  color: var(--acc-ink);
+  padding-left: 12px;
+}
+.ha-list a.on i,
+.ha-list a.on em {
+  color: var(--acc-ink);
+}
+
+/* ---------- clicking a section shifts the desktop ---------- */
+
+.ha-sec {
+  display: none;
+  z-index: 2;
+}
+.stage[data-ha] .ha-sec {
+  display: block;
+}
+.stage[data-ha] .ground {
+  transform: translateX(600px);
+}
+.stage[data-ha] .ha-sec::before {
+  /* the strip the desktop slid away from */
+  content: "";
+  position: absolute;
+  left: -96px;
+  top: -70px;
+  width: 640px;
+  height: 860px;
+  background: #151513;
+  z-index: -1;
+  border-right: 2px solid var(--acc);
 }
