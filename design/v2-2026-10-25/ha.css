@@ -118,7 +118,7 @@
   box-shadow:
     0 0 0 6px var(--bg),
     0 0 0 7px var(--acc),
-    0 0 0 18px #c6f0321a;
+    0 0 0 18px color-mix(in srgb, var(--acc) 10%, transparent);
 }
 .node label {
   font-size: 11px;

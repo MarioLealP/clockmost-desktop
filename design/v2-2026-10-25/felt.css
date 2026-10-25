@@ -39,7 +39,7 @@
   height: 10px;
   border-radius: 50%;
   background: var(--acc);
-  box-shadow: 0 0 0 4px #c6f03226;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--acc) 15%, transparent);
 }
 
 .fc-chips {

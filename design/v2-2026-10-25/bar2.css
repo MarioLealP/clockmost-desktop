@@ -135,3 +135,9 @@
 .nowplay {
   left: 540px;
 }
+
+/* Mario 2026-10-25: "change the lime green to something else, maybe orange" */
+.stage[data-v="graphite"] {
+  --acc: #ff5f1f;
+  --acc-ink: #111110;
+}
