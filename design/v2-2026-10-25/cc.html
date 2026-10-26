@@ -108,12 +108,73 @@
           <div class="keys"><span>↵ COPY</span><span>⇥ MORE</span><span>CTRL P PIN</span><span>DEL REMOVE</span><span>ESC CLOSE</span></div>
         </section>
 
+        <!-- MEDIA: the cover as staggered slices (the ground's hero motif), title as the poster, the spectrum doubles
+             as the seek bar (played part orange), transport as one spec row with play as the slab -->
+        <section class="tab" data-t="media">
+          <div class="hero media">
+            <div class="cover">
+              <i style="--y: 0px; --h: 168px"></i>
+              <i style="--y: 14px; --h: 176px"></i>
+              <i style="--y: 4px; --h: 150px"></i>
+            </div>
+            <div class="meta">
+              <span class="sub top">NOW PLAYING · SPOTIFY · 03 / 11</span>
+              <b class="big">MY WAY</b>
+              <span class="who2">TEAM FOUR STAR</span>
+              <span class="sub">DRAGON BALL Z ABRIDGED · OST</span>
+            </div>
+          </div>
+          <div class="spec" id="spec"></div>
+          <div class="times"><span>01:35</span><span>02:54</span></div>
+          <div class="transport">
+            <em>SHUF</em><em>◀◀</em><em class="play">❚❚ PAUSE</em><em>▶▶</em><em class="on">RPT</em>
+          </div>
+          <div class="rows">
+            <div class="row"><span>VOLUME</span><div class="bar mid"><i style="width: 59%"></i></div><b class="num">59</b></div>
+            <div class="row"><span>PLAYERS</span><em>SPOTIFY · FIREFOX</em></div>
+          </div>
+          <div class="cta">OPEN PHONOGRAPH →</div>
+        </section>
+
+        <!-- NETWORK: the state as the poster, the connection as a spec sheet, VPNs as switch rows -->
+        <section class="tab" data-t="network">
+          <div class="hero">
+            <b class="big">WIRED</b>
+            <span class="sub">ETHERNET · ENP7S0 · 1 GBIT · 1 UP · NETWORKMANAGER</span>
+          </div>
+          <div class="sheet">
+            <div><span>CONNECTION</span><b>Wired connection 1</b></div>
+            <div><span>IPV4</span><b>192.168.10.74<small>/24</small></b></div>
+            <div><span>GATEWAY</span><b>192.168.10.1</b></div>
+            <div><span>DNS</span><b>192.168.10.1</b></div>
+            <div><span>MAC</span><b>A8:A1:59:XX:XX:XX</b></div>
+            <div><span>LINK</span><b>1000 <small>MB/S</small></b></div>
+          </div>
+          <div class="cta ghost">DISCONNECT</div>
+          <div class="group">
+            <h4>VPN · 01</h4>
+            <div class="row sw"><span>PIA · WIREGUARD</span><em>○ OFF</em></div>
+          </div>
+          <div class="group">
+            <h4>BLUETOOTH TETHER · 01</h4>
+            <div class="row sw"><span>POCO X7 PRO NETWORK</span><em>○ OFF</em></div>
+          </div>
+        </section>
+
         <div class="haz"></div>
       </div>
     </div>
     <script>
       const t = new URLSearchParams(location.search).get("tab") || "home";
       document.querySelectorAll(`[data-t="${t}"]`).forEach((e) => e.classList.add("on"));
+      // fake spectrum: 48 bars, the first 55% (played) orange
+      const spec = document.getElementById("spec");
+      for (let i = 0; i < 48; i++) {
+        const b = document.createElement("i");
+        b.style.height = 8 + Math.round(Math.abs(Math.sin(i * 0.7) * 30 + Math.sin(i * 2.3) * 14)) + "px";
+        if (i < 26) b.className = "p";
+        spec.appendChild(b);
+      }
     </script>
   </body>
 </html>
