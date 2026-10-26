@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>v2 app drawer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="drawer.css" />
+  </head>
+  <body>
+    <!-- The app drawer in the v2 language: search first, logos only, the phonograph's deck as a carousel of logo
+         squares (the featured one big and named, the rest logo-only, shrinking away). No query = the most launched
+         apps. Apps without a usable logo get a generated monogram square. ?s=idle|search -->
+    <div class="ground">
+      <div class="drawer">
+        <div class="head">
+          <span class="prompt">›</span>
+          <b class="q" id="q"></b><i class="caret"></i>
+          <div class="meta" id="meta"></div>
+        </div>
+        <div class="rule"><i></i></div>
+
+        <div class="deck" id="deck"></div>
+
+        <div class="feat">
+          <b class="name" id="name"></b>
+          <div class="spec" id="spec"></div>
+        </div>
+
+        <div class="foot">
+          <div class="ticks" id="ticks"></div>
+          <div class="keys"><span>↵ OPEN</span><span>← → PICK</span><span>TAB PIN</span><span>ESC CLOSE</span></div>
+        </div>
+        <div class="haz"></div>
+      </div>
+    </div>
+    <script>
+      const ic = (n) => `drawer-icons/${n}`;
+      // the most launched apps on this desktop (app-usage.json, 2026-10-26)
+      const apps = [
+        { n: "FIREFOX", i: ic("firefox.png"), c: "BRW", g: "WEB BROWSER", u: 138, r: 2 },
+        { n: "CLAUDE CODE", m: "CC", c: "DEV", g: "TERMINAL AGENT", u: 50, r: 0 },
+        { n: "STEAM", i: ic("steam.png"), c: "GAM", g: "GAME LIBRARY", u: 27, r: 1 },
+        { n: "SPOTIFY", i: ic("spotify-launcher.png"), c: "MUS", g: "MUSIC", u: 24, r: 1 },
+        { n: "DOLPHIN", i: ic("org.kde.dolphin.svg"), c: "FIL", g: "FILE MANAGER", u: 24, r: 0 },
+        { n: "KEEPASSXC", i: ic("keepassxc.svg"), c: "SEC", g: "PASSWORD MANAGER", u: 23, r: 1 },
+        { n: "XIVLAUNCHER", i: ic("xivlauncher.png"), c: "GAM", g: "FFXIV LAUNCHER", u: 18, r: 0 },
+        { n: "ORCA SLICER", m: "OS", c: "IMG", g: "3D PRINT SLICER", u: 13, r: 0 },
+        { n: "ZAPZAP", i: ic("zapzap.svg"), c: "COM", g: "WHATSAPP", u: 11, r: 0 },
+        { n: "KITTY", i: ic("kitty.png"), c: "TRM", g: "TERMINAL", u: 10, r: 3 },
+        { n: "EQUIBOP", i: ic("equibop.png"), c: "COM", g: "DISCORD", u: 6, r: 1 },
+      ];
+      const s = new URLSearchParams(location.search).get("s") || "idle";
+      // idle: no query, the deck is the most launched, Firefox featured. search: "S" typed -> Steam, Spotify ...
+      const view =
+        s === "search"
+          ? { q: "S", list: [apps[2], apps[3], apps[5], apps[7]], at: 0 }
+          : { q: "", list: apps, at: 0 };
+      document.getElementById("q").innerHTML = view.q || '<em>TYPE TO SEARCH</em>';
+      document.getElementById("meta").innerHTML = view.q
+        ? `<b>${view.list.length}</b> MATCHES`
+        : `MOST LAUNCHED · <b>${apps.length}</b> OF 64`;
+
+      // the deck: one before the featured square, the featured one, then the rest shrinking away
+      const deck = document.getElementById("deck");
+      const sizes = [128, 232, 152, 128, 108, 92, 80, 72];
+      const shown = [];
+      if (view.at > 0) shown.push(view.list[view.at - 1]);
+      else shown.push(null);
+      for (let k = view.at; k < view.list.length && shown.length < sizes.length; k++) shown.push(view.list[k]);
+      shown.forEach((a, k) => {
+        const d = document.createElement("div");
+        d.className = "sq" + (k === 1 ? " on" : "") + (a ? "" : " none");
+        d.style.setProperty("--z", sizes[k] + "px");
+        if (a) {
+          d.innerHTML = a.i ? `<img src="${a.i}">` : `<b class="mono">${a.m}</b>`;
+          if (a.r) d.innerHTML += `<em>${"▪".repeat(a.r)}</em>`;
+          if (k !== 1) d.innerHTML += `<small>${String(view.list.indexOf(a) + 1).padStart(2, "0")}</small>`;
+        }
+        deck.appendChild(d);
+      });
+
+      const f = view.list[view.at];
+      document.getElementById("name").textContent = f.n;
+      document.getElementById("spec").innerHTML =
+        `<span>${f.c}</span><span>${f.g}</span><span>${f.u} LAUNCHES</span>` +
+        (f.r ? `<span class="hot">${f.r} OPEN</span>` : `<span>NOT RUNNING</span>`);
+
+      // the scrubber: one tick per app in the list, the featured one orange
+      const t = document.getElementById("ticks");
+      view.list.forEach((a, k) => {
+        const i = document.createElement("i");
+        if (k === view.at) i.className = "on";
+        t.appendChild(i);
+      });
+      t.insertAdjacentHTML("beforeend", `<span>${String(view.at + 1).padStart(2, "0")} / ${String(view.list.length).padStart(2, "0")}</span>`);
+    </script>
+  </body>
+</html>

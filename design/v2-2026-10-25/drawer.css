@@ -1,0 +1,240 @@
+/* v2 app drawer mock - graphite, bone, one orange; poster search, a deck of logo squares. Layout only. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1a1a18;
+  --cell: #222220;
+  --ink: #e8e6df;
+  --ink2: #8a8881;
+  --line: #3a3a37;
+  --acc: #ff5f1f;
+  --acc-ink: #111110;
+}
+
+body {
+  background: #000;
+}
+
+/* a stretch of the ultrawide's ground behind it (the drawer sits centred, between the dock and the bar) */
+.ground {
+  width: 1600px;
+  height: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  background-image: radial-gradient(#e8e6df26 1.2px, transparent 1.4px);
+  background-size: 24px 24px;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ink);
+}
+
+.drawer {
+  position: relative;
+  width: 1296px;
+  padding: 36px 48px 40px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+/* ---------- search: the query as the poster ---------- */
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  height: 104px;
+}
+.prompt {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-size: 72px;
+  color: var(--acc);
+}
+.q {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 104px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.q em {
+  font-style: normal;
+  color: #2e2e2b;
+}
+.caret {
+  align-self: center;
+  width: 14px;
+  height: 84px;
+  margin-left: -10px;
+  background: var(--acc);
+}
+.meta {
+  margin-left: auto;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+.meta b {
+  color: var(--acc);
+}
+.rule {
+  height: 1px;
+  margin: 18px 0 36px;
+  background: var(--line);
+}
+.rule i {
+  display: block;
+  width: 232px;
+  height: 3px;
+  margin-top: -1px;
+  margin-left: 140px;
+  background: var(--acc);
+}
+
+/* ---------- the deck ---------- */
+
+.deck {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 232px;
+}
+.sq {
+  position: relative;
+  flex: none;
+  width: var(--z);
+  height: var(--z);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cell);
+  border: 1px solid var(--line);
+}
+.sq.none {
+  background: none;
+  border-style: dashed;
+}
+.sq img {
+  width: 56%;
+  height: 56%;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.9);
+}
+.sq.on {
+  border: 2px solid var(--acc);
+}
+.sq.on img {
+  width: 58%;
+  height: 58%;
+  filter: none;
+}
+.sq .mono {
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: calc(var(--z) * 0.42);
+  color: var(--ink2);
+}
+.sq.on .mono {
+  color: var(--ink);
+}
+.sq small {
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink2);
+}
+/* running: a square pip per open window, bottom-left */
+.sq em {
+  position: absolute;
+  left: 6px;
+  bottom: 2px;
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--acc);
+}
+
+/* ---------- the featured app: its name as the poster ---------- */
+
+.feat {
+  margin: 22px 0 0 140px;
+}
+.name {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  font-size: 64px;
+  line-height: 1;
+}
+.spec {
+  display: flex;
+  gap: 0;
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+.spec span + span::before {
+  content: "·";
+  margin: 0 12px;
+}
+.spec .hot {
+  color: var(--acc);
+}
+
+/* ---------- foot: the scrubber + keys ---------- */
+
+.foot {
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.ticks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ticks i {
+  width: 14px;
+  height: 6px;
+  background: var(--line);
+}
+.ticks i.on {
+  width: 28px;
+  background: var(--acc);
+}
+.ticks span {
+  margin-left: 12px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+.keys {
+  margin-left: auto;
+  display: flex;
+  gap: 22px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--ink2);
+}
+.haz {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  bottom: 8px;
+  height: 4px;
+  background: repeating-linear-gradient(45deg, var(--acc) 0 6px, transparent 6px 12px);
+}
