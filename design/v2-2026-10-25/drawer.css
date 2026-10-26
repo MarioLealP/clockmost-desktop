@@ -45,7 +45,9 @@ body {
 /* ---------- search: the query as the poster ---------- */
 
 .head {
+  position: relative;
   display: flex;
+  justify-content: center;
   align-items: baseline;
   gap: 18px;
   height: 104px;
@@ -76,7 +78,7 @@ body {
   background: var(--acc);
 }
 .meta {
-  margin-left: auto;
+  margin-left: 22px;
   font-size: 12px;
   letter-spacing: 0.2em;
   color: var(--ink2);
@@ -93,8 +95,7 @@ body {
   display: block;
   width: 232px;
   height: 3px;
-  margin-top: -1px;
-  margin-left: 140px;
+  margin: -1px auto 0;
   background: var(--acc);
 }
 
@@ -102,7 +103,8 @@ body {
 
 .deck {
   display: flex;
-  align-items: flex-end;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
   height: 232px;
 }
@@ -117,9 +119,8 @@ body {
   background: var(--cell);
   border: 1px solid var(--line);
 }
-.sq.none {
-  background: none;
-  border-style: dashed;
+.sq.gap {
+  visibility: hidden;
 }
 .sq img {
   width: 56%;
@@ -167,7 +168,8 @@ body {
 /* ---------- the featured app: its name as the poster ---------- */
 
 .feat {
-  margin: 22px 0 0 140px;
+  margin-top: 24px;
+  text-align: center;
 }
 .name {
   display: block;
@@ -179,6 +181,7 @@ body {
 }
 .spec {
   display: flex;
+  justify-content: center;
   gap: 0;
   margin-top: 12px;
   font-size: 11px;
