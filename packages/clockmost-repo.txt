@@ -1,6 +1,7 @@
 # Our own packages from the [clockmost] repo (git.clockmost.com/pkgs) - enable the repo first (skill clockmost-package,
 # Task D: key BC27FC1EB71B365E28B7FDC0F93259A911AB1037 + [clockmost] in pacman.conf), then install these, then run
-# `clockmost-desktop-setup` as the user inside the Plasma session (re-run after the first Firefox / Spotify start).
+# `clockmost-desktop-setup` as the user inside the Plasma session. No app skins any more (Firefox + Spotify skins
+# removed 2026-11-11); phonograph = the MEDIA tab's audio relay only.
 clockmost-shell
 kwin-decoration-endfield
 kitty-clockmost
